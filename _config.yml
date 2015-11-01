@@ -1,0 +1,17 @@
+title: Joe Duffy's Blog
+url: http://joeduffyblog.com
+description: Adventures in the high-tech underbelly
+email: joeduffy@acm.org
+
+highlighter: pygments
+markdown: redcarpet
+
+permalink: /:year/:month/:day/:title/
+timezone: America/Los_Angeles
+
+paginate: 15
+
+safe: true
+lsi: false
+exclude: [.gitignore, CNAME, Dockerfile, README.md]
+
