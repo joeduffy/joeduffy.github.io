@@ -1,0 +1,23 @@
+---
+layout: default
+---
+<ul class="posts">
+    <li>
+
+        <div class="post_preheader">
+            <span>
+                {{ page.date | date: "%B %-d, %Y" }} 
+            </span>
+        </div>
+
+        <div class="post_header">
+            <b>{{ page.title }}</b>
+        </div>
+
+        <div id="post">
+          {{ content }}
+        </div>
+
+    </li>
+</ul>
+
