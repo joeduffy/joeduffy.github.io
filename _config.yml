@@ -5,7 +5,7 @@ email: joeduffy@acm.org
 
 highlighter: pygments
 markdown: redcarpet
-excerpt_separator: \n\n
+excerpt_separator: "\n\n"
 
 permalink: /:year/:month/:day/:title/
 timezone: America/Los_Angeles
