@@ -15,7 +15,7 @@ author:
 ---
 It seems that I completely blow away and recreate my blog every two years or so.
 The time has come.  I ended up horking my prior setup and have moved everything
-over to [GitHub](github.com/joeduffy/joeduffy.github.io/).
+over to [GitHub](https://github.com/joeduffy/joeduffy.github.io/).
 
 I've not been able to perfectly preserve permalinks, comments, and so on.  I
 tried to keep as much the same as possible (e.g., [/feed](/feed) is still the RSS
