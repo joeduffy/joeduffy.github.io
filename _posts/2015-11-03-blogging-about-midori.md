@@ -13,8 +13,6 @@ author:
   last_name: Duffy
   email: joeduffy@acm.org
 ---
-Blogging about Midori
-
 Enough time has passed that I feel safe blogging about my prior project here at
 Microsoft, "Midori."  In the months to come, I'll publish a dozen-or-so articles
 covering the most interesting aspects of this project, and my key take-aways.
