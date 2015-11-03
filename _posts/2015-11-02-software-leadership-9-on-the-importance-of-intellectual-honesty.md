@@ -14,7 +14,7 @@ author:
   last_name: Duffy
 ---
 There's one especially important trait I look for in great team members:
-intellectual honesty.  Many others traits typically follow suit, but lacking
+intellectual honesty.  Many other traits typically follow suit, but lacking
 this foundation can lead to frequent [Kobayashi Maru](
 https://en.wikipedia.org/wiki/Kobayashi_Maru) situations.  At best,
 those slow down the team without adding value, and at worst, turn an entire team
