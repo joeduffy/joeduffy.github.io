@@ -1,7 +1,7 @@
 ---
 layout: post
 title: 'Blogging about Midori'
-date: 2015-11-01 15:29:00.000000000 -08:00
+date: 2015-11-03 15:29:00.000000000 -08:00
 categories: []
 tags: []
 status: publish
