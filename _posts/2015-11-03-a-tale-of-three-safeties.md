@@ -58,9 +58,9 @@ comes at some runtime cost, although [proof carrying code](
 https://en.wikipedia.org/wiki/Proof-carrying_code) can lessen it.  These
 techniques don't deliver all the added benefits of type and concurrency safety.
 
-Language-based safety, on the other hand, is done through a conjunction of a
-type system's construction, via local checks that, inductively, ensure certain
-operations do not occur, plus optional runtime checks (like array bounds
+Language-based safety, on the other hand, is done through a system of type
+system rules and local checks (as opposed to global) that, inductively, ensure
+certain operations do not occur, plus optional runtime checks (like array bounds
 checking in the absence of a more capable [dependent type system](
 https://en.wikipedia.org/wiki/Dependent_type)).  The benefits of this approach
 are often a more productive approach to stopping safety holes because a developer
@@ -72,6 +72,13 @@ order to running arbitrary code, for example.
 Multiple techniques are frequently used in conjunction with another, something
 called "defense in depth," in order to deliver the best of all of these
 techniques.
+
+Good examples of the runtime approach to safety include [Google's C++ sanitizers](
+https://github.com/google/sanitizers) and [Microsoft's "/guard" feature](
+http://blogs.msdn.com/b/vcblog/archive/2014/12/08/visual-studio-2015-preview-work-in-progress-security-feature.aspx).
+Good examples of the language approach include C#, Java, most functional
+languages, Go, etc.  We can see some cracks already, however, since C# has the
+`unsafe` keyword which permits unsafe regions that violate safety.
 
 So, anyway, how do you build an operating system, whose central purpose is to
 control hardware resources, buffers, services and applications running in
@@ -169,11 +176,11 @@ achieve simultaneous safety and performance to both .NET and C++.  Perhaps the
 most visible artifact are the [safety profiles](
 https://github.com/isocpp/CppCoreGuidelines/blob/master/CppCoreGuidelines.md#S-profile)
 we recently launched as part of the C++ Core Guidelines effort.  I expect more
-to show up in C# 7 and the C# AOT work we're doing right now, in conjunction
-with our cross-platform efforts.  Midori was greenfield, whereas these
-environments require delicate compromise, which has been fun, but slowed down
-some of the transfer of these ideas into production.  I'm happy to finally start
-seeing some of it bearing fruit.
+to show up in C# 7 and the C# AOT work we're doing right now as we take .NET
+cross-platform.  Midori was greenfield, whereas these environments require
+delicate compromises, which has been fun, but slowed down some of the transfer
+of these ideas into production.  I'm happy to finally start seeing some of it
+bearing fruit.
 
 The combination of memory, type, and concurrency safety gave us a powerful
 foundation to stand on.  Most of all, it delivered a heightened level of
