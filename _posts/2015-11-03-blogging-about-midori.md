@@ -43,7 +43,7 @@ I'll be the first to admit, none of us knew how Midori would turn out.  That's
 often the case with research.  My biggest regret is that we didn't OSS it from
 the start, where the meritocracy of the Internet could judge its pieces
 appropriately.  As with all big corporations, decisions around the destiny of
-Midori's core technology wasn't entirely technology-driven, and sadly, not even
+Midori's core technology weren't entirely technology-driven, and sadly, not even
 entirely business-driven.  But therein lies some important lessons too.  My
 second biggest regret is that we didn't publish more papers.  This blog series
 may help to recitify some of this.
