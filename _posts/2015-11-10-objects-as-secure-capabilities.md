@@ -48,13 +48,17 @@ call accordingly.  There are various mechanisms for impersonating users, like
 `su` and `setuid` on UNIX and `ImpersonateLoggedOnUser` on Windows.  But the
 primary point here is that `open` just "knew" how to inspect some global state
 to understand the security implications of the action being asked of it.
+Another interesting aspect of this is that the `O_RDONLY` flag is passed, asking
+for readonly access, which factors into the authorization process too.
 
 Well, what's wrong with this?
 
-It's imprecise.  And thanks to its imprecision, it's easy to get wrong, and
-going here wrong means security attacks.  Specifically, it's easy to trick a
-program into doing something on behalf of a user that it was never intended to
-do.  This is called the ["confused deputy problem"](
+It's imprecise.  It relies on ambient state that is invisible to the program.
+You can't easily audit to see the security implications of the operation.  You
+just need to know how `open` works.  And thanks to its imprecision, it's easy to
+get wrong, and going here wrong means security vulnerabilities.  Specifically,
+it's easy to trick a program into doing something on behalf of a user that it
+was never intended to do.  This is called the ["confused deputy problem"](
 http://c2.com/cgi/wiki?ConfusedDeputyProblem).  All you need to do is trick the
 shell or program into impersonating a superuser, and you're home free.
 
