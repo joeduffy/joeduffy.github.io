@@ -222,7 +222,7 @@ CloudFile and do things I didn't intend.  We addressed this with severe
 restrictions on casting and by putting the most sensitive capabilities on an
 entirely different plan altogether...
 
-# Distributed Objects and IO
+# Distributed Capabilities
 
 I'll briefly touch on an area that warrants a lot more coverage in a future
 post: our asynchronous programming model.  This model formed the foundation of
