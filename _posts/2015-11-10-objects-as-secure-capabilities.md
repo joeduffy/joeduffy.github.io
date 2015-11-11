@@ -53,8 +53,9 @@ Well, what's wrong with this?
 It's imprecise.  And thanks to its imprecision, it's easy to get wrong, and
 going here wrong means security attacks.  Specifically, it's easy to trick a
 program into doing something on behalf of a user that it was never intended to
-do.  All you need to do is trick the shell or program into impersonating a
-superuser, and you're home free.
+do.  This is called the ["confused deputy problem"](
+http://c2.com/cgi/wiki?ConfusedDeputyProblem).  All you need to do is trick the
+shell or program into impersonating a superuser, and you're home free.
 
 Capability-based security, on the other hand, isn't reliant on global authority
 in this same manner.  It uses so-called "unforgeable tokens" to represent
@@ -139,7 +140,7 @@ they are closer to them than the true sort of capability we're discussing here.
 
 A nice thing about capabilities simply being objects was that could apply your
 existing knowledge of object-orientation to capabilities, and hence the domain
-of security, authority, etc.
+of security and authority.
 
 Since objects represented capabilities, they could be as fine or coarse as you
 wish.  You could make new ones through composition, or modify existing ones
@@ -149,13 +150,14 @@ objects.  You could leverage all sorts of [classic design patterns](
 https://en.wikipedia.org/wiki/Design_Patterns) suddenly in the domain of
 security.  I do have to admit the simplicity of this idea was jarring to some.
 
-One fundamental idea is revocation.  An object has a type and some systems --
-like ours did -- let you substitute one implementation in place of another.
-That means if you ask me for a Clock, I needn't give you access to a clock for
-all time.  Or even the real one for that matter.  Instead, I could give you my
-own subclass of a Clock that delegates to the real one, and rejects your
-attempts after an event occurs.  You've got to either trust the source of the
-clock, or explicitly safe-guard yourself against it, if you aren't sure.
+One fundamental idea is [revocation](http://c2.com/cgi/wiki?RevokableCapabilities).
+An object has a type and some systems -- like ours did -- let you substitute one
+implementation in place of another.  That means if you ask me for a Clock, I
+needn't give you access to a clock for all time.  Or even the real one for that
+matter.  Instead, I could give you my own subclass of a Clock that delegates to
+the real one, and rejects your attempts after an event occurs.  You've got to
+either trust the source of the clock, or explicitly safe-guard yourself against
+it, if you aren't sure.
 
 Another concept is state.  In our system, we banned mutable statics, by-
 construction, in our programming language.  That's right, not only could a
