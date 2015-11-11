@@ -153,51 +153,50 @@ they are closer to them than the true sort of capability we're discussing here.
 
 # Objects and State
 
-A nice thing about capabilities simply being objects was that could apply your
-existing knowledge of object-orientation to capabilities, and hence the domain
-of security and authority.
+A nice thing about capabilities just being objects is that you can apply existing
+knowledge about object-orientation to the domains of security and authority.
 
-Since objects represented capabilities, they could be as fine or coarse as you
-wish.  You could make new ones through composition, or modify existing ones
-through subclassing.  Dependencies were managed just like any dependencies in an
+Since objects represent capabilities, they can be as fine or coarse as you
+wish.  You can make new ones through composition, or modify existing ones
+through subclassing.  Dependencies are managed just like any dependencies in an
 object-oriented system: by encapsulating, sharing, and requesting references to
-objects.  You could leverage all sorts of [classic design patterns](
+objects.  You can leverage all sorts of [classic design patterns](
 https://en.wikipedia.org/wiki/Design_Patterns) suddenly in the domain of
 security.  I do have to admit the simplicity of this idea was jarring to some.
 
 One fundamental idea is [revocation](http://c2.com/cgi/wiki?RevokableCapabilities).
-An object has a type and some systems -- like ours did -- let you substitute one
-implementation in place of another.  That means if you ask me for a Clock, I
-needn't give you access to a clock for all time.  Or even the real one for that
-matter.  Instead, I could give you my own subclass of a Clock that delegates to
-the real one, and rejects your attempts after an event occurs.  You've got to
-either trust the source of the clock, or explicitly safe-guard yourself against
-it, if you aren't sure.
+An object has a type and our system let you substitute one implementation in place
+of another.  That means if you ask me for a Clock, I needn't give you access to
+a clock for all time, or even the real one for that matter.  Instead, I can give
+you my own subclass of a Clock that delegates to the real one, and rejects your
+attempts after some event occurs.  You've got to either trust the source of the
+clock, or explicitly safe-guard yourself against it, if you aren't sure.
 
-Another concept is state.  In our system, we banned mutable statics, by-
-construction, in our programming language.  That's right, not only could a
-static field only be written to once, but the entire object graph it referred to
-could only be written to during construction.  It turns out mutable statics are
+Another concept is state.  In our system, we banned mutable statics,
+by-construction at compile-time, in our programming language.  That's right, not
+only could a static field only be written to once, but the entire object graph
+it referred to was frozen after construction.  It turns out mutable statics are
 really just a form of ambient authority, and this approach prevents someone
 from, say, caching a Filesystem object in a global static variable, and sharing
 it freely, thereby creating something very similar to the classical security
 models we are seeking to avoid.  It also had many benefits in the area of safe
 concurrency and even gave us performance benefits, because statics simply became
-rich constant object graphs.
+rich constant object graphs that could be frozen and shared across binaries.
 
 The total elimination of mutable statics had an improvement to our system's
 reliability that is difficult to quantify, and difficult to understate.  This is
 one of the biggest things I miss.
 
-Notice that I mentioned Clock above.  This is an extreme example, however, yes,
+Recall my mention of Clock above.  This is an extreme example, however, yes,
 that's right, there was no global function to read time, like C's `localtime` or
-C#'s `DateTime.Now`.  To get the time, you needed to explicitly request a Clock
-capability.  This had the effect of eliminating non-determinism from an entire
-class of functions.  A static function that didn't do IO -- something we could
-ascertain in our type system (think Haskell monads) -- now became purely
-functional, memoizable, and even something we could evaluate at compile-time (a
-bit like [`constexpr`](http://en.cppreference.com/w/cpp/language/constexpr) on
-steroids).
+C#'s `DateTime.Now`.  To get the time, you must explicitly request a Clock
+capability.  This has the effect of eliminating non-determinism from an entire
+class of functions.  A static function that doesn't do IO -- [something we can
+ascertain in our type system (think Haskell monads)](
+http://research.microsoft.com/apps/pubs/default.aspx?id=170528) -- now becomes
+purely functional, memoizable, and even something we can evaluate at
+compile-time (a bit like [`constexpr`](
+http://en.cppreference.com/w/cpp/language/constexpr) on steroids).
 
 I'll be the first to admit, there was a maturity process that developers went
 through, as they learned about the design patterns in an object capability
@@ -216,11 +215,12 @@ contextual storage like parents and children to make fetching them easier.
 
 The weaknesses of classical object-oriented systems also rear their ugly heads.
 Downcasting, for example, means you cannot entirely trust subclassing as a means
-of information hiding.  If you ask for a File, and I supply my own CloudFile
-that derives from File and adds its own cloud-like functions to it, you might
-sneakily downcast to CloudFile and do things I didn't intend.  We addressed this
-with severe restrictions on casting and by putting the most sensitive
-capabilities on an entirely different plan altogether...
+of [information hiding](https://en.wikipedia.org/wiki/Information_hiding).  If
+you ask for a File, and I supply my own CloudFile that derives from File and adds
+its own public cloud-like functions to it, you might sneakily downcast to
+CloudFile and do things I didn't intend.  We addressed this with severe
+restrictions on casting and by putting the most sensitive capabilities on an
+entirely different plan altogether...
 
 # Distributed Objects and IO
 
