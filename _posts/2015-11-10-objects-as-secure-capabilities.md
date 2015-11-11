@@ -37,7 +37,7 @@ current process.
 
 To illustrate this concept, consider a simple C call to the `open` API:
 
-	void MyProgram() {
+	void main() {
 		int file = open("filename", O_RDONLY, 0);
 		// Interact with `file`...
 	}
@@ -78,7 +78,7 @@ Insecure operations rejected at compile-time, how cool is that!
 The hypothetical `open` API from earlier, as you may have guessed, would look
 very different:
 
-	void MyProgram(File file) {
+	void main(File file) {
 		// Interact with `file`...
 	}
 
@@ -121,9 +121,10 @@ and exposure, because all you've got are objects to secure your system.
 Probably, you'll have a way that a program requests access to some state
 somewhere on the Filesystem, declaratively, and then the "capability oracle"
 decides whether to give it to you.  This is the role our application model
-played.  From that point onwards it's just objects.  The key is that nowhere in
-the entire system will you find the classical kind of ambient authority, and so
-none of these abstractions can "cheat" in their construction.
+played, and is how `main` got its hands on the capabilities a program's manifest
+demanded that it needs.  From that point onwards it's just objects.  The key is
+that nowhere in the entire system will you find the classical kind of ambient
+authority, and so none of these abstractions can "cheat" in their construction.
 
 A classic paper, [Protection](
 http://research.microsoft.com/en-us/um/people/blampson/08-Protection/Acrobat.pdf),
