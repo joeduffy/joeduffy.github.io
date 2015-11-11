@@ -28,11 +28,12 @@ type system.
 First and foremost: what the heck are capabilities?
 
 In the security systems most of us know and love, i.e. UNIX and Windows,
-permission to do things is granted based on concepts like users and groups.
-Certain objects like files and system calls can be protected by access controls
-that restrict what users and groups can do things with said objects.  At
-runtime, checks are performed to enforce these access controls, using ambient
-identity like what user the current process is running as.
+permission to do something is granted based on identity, typically in the form
+of users and groups.  Certain protected objects like files and system calls have
+access controls attached to them that restrict which users and groups can use
+them.  At runtime, the OS checks that requested operation is permitted based on
+these access controls, using ambient identity like what user is running the
+current process.
 
 To illustrate this concept, consider a simple C call to the `open` API:
 
