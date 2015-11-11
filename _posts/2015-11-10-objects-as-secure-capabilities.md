@@ -31,8 +31,8 @@ In the security systems most of us know and love, i.e. UNIX and Windows,
 permission to do something is granted based on identity, typically in the form
 of users and groups.  Certain protected objects like files and system calls have
 access controls attached to them that restrict which users and groups can use
-them.  At runtime, the OS checks that requested operation is permitted based on
-these access controls, using ambient identity like what user is running the
+them.  At runtime, the OS checks that the requested operation is permitted based
+on these access controls, using ambient identity like what user is running the
 current process.
 
 To illustrate this concept, consider a simple C call to the `open` API:
@@ -62,14 +62,18 @@ was never intended to do.  This is called the ["confused deputy problem"](
 http://c2.com/cgi/wiki?ConfusedDeputyProblem).  All you need to do is trick the
 shell or program into impersonating a superuser, and you're home free.
 
-Capability-based security, on the other hand, isn't reliant on global authority
-in this same manner.  It uses so-called "unforgeable tokens" to represent
-capabilities to perform operations.  No matter how the decision is made, if the
-software isn't meant to perform some operation, it simply never receives the
-token necessary to do said operation.  Since tokens are unforgeable, the program
-cannot even attempt the operation.  In a system like Midori's, type safety meant
-that not only could the program not perform the operation, it would often be
-caught at compile-time.
+[Capability-based security](https://en.wikipedia.org/wiki/Capability-based_security),
+on the other hand, isn't reliant on global authority in this same way.  It uses
+so-called "unforgeable tokens" to represent the ability to perform privileged
+operations.  No matter how the decision gets made -- there is an entirely complex
+topic of policy management and granting authority that gets into social and human
+behaviors -- if the software isn't meant to perform some operation, it simply
+never receives the token necessary to do said operation.  And because tokens are
+unforgeable, the program can't even attempt the operation.  In a system like
+Midori's, type safety meant that not only could the program not perform the
+operation, it would often be caught at compile-time.
+
+Insecure operations rejected at compile-time, how cool is that!
 
 The hypothetical `open` API from earlier, as you may have guessed, would look
 very different:
@@ -78,19 +82,24 @@ very different:
 		// Interact with `file`...
 	}
 
-I've just passed the buck.  *Someone else* has to show up with a File object.
-How do they get one?  That's up to them.  But if they *do* show up with one,
-they must have been authorized to get it, because object references in a type
-safe system are unforgeable.  The matter of policy and authorization are now
-pushed to the source.
+OK, clearly we're not in Kansas anymore.  This is *extremely* different.  And
+I've just passed the buck.  *Someone else* has to show up with a File object?
+How do they get one?
 
-I'm over-simplifying a little bit, since most of the interesting questions just
-evaporated from the conversation.  Let's keep digging deeper.
+The trite answer is, who cares, that's up to the caller.  But if they *do* show
+up with one, they must have been authorized to get it, because object references
+in a type safe system are unforgeable.  The matter of policy and authorization
+are now pushed to the source where, arguably, they belong.
 
-How does anyone actually produce a File object?  The code above neither knows
-nor cares whether where it came from.  All it knows is it is given an object
-with a File-like API.  It might have been `new`'d up.  More likely, it was
-obtained by consulting a separate entity, like a Filesystem or a Directory:
+I'm over-simplifying a little bit, since this answer likely raised more questions
+than it actually answered.  Let's keep digging deeper.
+
+So, again, let's ask the question: how does one get their hands on a File object?
+
+The code above neither knows nor cares whether where it came from.  All it knows
+is it is given an object with a File-like API.  It might have been `new`'d up by
+the caller.  More likely, it was obtained by consulting a separate entity, like
+a Filesystem or a Directory, both of which are also capability objects:
 
 	Filesystem fs = ...;
 	Directory dir = ... something(fs) ...;
@@ -98,9 +107,9 @@ obtained by consulting a separate entity, like a Filesystem or a Directory:
 	MyProgram(file);
 
 You might be getting really angry at me now.  Where did `fs` come from?  How did
-I get a Directory from `fs`, and how did I get a File from `dir`?  One could
-reasonably claim I've just squished all the interesting topics around, and
-answered very few.
+I get a Directory from `fs`, and how did I get a File from `dir`?  I've just
+squished all the interesting topics around, like a water balloon, and answered
+nothing at all!
 
 The reality is that those are all the interesting questions you encounter now
 when you try to design a filesystem using capabilities.  You probably don't want
@@ -118,11 +127,12 @@ none of these abstractions can "cheat" in their construction.
 
 A classic paper, [Protection](
 http://research.microsoft.com/en-us/um/people/blampson/08-Protection/Acrobat.pdf),
-by Butler Lampson clearly articulates some of the key underlying principles.  In
-a sense, each object in our system is its own "protection domain."  I also love
-[Capability Myths Demolished](http://srl.cs.jhu.edu/pubs/SRL2003-02.pdf)'s way
-of comparing and contrasting capabilities with classical security models, if you
-want more details (or incorrectly speculate that they might be isomorphic).
+by Butler Lampson clearly articulates some of the key underlying principles, like
+unforgeable tokens.  In a sense, each object in our system is its own "protection
+domain."  I also love [Capability Myths Demolished](
+http://srl.cs.jhu.edu/pubs/SRL2003-02.pdf)'s way of comparing and contrasting
+capabilities with classical security models, if you want more details (or
+incorrectly speculate that they might be isomorphic).
 
 Midori was by no means the first to build an operating systems with object
 capabilities at its core.  In fact, we drew significant inspiration from
