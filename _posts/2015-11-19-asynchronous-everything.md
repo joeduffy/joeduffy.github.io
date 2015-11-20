@@ -409,7 +409,7 @@ at-a-time.  Finally, a novel technique called "three-party handoff" was used to 
 parties engaging in a message passing dialogue.  This cut out middle-men whose jobs in a normal system would have been
 to simply bucket brigade the messages, adding no value, other than latency and wasted work.
 
-![Message Passing Diagram](/img/assets/2015-11-19-asynchronous-everything.pipeline.jpg)
+![Message Passing Diagram](/assets/img/2015-11-19-asynchronous-everything.pipeline.jpg)
 
 The only types marshalable across message passing boundaries were:
 
