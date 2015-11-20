@@ -197,7 +197,7 @@ A caller invoking an `async` method was forced to choose: use `await` and wait f
 launch an asynchronous operation.  All asynchrony in the system was thus explicit:
 
     int x = await Bar();        // Invoke Bar, but wait for its result.
-    Async<int> y = async Bar(); // Invoke Bar asynchronously; I can wait for its result later.
+    Async<int> y = async Bar(); // Invoke Bar asynchronously; I'll wait later.
     int z = await y;            // ...like now.  This waits for Bar to finish.
 
 This also gave us a very important, but subtle, property that we didn't realize until much later.  Because in Midori the
@@ -321,14 +321,15 @@ eliminating a few sub-optimal aspects of the state machine rewrite model.  Actua
    in addition to some processes constantly switching between them.  For footprint and cache reasons, it was important
    that they remain as small as the most carefully hand-crafted state machine as possible.
 
-The model we built was one where asynchronous activities ran on linked stacks.  These links could start as small as
-128 bytes and grow as needed.  After much experimentation, we landed on a model where link sizes doubled each time; so,
-the first link would be 128b, then 256b, ..., on up to 8k chunks.  Implementing this required deep compiler support.
-As did getting it to perform well.  The compiler knew to hoist link checks, especially out of loops, and probe for
-larger amounts when it could predict the size of stack frames (accounting for inlining).  There is a common problem with
-linking where you can end up relinking frequently, especially at the edge of a function call within a loop, however most
-of the above optimizations prevented this from showing up.  And, even if they did, our linking code was hand-crafted
-assembly -- IIRC, it was three instructions to link -- and we kept a lookaside of hot link segments we could reuse.
+The model we built was one where asynchronous activities ran on [linked stacks](https://gcc.gnu.org/wiki/SplitStacks).
+These links could start as small as 128 bytes and grow as needed.  After much experimentation, we landed on a model
+where link sizes doubled each time; so, the first link would be 128b, then 256b, ..., on up to 8k chunks.  Implementing
+this required deep compiler support.  As did getting it to perform well.  The compiler knew to hoist link checks,
+especially out of loops, and probe for larger amounts when it could predict the size of stack frames (accounting for
+inlining).  There is a common problem with linking where you can end up relinking frequently, especially at the edge of
+a function call within a loop, however most of the above optimizations prevented this from showing up.  And, even if
+they did, our linking code was hand-crafted assembly -- IIRC, it was three instructions to link -- and we kept a
+lookaside of hot link segments we could reuse.
 
 There was another key innovation.  Remember, I hinted earlier, we knew statically in the type system whether a function
 was asynchronous or not, simply by the presence of the `async` keyword?  That gave us the ability in the compiler to
@@ -358,7 +359,8 @@ face of concurrency, however it comes with some gotchas, as we explore later.
 The nicest part of this, however, was that processes suffered no shared memory race conditions.
 
 We did have a task and data parallel framework.  It leveraged the concurrency safety features of the languge I've
-mentioned previously -- immutability, isolation, and readonly annotations -- to ensure that this data race freedom was
+mentioned previously -- [immutability, isolation, and readonly annotations](
+http://research.microsoft.com/apps/pubs/default.aspx?id=170528) -- to ensure that this data race freedom was
 not violated.  This was used for fine-grained computations that could use the extra compute power.  Most of the system,
 however, gained its parallel execution through the decomposition into processes connected by message passing.
 
