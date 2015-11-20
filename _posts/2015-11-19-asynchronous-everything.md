@@ -223,9 +223,15 @@ now use the familiar programming language constructs, rather than clumsy API ver
 I mentioned this was controversial.  Most of the team loved the usability improvements.  But it wasn't unanimous.
 
 Maybe the biggest problem was that it encouraged a pull-style of concurrency.  Pull is where a caller awaits a callee
-before proceeding with its own operations.  In this new model, you need to go out of your way to do that.  It's always
-possible, of course, thanks to the `async` keyword, but there's certainly a little more friction than the old model.
-The old, familiar, blocking model of waiting for things is just an `await` keyword away.
+before proceeding with its own operations.  In this new model, you need to go out of your way to *not* do that.  It's
+always possible, of course, thanks to the `async` keyword, but there's certainly a little more friction than the old
+model. The old, familiar, blocking model of waiting for things is just an `await` keyword away.
+
+We offered bridges between pull and push, in the form of [reactive](https://rx.codeplex.com/)
+`IObservable<T>`/`IObserver<T>` adapters.  I wouldn't claim they were very successful, however for side-effectful
+actions that didn't employ dataflow, they were useful.  In fact, our entire UI framework was based on the concept of
+[functional reactive programming](https://en.wikipedia.org/wiki/Functional_reactive_programming), which required a
+slight divergence from the Reactive Framework in the name of performance.  But alas, this is a post on its own.
 
 An interesting consequence was a new difference between a method that awaits before returning a `T`, and one that
 returns an `Async<T>` directly.  This difference didn't exist in the type system previously.  This, quite frankly,
@@ -608,7 +614,10 @@ In a distributed system, things get unordered unless you go out of your way to p
 way to preserve order removes concurrency from the system, adds book-keeping, and a ton of complexity.  My biggest
 lesson learned here was: distributed systems are unordered.  It sucks.  Don't fight it.  You'll regret trying.
 
-But it surprises developers.  A good example is as follows:
+Leslie Lamport has a classic must-read paper on the topic: [Time, Clocks, and the Ordering of Events in a Distributed
+System](http://amturing.acm.org/p558-lamport.pdf).
+
+But unordered events surprise developers.  A good example is as follows:
 
     // Three asynchronous objects:
     IA a = ...;
