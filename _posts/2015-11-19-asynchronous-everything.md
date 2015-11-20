@@ -276,15 +276,15 @@ machine, and uses Task's continuation passing machinery to keep the iterator-lik
 We began this way and shared some of our key optimizations with the C# and .NET teams.  Unfortunately, the result at
 the scale of what we had in Midori simply didn't work.
 
-First, remember, Midori was an entire OS written to use garbage collected memory.  We learned some key lessons -- which
-I will recap in a future post -- that were necessary for this to perform adequately.  But I'd say the prime directive
-was to avoid superfluous allocations like the plague.  Even short-lived ones.  There is a mantra that permeated .NET
-in the early days: Gen0 collections are free.  Unfortunately, this shaped a lot of .NET's library code, and is utter
-hogwash.  Gen0 collections introduce pauses, dirty the cache, and introduce [beat frequency issues](
-https://en.wikipedia.org/wiki/Beat_(acoustics)) in a highly concurrent system.  I will point out, however, one of the
-tricks to garbage collection working at the scale of Midori was precisely the fine-grained process model, where each
-process had a distinct heap that was independently collectible.  I'll have an entire article devoted to how we got
-good behavior out of our garbage collector, but this was the most important architectural characteristic.
+First, remember, Midori was an entire OS written to use garbage collected memory.  We learned some key lessons that were
+necessary for this to perform adequately.  But I'd say the prime directive was to avoid superfluous allocations like the
+plague.  Even short-lived ones.  There is a mantra that permeated .NET in the early days: Gen0 collections are free.
+Unfortunately, this shaped a lot of .NET's library code, and is utter hogwash.  Gen0 collections introduce pauses, dirty
+the cache, and introduce [beat frequency issues](https://en.wikipedia.org/wiki/Beat_(acoustics)) in a highly concurrent
+system.  I will point out, however, one of the tricks to garbage collection working at the scale of Midori was precisely
+the fine-grained process model, where each process had a distinct heap that was independently collectible.  I'll have an
+entire article devoted to how we got good behavior out of our garbage collector, but this was the most important
+architectural characteristic.
 
 The first key optimization, therefore, is that an async method that doesn't await shouldn't allocate anything.
 
@@ -464,10 +464,14 @@ For purposes of this discussion, however, just imagine that `Stream` and `Sequen
 
 As hinted at earlier, we also had `IAsyncEnumerable<T>` and `IAsyncEnumerator<T>` types.  These were the most general
 purpose interfaces you'd code against when wanting to consume something.  Developers could, of course, implement their
-own stream types, especially since we had asynchronous iterators in the language.
+own stream types, especially since we had asynchronous iterators in the language.  A full set of asynchronous LINQ
+operators worked over these interfaces, so LINQ worked nicely for consuming and composing streams and sequences.
 
-Additionally, a full set of asynchronous LINQ operators were available.  Thanks to these fundamental interface types,
-they worked over streams and sequences.
+In addition to the enumerable-based consumption techniques, all the standard peeking and batch-based APIs were
+available.  It's important to point out, however, that the entire streams framework built atop the zero-copy
+capabilities of the kernel, to avoid copying.  Every time I see an API in .NET that deals with streams in terms of
+`byte[]`s makes me shed a tear.  The result is our streams were actually used in very fundamental areas of the system,
+like the network stack itself, the filesystem the web servers, and more.
 
 As hinted at earlier, we supported both push and pull-style concurrency in the streaming APIs.  For example, we
 supported generators, which could either style:
@@ -518,11 +522,14 @@ The solution ended up building atop the foundation of `CancellationToken`.
 They key innovation was first to rebuild the idea of `CancellationToken` on top of our overall message passing model,
 and then to weave it throughout in all the right places.  For example:
 
-* CancellationTokens could be marshaled in messages.
-* Whole async objects could be wrapped in a CancellationToken, such that cancelling [revoked](
-  http://c2.com/cgi/wiki?RevokableCapabilities) access.
-* Whole async functions could be invoked with an attached CancellationToken, such that cancelling propagated downward.
+* CancellationTokens could extend their reach across processes.
+* Whole async objects could be wrapped in a CancellationToken, and used to trigger [revocation](
+  http://c2.com/cgi/wiki?RevokableCapabilities).
+* Whole async functions could be invoked with a CancellationToken, such that cancelling propagated downward.
 * Areas like storage needed to manually check to ensure that state was kept consistent.
+
+In summary, we took a "whole system" approach to the way cancellation was plumbed throughout the system, including
+extending the reach of cancellation across processes.  I was happy with where we landedon this one.
 
 ### State Management
 
@@ -647,20 +654,22 @@ parallelism by default.  But ours did!  Although that sounds like a good thing -
 dark side.  How the heck do you manage resources and schedule all that work intelligently, in the face of so much of it?
 
 This was a loooooooong, winding road.  I won't claim we solved it.  I won't claim we even came close.  I will claim we
-made significant inroads into making the problem less disastrous to the stability of the system.
+tackled it enough that the problem was less disastrous to the stability of the system than it would have otherwise been.
 
 An analogous problem that I've faced in the past is with thread pools in both Windows and the .NET Framework.  Given
 that work items might block in the thread pool, how do you decide the number of threads to keep active at once?  There
-are always imperfect heuristics applied, and I would say we did no worse.  Probably far better, actually.
+are always imperfect heuristics applied, and I would say we did no worse.  If anything, we erred on the side of using
+more of the latent parallelism to saturate the available resources.  It was pretty common to be running the Midori
+system at 100% CPU utilization, because it was doing useful stuff, which is pretty rare on PCs and traditional apps.
 
-But the scale of our problem was much worse.  Everything was asynchronous.  Imagine an app traversing the entire
-filesystem, and performing a series of asynchronous operations for each file on disk.  In Midori, the app, filesystem,
-disk drivers, etc., are all different asynchronous processes.  It's easy to envision the resulting [fork bomb](
-https://en.wikipedia.org/wiki/Fork_bomb).
+But the scale of our problem was much worse than anything I'd ever seen.  Everything was asynchronous.  Imagine an app
+traversing the entire filesystem, and performing a series of asynchronous operations for each file on disk.  In Midori,
+the app, filesystem, disk drivers, etc., are all different asynchronous processes.  It's easy to envision the resulting
+[fork bomb](https://en.wikipedia.org/wiki/Fork_bomb)-like problem that results.
 
-The solution here broke down into two buckets:
+The solution here broke down into a two-pronged defense:
 
-1. Self-control: some async code knows that it could flood the system with work, and explicitly tries not to.
+1. Self-control: async code knows that it could flood the system with work, and explicitly tries not to.
 2. Automatic resource management: no matter what the user-written code does, the system can throttle automatically.
 
 For obvious reasons, we preferred automatic resource management.
@@ -677,11 +686,13 @@ of [game theory](https://en.wikipedia.org/wiki/Game_theory), this approach gets 
 a market value for all system resources, and all agents in the system have a finite amount of "purchasing power," we
 can expect they will purchase those resources that benefit themselves the most based on the market prices available.
 
-But automatic management wasn't always perfect.  A programmer could also help us out by capping the maximum number of
-outstanding activities, using simple techniques like "wide-loops."  A wide-loop was an asynchronous loop where the
-developer specified the maximum outstanding iterations.  The system ensured it launched no more than this count at once.
+But automatic management wasn't always perfect.  That's where self-control came in.  A programmer could also help us out
+by capping the maximum number of outstanding activities, using simple techniques like "wide-loops."  A wide-loop was an
+asynchronous loop where the developer specified the maximum outstanding iterations.  The system ensured it launched no
+more than this count at once.  It always felt a little cheesy but, coupled with resource management, did the trick.
 
-I would say we didn't die from this one.  I would also say it was solved to my least satisfaction out of the bunch.
+I would say we didn't die from this one.  We really thought we would die from this one.  I would also say it was solved
+to my least satisfaction out of the bunch, however.  It remains fertile ground for innovative systems research.
 
 ## Winding Down
 
