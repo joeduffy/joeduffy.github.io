@@ -13,11 +13,11 @@ author:
   last_name: Duffy
   email: joeduffy@acm.org
 ---
-Midori was comprised of many ultra-lightweight, fine-grained processes, connected through strongly typed message passing
-interfaces.  It was common to see programs that'dve classically been single, monolithic processes -- perhaps with some
-internal multithreading -- expressed instead as dozens of small processes, resulting in natural, safe, and, largely,
+Midori was built out of many ultra-lightweight, fine-grained processes, connected through strongly typed message passing
+interfaces.  It was common to see programs that'd've classically been single, monolithic processes -- perhaps with some
+internal multithreading -- expressed instead as dozens of small processes, resulting in natural, safe, and largely
 automatic parallelism.  Synchronous blocking was flat-out disallowed.  This meant that literally everything was
-asynchronous.  All file and network IO, all message passing, and any "synchronization" activities like rendezvousing
+asynchronous: all file and network IO, all message passing, and any "synchronization" activities like rendezvousing
 with other asynchronous work.  The resulting system was highly concurrent, responsive to user input, and scaled like the
 dickens.  But as you can imagine, it also came with some fascinating challenges.
 
@@ -27,10 +27,11 @@ The asynchronous programming model looked a lot like C#'s async/await on the sur
 
 That's not a coincidence.  I was the architect and lead developer on [.NET tasks](
 https://en.wikipedia.org/wiki/Parallel_Extensions).  As the concurrency architect on Midori, coming off just shipping
-them, I had a natural bias.  But we also worked closely with the C# team to bring some of Midori's approaches back to
-the shipping language, and had been using a variant of the async/await model for over a year when C# began looking into
-it.  We didn't bring all the Midori goodness to .NET, but some of it certainly showed up, mostly in the area of
-performance.  It still kills me that I can't go back in time and make .NET's task a struct.
+the .NET release, I admit I had a bit of a bias.  Even I knew what we had wouldn't work as-is for Midori, however, so
+we embarked upon a multi-year journey.  But as we went, we worked closely with the C# team to bring some of Midori's
+approaches back to the shipping language, and had been using a variant of the async/await model for about a year when C#
+began looking into it.  We didn't bring all the Midori goodness to .NET, but some of it certainly showed up, mostly in
+the area of performance.  It still kills me that I can't go back in time and make .NET's task a struct.
 
 But I'm getting ahead of myself.  The journey to get to this point was a long one, and we should start at the beginning.
 
@@ -38,56 +39,62 @@ But I'm getting ahead of myself.  The journey to get to this point was a long on
 
 At the core of our asynchronous model was a technology called [promises](
 https://en.wikipedia.org/wiki/Futures_and_promises).  These days, the idea is ubiquitous.  The way we used promises,
-however, was more interesting, as we'll start to see soon.  Perhaps the biggest difference is you were forced to use
-them, because there wasn't a single synchronous API available.
+however, was more interesting, as we'll start to see soon.  We were heavily influenced by the [E system](
+https://en.wikipedia.org/wiki/E_(programming_language)).  Perhaps the biggest difference compared to popular
+asynchronous frameworks these days is there was no cheating.  There wasn't a single synchronous API available.
 
 The first cut at the model used explicit callbacks.  This'll be familiar to anybody who's done Node.js programming.  The
 idea is you get a `Promise<T>` for any operation that will eventually yield a `T` (or fail).  The operation producing
-that may be happening asynchronously within the process or even remotely somewhere else.  The consumer of it doesn't
-need to know or care.  They simply deal with the `Promise<T>` as a first class value and, when the `T` is sought, must
-rendezvous.
+that may be running asynchronously within the process or even remotely somewhere else.  The consumer doesn't need to
+know or care.  They just deal with the `Promise<T>` as a first class value and, when the `T` is sought, must rendezvous.
 
 The basic callback model looked something like this:
 
     Promise<T> p = ... some operation ...;
-    ... do some things ...;
+
+    ... optionally do some things concurrent with that operation ...;
+
     Promise<U> u = p.When(
         (T t) => { ... the T is available ... },
         (Exception e) => { ... a failure occurred ... }
     );
 
-Notice that the promises chain.  The `When` operation's callbacks are expected to return a value of type U or throw an
-Exception, as appropriate.  Then the recipient of the `u` promise does the same, and so on, and so forth.
+Notice that the promises chain.  The `When` operation's callbacks are expected to return a value of type `U` or throw an
+exception, as appropriate.  Then the recipient of the `u` promise does the same, and so on, and so forth.
 
 This is [concurrent](https://en.wikipedia.org/wiki/Concurrent_computing#Concurrent_programming_languages) [dataflow](
-https://en.wikipedia.org/wiki/Dataflow_programming).  It is nice because the true dependencies of operations govern the
-scheduling of activity in the system.  A classical system often results in work stoppage not because of true
+https://en.wikipedia.org/wiki/Dataflow_programming) programming.  It is nice because the true dependencies of operations
+govern the scheduling of activity in the system.  A classical system often results in work stoppage not because of true
 dependencies, but [false dependencies](https://en.wikipedia.org/wiki/Data_dependency), like the programmer just
 happening to issue a synchronous IO call deep down in the callstack, unbeknownst to the caller.
 
 In fact, this is one of the reasons your screen bleaches so often on Windows.  I'll never forget a paper a few years
 back finding one of the leading causes of hangs in Outlook.  A commonly used API would occasionally enumerate Postscript
-fonts by calling the printer.  It cached them so it only needed to go to the printer once in a while.  As a result, the
-"good" behavior led developers to think it safe to call from the UI thread.  Sadly, when the network flaked out, you'd
-get 10 second hangs with spinning donuts and bleachy white screens.
+fonts by attempting to talk to the printer over the network.  It cached fonts so it only needed to go to the printer
+once in a while, at unpredictable times.  As a result, the "good" behavior led developers to think it safe to call from
+the UI thread.  Nothing bad happened during testing (where, presumably, the developers worked on expensive computers
+with near-perfect networks).  Sadly, when the network flaked out, the result was 10 second hangs with spinning donuts
+and bleachy white screens.  To this day, we still have this problem in every OS that I use.
 
-The problem in this example is the possibility for high latency simply wasn't apparent to developers calling the API.
-It was even more removed because the call was buried deep in a callstack, masked by virtual function calls, and so on.
-In Midori, where all asynchrony is expressed in the type system, this wouldn't happen because such an API would
+The issue in this example is the possibility for high latency wasn't apparent to developers calling the API.  It was
+even less apparent because the call was buried deep in a callstack, masked by virtual function calls, and so on.  In
+Midori, where all asynchrony is expressed in the type system, this wouldn't happen because such an API would
 necessarily return a promise.  It's true, a developer can still do something ridiculous (like an infinite loop on the
-UI thread), of course, but it's a lot harder to shoot yourself in the foot.  Especially when it came to IO.
+UI thread), but it's a lot harder to shoot yourself in the foot.  Especially when it came to IO.
 
-What it you didn't want to continue the dataflow chain?  This turns out to be a bit of an anti-pattern.  It's usually
-a sign that you're mutating shared state.  But you could do it:
+What if you didn't want to continue the dataflow chain?  No problem.
 
     p.When(
         ... as above ...
     ).Ignore();
 
-In Midori, we didn't let you ignore return values without being explicit about doing so.  The `Ignore` method here
-furthermore added some diagnostics to help debug situations where you accidentally ignored something important.
+This turns out to be a bit of an anti-pattern.  It's usually a sign that you're mutating shared state.
 
-Eventually we added a bunch of When-like APIs for different circumstances:
+The `Ignore` warrants a quick explanation.  Our language didn't let you ignore return values without being explicit
+about doing so.  This specific `Ignore` method also addded some diagnostics to help debug situations where you
+accidentally ignored something important (and lost, for example, an exception).
+
+Eventually we added a bunch of `When`-like APIs for common patterns:
 
     // Just respond to success, and propagate the error automatically:
     Promise<U> u = p.WhenResolved((T t) => { ... the T is available ... });
@@ -104,10 +111,11 @@ Eventually we added a bunch of When-like APIs for different circumstances:
 
 And so on.
 
-This idea is most certainly not even close to new.  The [E system](https://en.wikipedia.org/wiki/E_(programming_language))
-and languages like [Joule](https://en.wikipedia.org/wiki/Joule_(programming_language)) and [Alice](
-https://en.wikipedia.org/wiki/Alice_(programming_language)) even have nice built-in support to make the otherwise clumsy
-callback passing shown above more tolerable.
+This idea is most certainly not even close to new.  [Joule](https://en.wikipedia.org/wiki/Joule_(programming_language))
+and [Alice](https://en.wikipedia.org/wiki/Alice_(programming_language)) even have nice built-in syntax to make the
+otherwise clumsy callback passing shown above more tolerable.
+
+But it was not tolerable.  The model tossed out decades of familiar programming language constructs, like loops.
 
 It got really bad.  Like really, really.  It led to callback soup, often nested many levels deep, and often in some
 really important code to get right.  For example, imagine you're in the middle of a disk driver, and you see code like:
@@ -154,7 +162,8 @@ was F# with its [asynchronous workflows](
 http://blogs.msdn.com/b/dsyme/archive/2007/10/11/introducing-f-asynchronous-workflows.aspx).  And despite the boon
 to usability and productivity, it was also enormously controversial on the team.  More on that later.
 
-What we had was slightly different from what you'll find in C# and .NET, so let's quickly take a tour.
+What we had was a bit different from what you'll find in C# and .NET.  Let's walk through the progression from the
+promises model above to this new async/await-based one.  As we go, I'll point out the differences.
 
 We first renamed `Promise<T>` to `AsyncResult<T>`, and made it a struct.  (This is similar to .NET's `Task<T>`, however
 focuses more on the "data" than the "computation.")  A family of related types were born:
@@ -162,10 +171,12 @@ focuses more on the "data" than the "computation.")  A family of related types w
 * `T`: the result of a prompt, synchronous computation that cannot fail.
 * `Async<T>`: the result of an asynchronous computation that cannot fail.
 * `Result<T>`: the result of a a prompt, synchronous computation that might fail.
-* `AsyncResult<T>`: the result of an asynchronous computation that might fail.  Shortcut for `Async<Result<T>>`.
+* `AsyncResult<T>`: the result of an asynchronous computation that might fail.
+
+That last one was really just a shortcut for `Async<Result<T>>`.
 
 The distinction between things that can fail and things that cannot fail is a topic for another day.  In summary,
-however, our type system guaranteed these attributes for us.  For now, just believe me.
+however, our type system guaranteed these properties for us.
 
 Along with this, we added the `await` and `async` keywords.  A method could be marked `async`:
 
@@ -182,11 +193,12 @@ All this meant was that it was allowed to `await` inside of it:
 Originally this was merely syntactic sugar for all the `When` stuff above, like it is in C#.  Eventually, however, we
 went way beyond this, in the name of performance, and added lightweight coroutines and linked stacks.  More below.
 
-A caller invoking an `async` method was forced to choose; use `await` and wait for its result, or use `async` and
-launch an asynchronous operation.  This meant all asynchrony in the system was explicit:
+A caller invoking an `async` method was forced to choose: use `await` and wait for its result, or use `async` and
+launch an asynchronous operation.  All asynchrony in the system was thus explicit:
 
-    int x = await Bar();
-    Async<int> y = async Bar();
+    int x = await Bar();        // Invoke Bar, but wait for its result.
+    Async<int> y = async Bar(); // Invoke Bar asynchronously; I can wait for its result later.
+    int z = await y;            // ...like now.  This waits for Bar to finish.
 
 This also gave us a very important, but subtle, property that we didn't realize until much later.  Because in Midori the
 only way to "wait" for something was to use the asynchronous model, and there was no hidden blocking, our type system
@@ -216,7 +228,8 @@ possible, of course, thanks to the `async` keyword, but there's certainly a litt
 The old, familiar, blocking model of waiting for things is just an `await` keyword away.
 
 An interesting consequence was a new difference between a method that awaits before returning a `T`, and one that
-returns an `Async<T>` directly.  This difference didn't exist in the type system previously.  For example:
+returns an `Async<T>` directly.  This difference didn't exist in the type system previously.  This, quite frankly,
+annoyed the hell out of me and still does.  For example:
 
     async int Bar()  { return await Foo(); }
     Async<int> Bar() { return async Foo(); }
@@ -225,15 +238,16 @@ We would like to claim the performance between these two is identical.  But alas
 a stack frame alive, whereas the latter does not.  Some compiler cleverness can help address common patterns -- this is
 really the moral equivalent to an asynchronous tail call -- however it's not always so cut and dry.
 
-On its own, this wasn't a killer.  I will admit it caused some anti-patterns in important areas like streams, however
-(which we haven't yet gotten to).  Developers were prone to awaiting in areas they used to just pass around `Async<T>`s,
-leading to an accumulation of paused stack frames that really didn't need to be there.  We had good solutions to most
-patterns, but up to the end of the project we struggled with this, especially in the networking stack that was chasing
-10GB NIC saturation at wire speed.  We'll discuss some of the techniques we employed below.
+On its own, this wasn't a killer.  It caused some anti-patterns in important areas like streams, however.  Developers
+were prone to awaiting in areas they used to just pass around `Async<T>`s, leading to an accumulation of paused stack
+frames that really didn't need to be there.  We had good solutions to most patterns, but up to the end of the project
+we struggled with this, especially in the networking stack that was chasing 10GB NIC saturation at wire speed.  We'll
+discuss some of the techniques we employed below.  But at the end of it all, this change was well worth it, both in
+the simplicity and usability of the model, and also in some of the optimization doors it opened up for us.
 
 ## The Execution Model
 
-That brings me to the execution model.  We went through several revisions of this, but landed in a nice place.
+That brings me to the execution model.  We went through maybe five different models, but landed in a nice place.
 
 A key to achieving asynchronous everything was ultra-lightweight processes.  This was possible thanks to [software
 isolated processes (SIPs)](http://research.microsoft.com/apps/pubs/default.aspx?id=71996), building upon [the foundation
@@ -248,12 +262,12 @@ nightly in our lab and had a "ratcheting" process where every sprint we ensured 
 of us got in a room every week to look at the numbers and answer the question of why they went up, down, or stayed the
 same. We had this culture for performance generally, but in this case, it kept the base of the system light and nimble.
 
-Code running inside processes could not block.  Inside the kernel, blocking was permitted in select areas, however.
-And when I say "no blocking," I really mean it: Midori did not have [demand paging](
-https://en.wikipedia.org/wiki/Demand_paging) which, in a classical system, means that touching a piece of memory may
-physically block to perform IO.  I have to say, the lack of page thrashing was such a welcome that, at some point, I got
-into the habit of disabling paging on any Windows system I touched.  I would much rather have the OS kill programs at
-will, to keep it running reliably, than to deal with a paging system.
+Code running inside processes could not block.  Inside the kernel, blocking was permitted in select areas, but remember
+no user code ever ran in the kernel, so this was an implementation detail.  And when I say "no blocking," I really mean
+it: Midori did not have [demand paging](https://en.wikipedia.org/wiki/Demand_paging) which, in a classical system, means
+that touching a piece of memory may physically block to perform IO.  I have to say, the lack of page thrashing was such
+a welcome that, to this day, the first thing I do on a new Windows sytem is disable paging.  I would much rather have
+the OS kill programs when it is close to the limit, and continue running reliably, than to deal with a paging madness.
 
 C#'s implementation of async/await is entirely a front-end compiler trick.  If you've ever run ildasm on the resulting
 assembly, you know: it lifts captured variables into fields on an object, rewrites the method's body into a state
@@ -393,7 +407,7 @@ at-a-time.  Finally, a novel technique called "three-party handoff" was used to 
 parties engaging in a message passing dialogue.  This cut out middle-men whose jobs in a normal system would have been
 to simply bucket brigade the messages, adding no value, other than latency and wasted work.
 
-![Message Passing Diagram](assets/2015-11-19-asynchronous-everything.pipeline.jpg)
+![Message Passing Diagram](/img/assets/2015-11-19-asynchronous-everything.pipeline.jpg)
 
 The only types marshalable across message passing boundaries were:
 
