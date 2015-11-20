@@ -392,6 +392,14 @@ simply by exposing a constructor, much like the program's main entrypoint could,
 http://joeduffyblog.com/2015/11/10/objects-as-secure-capabilities/).  Our application model took care of activating and
 wiring up the server's programs and services.
 
+A server could also return references to other objects, either in its own process, or a distant one.  The system
+managed the object lifetime state in coordination with the garbage collector.  So, for example, a tree:
+
+    class MyTree : ITree {
+        async ITree Left() { ... }
+        async ITree Right() { ... }
+    }
+
 As you might guess, the client-side would then get its hands on a proxy object, connected to this server object
 running in a process.  It's possible the server would be in the same process as the client, however typically the
 object was distant, because this is how processes communicated with one another:
