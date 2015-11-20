@@ -578,7 +578,9 @@ The solution is to steal a page from classical synchronization, and apply one of
 * Transactions.
 
 By far, we preferred isolation.  It turns out web frameworks offer good lessons to learn from here.  Most of the time,
-a server object is part of a "session" and should not be aliased across multiple concurrent clients.
+a server object is part of a "session" and should not be aliased across multiple concurrent clients.  It tended to be
+easy to partition state into sub-objects, and have dialogues using those.  Our language annotations around mutability
+helped to guide this process.
 
 A lesser regarded technique was to apply synchronization.  Thankfully in our language, we knew which operations read
 versus wrote, and so we could use that to block dispatching messages intelligently, using standard reader-writer lock
@@ -591,10 +593,13 @@ http://c2.com/cgi/wiki?DistributedTransactionsAreEvil).
 In general, we tried to learn from the web, and apply architectures that worked for large-scale distributed systems.
 Statelessness was by far the easiest pattern.  Isolation was a close second.  Everything else was just a little dirty.
 
+P.S.  I will be sure to have an entire post dedicated to the language annotations.
+
 ### Ordering
 
 In a distributed system, things get unordered unless you go out of your way to preserve order.  And going out of your
-way to preserve order removes concurrency from the system, adds book-keeping, and a ton of complexity.
+way to preserve order removes concurrency from the system, adds book-keeping, and a ton of complexity.  My biggest
+lesson learned here was: distributed systems are unordered.  It sucks.  Don't fight it.  You'll regret trying.
 
 But it surprises developers.  A good example is as follows:
 
@@ -626,11 +631,12 @@ With so much work flying around in the system, debugging was a challenge in the 
 
 The solution, as with many such challenges, was tooling.  We taught our tools that activities were as first class as
 threads.  We introduced causality IDs that flowed with messages across processes, so if you broke into a message
-dispatch in one process, you could trace back to the origin in potentially some other distant process.
+dispatch in one process, you could trace back to the origin in potentially some other distant process.  The default
+behavior for a crash was to gather this cross-process stack trace, to help figure out how you go to where you were.
 
 Another enormous benefit of our improved execution model was that stacks were back!  Yes, you actually got stack traces
-for asynchronous activities awaiting multiple levels deep, at no expense.  Many systems like .NET's have to go out of
-their way to piece together a stack trace from disparate hunks of stack-like objects.  We had that challenge across
+for asynchronous activities awaiting multiple levels deep at no extra expense.  Many systems like .NET's have to go out
+of their way to piece together a stack trace from disparate hunks of stack-like objects.  We had that challenge across
 processes, but within a single process, all activities had normal stack traces with variables that were in a good state.
 
 ### Resource Management
