@@ -52,6 +52,7 @@ I shall update this list as new articles are published:
 
 1. [A Tale of Three Safeties](/2015/11/03/a-tale-of-three-safeties/)
 2. [Objects as Secure Capabilities](/2015/11/10/objects-as-secure-capabilities/)
+3. [Asynchronous Everything](/2015/11/19/asynchronous-everything/)
 
 Midori was a fascinating journey, and the most fun I've had in my career
 to-date.  I look forward to sharing some of that journey with you.
