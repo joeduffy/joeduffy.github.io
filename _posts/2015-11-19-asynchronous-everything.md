@@ -217,17 +217,26 @@ UI from painting and, as we'll see below, many other powerful capabilities.
 Because of the sheer magnitude of asynchronous code in the system, we embellished lots of patterns in the language that
 C# still doesn't support.  For example, iterators, for loops, and LINQ queries:
 
-    IAsyncEnumerable<T> GetMovies(string url) {
-        await using (var http = new HttpClient()) {
-            foreach (await var movie in http.Get(url)) {
-                yield return movie;
-            }
+    IAsyncEnumerable<Movie> GetMovies(string url) {
+        foreach (await var movie in http.Get(url)) {
+            yield return movie;
         }
     }
 
-We converted millions of lines of code from the old model to the new one.  We found plenty of bugs along the way, due
-to the complex control flow of the explicit callback model.  Especially in loops and error handling logic, which could
-now use the familiar programming language constructs, rather than clumsy API versions of them.
+Or, in LINQ style:
+
+    IAsyncEnumerable<Movie> GetMovies(string url) {
+        return
+            from await movie in http.Get(url)
+            ... filters ...
+            select ... movie ...;
+    }
+
+The entire LINQ infrastructure participated in streaming, including resource management and backpressure.
+
+We converted millions of lines of code from the old callback style to the new async/await one.  We found plenty of bugs
+along the way, due to the complex control flow of the explicit callback model.  Especially in loops and error handling
+logic, which could now use the familiar programming language constructs, rather than clumsy API versions of them.
 
 I mentioned this was controversial.  Most of the team loved the usability improvements.  But it wasn't unanimous.
 
@@ -257,8 +266,10 @@ On its own, this wasn't a killer.  It caused some anti-patterns in important are
 were prone to awaiting in areas they used to just pass around `Async<T>`s, leading to an accumulation of paused stack
 frames that really didn't need to be there.  We had good solutions to most patterns, but up to the end of the project
 we struggled with this, especially in the networking stack that was chasing 10GB NIC saturation at wire speed.  We'll
-discuss some of the techniques we employed below.  But at the end of it all, this change was well worth it, both in
-the simplicity and usability of the model, and also in some of the optimization doors it opened up for us.
+discuss some of the techniques we employed below.
+
+But at the end of this journey, this change was well worth it, both in the simplicity and usability of the model, and
+also in some of the optimization doors it opened up for us.
 
 ## The Execution Model
 
