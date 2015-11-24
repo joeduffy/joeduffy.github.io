@@ -48,18 +48,26 @@ idea is you get a `Promise<T>` for any operation that will eventually yield a `T
 that may be running asynchronously within the process or even remotely somewhere else.  The consumer doesn't need to
 know or care.  They just deal with the `Promise<T>` as a first class value and, when the `T` is sought, must rendezvous.
 
-The basic callback model looked something like this:
+The basic callback model started something like this:
 
     Promise<T> p = ... some operation ...;
 
     ... optionally do some things concurrent with that operation ...;
 
-    Promise<U> u = p.When(
+    Promise<U> u = Promise.When(
+        p,
         (T t) => { ... the T is available ... },
         (Exception e) => { ... a failure occurred ... }
     );
 
-Notice that the promises chain.  The `When` operation's callbacks are expected to return a value of type `U` or throw an
+Eventually we switched over from static to instance methods:
+
+    Promise<U> u = p.Then(
+        (T t) => { ... the T is available ... },
+        (Exception e) => { ... a failure occurred ... }
+    );
+
+Notice that the promises chain.  The operation's callbacks are expected to return a value of type `U` or throw an
 exception, as appropriate.  Then the recipient of the `u` promise does the same, and so on, and so forth.
 
 This is [concurrent](https://en.wikipedia.org/wiki/Concurrent_computing#Concurrent_programming_languages) [dataflow](
@@ -84,7 +92,7 @@ UI thread), but it's a lot harder to shoot yourself in the foot.  Especially whe
 
 What if you didn't want to continue the dataflow chain?  No problem.
 
-    p.When(
+    p.Then(
         ... as above ...
     ).Ignore();
 
@@ -94,13 +102,13 @@ The `Ignore` warrants a quick explanation.  Our language didn't let you ignore r
 about doing so.  This specific `Ignore` method also addded some diagnostics to help debug situations where you
 accidentally ignored something important (and lost, for example, an exception).
 
-Eventually we added a bunch of `When`-like APIs for common patterns:
+Eventually we added a bunch of helper APIs for common patterns:
 
     // Just respond to success, and propagate the error automatically:
     Promise<U> u = p.WhenResolved((T t) => { ... the T is available ... });
 
     // Use a finally-like construct:
-    Promise<U> u = p.WhenFinally(
+    Promise<U> u = p.ThenFinally(
         (T t) => { ... the T is available ... },
         (Exception e) => { ... a failure occurred ... },
         () => { ... unconditionally executes ... }
@@ -121,10 +129,10 @@ It got really bad.  Like really, really.  It led to callback soup, often nested 
 really important code to get right.  For example, imagine you're in the middle of a disk driver, and you see code like:
 
     Promise<void> DoSomething(Promise<string> cmd) {
-        return cmd.When(
+        return cmd.Then(
             s => {
                 if (s == "...") {
-                    return DoSomethingElse(...).When(
+                    return DoSomethingElse(...).Then(
                         v => {
                             return ...;
                         },
@@ -190,7 +198,7 @@ All this meant was that it was allowed to `await` inside of it:
         return x * x;
     }
 
-Originally this was merely syntactic sugar for all the `When` stuff above, like it is in C#.  Eventually, however, we
+Originally this was merely syntactic sugar for all the callback goop above, like it is in C#.  Eventually, however, we
 went way beyond this, in the name of performance, and added lightweight coroutines and linked stacks.  More below.
 
 A caller invoking an `async` method was forced to choose: use `await` and wait for its result, or use `async` and
@@ -203,7 +211,8 @@ launch an asynchronous operation.  All asynchrony in the system was thus explici
 This also gave us a very important, but subtle, property that we didn't realize until much later.  Because in Midori the
 only way to "wait" for something was to use the asynchronous model, and there was no hidden blocking, our type system
 told us the full set of things that could "wait."  More importantly, it told us the full set of things that could not
-wait, which told us what was pure synchronous computation!  As we'll see below, this gave us a powerful capability.
+wait, which told us what was pure synchronous computation!  This could be used to guarantee no code ever blocked the
+UI from painting and, as we'll see below, many other powerful capabilities.
 
 Because of the sheer magnitude of asynchronous code in the system, we embellished lots of patterns in the language that
 C# still doesn't support.  For example, iterators, for loops, and LINQ queries:
