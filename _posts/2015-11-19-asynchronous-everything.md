@@ -62,7 +62,7 @@ The basic callback model started something like this:
 
 Eventually we switched over from static to instance methods:
 
-    Promise<U> u = p.Then(
+    Promise<U> u = p.WhenResolved(
         (T t) => { ... the T is available ... },
         (Exception e) => { ... a failure occurred ... }
     );
@@ -92,7 +92,7 @@ UI thread), but it's a lot harder to shoot yourself in the foot.  Especially whe
 
 What if you didn't want to continue the dataflow chain?  No problem.
 
-    p.Then(
+    p.WhenResolved(
         ... as above ...
     ).Ignore();
 
@@ -102,22 +102,23 @@ The `Ignore` warrants a quick explanation.  Our language didn't let you ignore r
 about doing so.  This specific `Ignore` method also addded some diagnostics to help debug situations where you
 accidentally ignored something important (and lost, for example, an exception).
 
-Eventually we added a bunch of helper APIs for common patterns:
+Eventually we added a bunch of helper overloads and APIs for common patterns:
 
     // Just respond to success, and propagate the error automatically:
     Promise<U> u = p.WhenResolved((T t) => { ... the T is available ... });
 
     // Use a finally-like construct:
-    Promise<U> u = p.ThenFinally(
+    Promise<U> u = p.WhenResolved(
         (T t) => { ... the T is available ... },
         (Exception e) => { ... a failure occurred ... },
         () => { ... unconditionally executes ... }
     );
 
-    // Perform a for-loop:
-    Promise<void> u = Async.For(0, 10, (int i) => { ... the loop body ... });
+    // Perform various kinds of loops:
+    Promise<U> u = Async.For(0, 10, (int i) => { ... the loop body ... });
+    Promise<U> u = Async.While(() => ... predicate, () => { ... the loop body ... });
 
-And so on.
+    // And so on.
 
 This idea is most certainly not even close to new.  [Joule](https://en.wikipedia.org/wiki/Joule_(programming_language))
 and [Alice](https://en.wikipedia.org/wiki/Alice_(programming_language)) even have nice built-in syntax to make the
@@ -129,10 +130,10 @@ It got really bad.  Like really, really.  It led to callback soup, often nested 
 really important code to get right.  For example, imagine you're in the middle of a disk driver, and you see code like:
 
     Promise<void> DoSomething(Promise<string> cmd) {
-        return cmd.Then(
+        return cmd.WhenResolved(
             s => {
                 if (s == "...") {
-                    return DoSomethingElse(...).Then(
+                    return DoSomethingElse(...).WhenResolved(
                         v => {
                             return ...;
                         },
