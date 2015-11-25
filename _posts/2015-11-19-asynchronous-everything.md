@@ -168,8 +168,9 @@ We began wide-scale use sometime in 2009.  And when I say wide-scale, I mean it.
 The async/await approach let us keep the non-blocking nature of the system and yet clean up some of the above usability
 mess.  In hindsight, it's pretty obvious, but remember back then the most mainstream language with await used at scale
 was F# with its [asynchronous workflows](
-http://blogs.msdn.com/b/dsyme/archive/2007/10/11/introducing-f-asynchronous-workflows.aspx).  And despite the boon
-to usability and productivity, it was also enormously controversial on the team.  More on that later.
+http://blogs.msdn.com/b/dsyme/archive/2007/10/11/introducing-f-asynchronous-workflows.aspx) (also see [this paper](
+http://research.microsoft.com/apps/pubs/default.aspx?id=147194)).  And despite the boon to usability and productivity,
+it was also enormously controversial on the team.  More on that later.
 
 What we had was a bit different from what you'll find in C# and .NET.  Let's walk through the progression from the
 promises model above to this new async/await-based one.  As we go, I'll point out the differences.
