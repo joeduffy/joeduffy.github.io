@@ -750,8 +750,9 @@ http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.69.1875&rep=rep1&type=p
 
 Instead, we used a concurrent mark-sweep compacting collector.  This means only write barriers are needed under normal
 program execution, however some code was cloned so that read barriers were present when programs ran in the presence of
-object movement.  Our primary GC guy's research was published (Steensgaard Coco), so you can read all about it.  The CLR
-also has a concurrent collector.  It is slightly different.  It uses copying to collect the youngest generation,
+object movement.  [Our primary GC guy's research was published](
+http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.108.322&rep=rep1&type=pdf), so you can read all about it.  The
+CLR also has a concurrent collector, but it's not quite as good.  It uses copying to collect the youngest generation,
 mark-sweep for the older ones, and the mark phase is parallelized.  There are unfortunately a few conditions that can
 lead to sequential pauses (think of this like a big "lock"), sometimes over 10 milliseconds: 1) all threads must be
 halted and scanned, an operation that is bounded only by the number of threads and the size of their stacks; 2) copying
