@@ -892,7 +892,7 @@ interface tables on the fly, because interfaces are duck typed.  Second, fat int
 and hence can violate memory safety in Go, unlike Midori thanks to our strong concurrency model.
 
 The finally challenge in this category was *generic virtual methods*, or GVMs.  To cut to the chase, we banned them.
-Even if you NGen an, image in .NET, all it takes is a call to the LINQ query `a.Where(...).Select(...)`, and you're
+Even if you NGen an image in .NET, all it takes is a call to the LINQ query `a.Where(...).Select(...)`, and you're
 pulling in the JIT compiler.  Even in .NET Native, there is considerable runtime data structure creation, lazily, when
 this happens.  In short, there is no known way to AOT compile GVMs in a way that is efficient at runtime.  So, we didn't
 even bother offering them.  This was a slightly annoying limitation on the programming model but I'd have done it all
@@ -1035,7 +1035,7 @@ a man year or two of effort, the switching time faded away into the sub-0.5% noi
 
 Midori's stance on [safe concurrency](http://joeduffyblog.com/2015/11/03/a-tale-of-three-safeties/) had truly one
 amazing benefit: you get a [sequentially consistent](https://en.wikipedia.org/wiki/Sequential_consistency) memory
-ordering model *for free*.  You may wish to read that again.  Incredible!
+ordering model *for free*.  You may wish to read that again.  Free!
 
 Why is this so?  First, Midori's [process model](http://joeduffyblog.com/2015/11/19/asynchronous-everything/) ensured
 single-threaded execution by default.  Second, any fine-grained parallelism inside of a process was governed by a finite
@@ -1173,8 +1173,9 @@ objects and, in .NET, is used for random stuff, like COM interop, locking, memoz
 Well, we ditched both.
 
 We didn't have COM interop.  There was no unsafe free-threading so there was no locking (and [locking on random objects
-is a bad idea anyway](TODO)).  Our `Object` didn't define a `GetHashCode`.  Etc.  This saved a word per object with no
-discernable loss in the programming model, which is nothing to shake a stick at.
+is a bad idea anyway](http://joeduffyblog.com/2006/10/26/concurrency-and-the-impact-on-reusable-libraries/)).  Our
+`Object` didn't define a `GetHashCode`.  Etc.  This saved a word per object with no discernable loss in the programming
+model (actually, to the contrary, it was improved), which is nothing to shake a stick at.
 
 At that point, the only overhead per object was the vtable pointer.  For structs, of course there wasn't one (unless
 they were boxed), and we did our best to eliminate these too.  Sadly, due to RTTI, it was difficult to be aggressive.  I
