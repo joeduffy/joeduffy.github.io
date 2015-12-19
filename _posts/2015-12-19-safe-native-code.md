@@ -47,11 +47,10 @@ foundation of a highly optimizing compiler, that knew about and took advantage o
 
 I would also be remiss if I didn't point out that the world has made considerable inroads in this area alongside us.
 [Go](https://golang.org/) has straddled an elegant line between systems performance and safety.  [Rust](
-http://rust-lang.org/) is just plain awesome.
-
-The [.NET Native](https://msdn.microsoft.com/en-us/vstudio/dotnetnative.aspx) and, related, [Android Runtime](
-https://en.wikipedia.org/wiki/Android_Runtime) projects have brought a nice taste of AOT to these languages in a more
-limited setting, as a "silent" optimization technique to avoid mobile application lag caused by JITting.  Lately, we've
+http://rust-lang.org/) is just plain awesome.  The [.NET Native](
+https://msdn.microsoft.com/en-us/vstudio/dotnetnative.aspx) and, related, [Android Runtime](
+https://en.wikipedia.org/wiki/Android_Runtime) projects have brought a nice taste of AOT to C# and Java in a more
+limited way, as a "silent" optimization technique to avoid mobile application lag caused by JITting.  Lately, we've
 been working on bringing AOT to a broader .NET setting with the [CoreRT project](https://github.com/dotnet/corert).
 Through that effort I hope we can bring some of the lessons learned below to a real-world setting.  Due to the
 delicate balance around breaking changes it remains to be seen how far we can go.  It took us years to get
@@ -61,9 +60,10 @@ First thing's first.  Let's quickly recap: What's the difference between native 
 
 ## What's the same
 
-I despise the false dichotomy "native and managed."  After reading this article, I to have convinced you it's a
-continuum.  C++ is [safer these days than ever before](https://github.com/isocpp/CppCoreGuidelines), and likewise, C#
-performant.  It's amusing how many of these lessons apply directly to the work my team is doing on Safe C++ these days.
+I despise the false dichotomy "native and managed," so I must apologize for using it.  After reading this article, I
+hope to have convinced you that it's a continuum.  C++ is [safer these days than ever before](
+https://github.com/isocpp/CppCoreGuidelines), and likewise, C# performant.  It's amusing how many of these lessons apply
+directly to the work my team is doing on Safe C++ these days.
 
 So let's begin by considering what's the same.
 
