@@ -462,7 +462,8 @@ appreciate how difficult this trick was.  For example, here is the code for B:
 
 To get the magic result required constant propagating the `ldftn`, recognizing how delegate construction works
 (`IL_0017`), leveraging that information to inline `B` and eliminate the lambda/delegate altogether, and then, again
-mostly through constant propagation, folding the arithmetic into the constant `42` initialization of `x`.
+mostly through constant propagation, folding the arithmetic into the constant `42` initialization of `x`.  I always
+found it elegant that this "fell out" of a natural composition of multiple optimizations with separate concerns.
 
 As with native code, profile guided optimization made our inlining decisions far more effective.
 
