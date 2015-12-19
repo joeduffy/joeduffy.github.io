@@ -1,5 +1,18 @@
-# Safe Native Code
-
+---
+layout: post
+title: 'Safe Native Code'
+date: 2015-12-19 13:03:00.000000000 -08:00
+categories: []
+tags: []
+status: publish
+type: post
+published: true
+author:
+  display_name: joeduffy
+  first_name: Joe
+  last_name: Duffy
+  email: joeduffy@acm.org
+---
 In my [first Midori post](http://joeduffyblog.com/2015/11/03/a-tale-of-three-safeties/), I described how safety was the
 foundation of everything we did.  I mentioned that we built an perating system out of safe code, and yet stayed
 competetive with operating systems like Windows and Linux written in C and C++.  In many ways, system architecture
