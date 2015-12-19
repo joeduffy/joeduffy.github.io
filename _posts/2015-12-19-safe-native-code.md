@@ -799,10 +799,11 @@ optimizations like inlining, devirtualization, async stack optimizations, and mo
 
 That brings me to generics.  They throw a wrench into everything.
 
-The problem is, unless you implement an erasure model -- which stinks performance-wise due to boxing allocations,
-indirections, or both -- there's no way for you to possible pre-instantiate all possible versions of the code.  For
-example, say you're providing a `List<T>`.  How do you know whether folks using your library will want a `List<int>`,
-`List<string>`, or `List<SomeStructYouveNeverHeardOf>`?
+The problem is, unless you implement an [erasure
+model](https://docs.oracle.com/javase/tutorial/java/generics/erasure.html) -- which utterly stinks performance-wise due
+to boxing allocations, indirections, or both -- there's no way for you to possibly pre-instantiate all possible versions
+of the code ahead-of-time.  For example, say you're providing a `List<T>`.  How do you know whether folks using your
+library will want a `List<int>`, `List<string>`, or `List<SomeStructYouveNeverHeardOf>`?
 
 Solutions abound:
 
@@ -810,11 +811,17 @@ Solutions abound:
 2. Specialize only a subset of instantiations, and create an erased instantiation for the rest.
 3. Specialize everything.  This gives the best performance, but at some complexity.
 
-Java uses #1 (in fact, erasure is baked into the language).  Many ML compilers use #2.  As with everything in Midori,
-we picked the hardest path, with the most upside, which meant #3.  Actually I'm being a little glib; we had several ML
-compiler legends on the team, and #2 is fraught with peril; just dig a little into [some papers](
-http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.98.2165&rep=rep1&type=pdf) on how hard this can get, since it's
-difficult to know a priori which instantiations are going to be performance critical to a program.
+Java uses #1 (in fact, erasure is baked into the language).  Many ML compilers use #2.  .NET's NGen compilation
+model is sort of a variant of #2, where things that can be trivially specialized are specialized, and everything else is
+JIT compiled.  .NET Native doesn't yet have a solution to this problem, which means 3rd party libraries, separate
+compilation, and generics are a very big TBD.   As with everything in Midori, we picked the hardest path, with the most
+upside, which meant #3.  Actually I'm being a little glib; we had several ML compiler legends on the team, and #2 is
+fraught with peril; just dig a little into [some papers](
+http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.98.2165&rep=rep1&type=pdf) on how hard (and clever) this can
+get.  It's difficult to know a priori which instantiations are going to be performance critical to a program.  My own
+experience trying to get C# code into the heart of Windows back in the Longhorn days also reinforced this; we didn't
+want JIT'ting and the rules for what generics you could and couldn't use in that world were so mind boggling they
+eventually led to greek formulas.
 
 Anyway, Midori's approach turned out to be harder than it sounded at first.
 
