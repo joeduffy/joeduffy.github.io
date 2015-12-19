@@ -14,7 +14,7 @@ author:
   email: joeduffy@acm.org
 ---
 In my [first Midori post](http://joeduffyblog.com/2015/11/03/a-tale-of-three-safeties/), I described how safety was the
-foundation of everything we did.  I mentioned that we built an perating system out of safe code, and yet stayed
+foundation of everything we did.  I mentioned that we built an operating system out of safe code, and yet stayed
 competetive with operating systems like Windows and Linux written in C and C++.  In many ways, system architecture
 played a key role, and I will continue discussing how in future posts.  But, at the foundation, an optimizing compiler
 that often eeked out native code performance from otherwise "managed", type- and memory-safe code, was one of our most
