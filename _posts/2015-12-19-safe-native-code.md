@@ -409,9 +409,10 @@ arithmetic operations included.  It takes a lot of work, but it's worth it in th
 ## Inlining
 
 For the most part, [inlining](https://en.wikipedia.org/wiki/Inline_expansion) is the same as with true native code.  And
-just as important.  I'll say, however, that because of many of the topics throughout this article, getting very tight
-code can be difficult.  As a result, in practice, most managed code compilers inline a lot less than native code
-compilers, or at least need to be tuned very differently.  This can make a huge difference in performance.
+just as important.  Often more important, due to C# developers' tendency to write lots of little methods (like property
+accessors).  Because of many of the topics throughout this article, getting small code can be more difficult than in
+C++ -- more branches, more checks, etc. -- and so, in practice, most managed code compilers inline a lot less than
+native code compilers, or at least need to be tuned very differently.  This can actually make or break performance.
 
 There are also areas of habitual bloat.  The way lambdas are encoded in MSIL is unintelligable to a naive backend
 compiler, unless it reverse engineers that fact.  For example, we had an optimization that took this code:
