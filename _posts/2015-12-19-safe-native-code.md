@@ -622,7 +622,7 @@ In practice, we never needed it.  What we found is that code generation was alwa
 off at least 30% of the best case C# image size by doing this.  Significantly more if you factor in systems where the
 full MSIL is retained, as is usually the case, even for NGen and .NET AOT solutions.
 
-In fact, we removed significant pieces of `System.Type` too.  No `Assembly`, no `BaseType`, and yes, even no `FullTime`.
+In fact, we removed significant pieces of `System.Type` too.  No `Assembly`, no `BaseType`, and yes, even no `FullName`.
 The .NET Framework's mscorlib.dll contains about 100KB of just type names.  Sure, names are useful, but our eventing
 framework leveraged code generation to produce just those you actually needed to be around at runtime.
 
