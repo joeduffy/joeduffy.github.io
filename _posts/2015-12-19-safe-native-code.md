@@ -567,7 +567,7 @@ http://joeduffyblog.com/2011/10/23/on-generics-and-some-of-the-associated-overhe
 transitive closure problem.  .NET's straightforward-looking `List<T>` class actually creates 28 types in its transitive
 closure!  And that's not even speaking to all the methods in each type.  Generics are a quick way to explode code size.
 
-I never forgot the day I refactored out LINQ implementation.  Unlike in .NET, which uses extension methods, we made all
+I never forgot the day I refactored our LINQ implementation.  Unlike in .NET, which uses extension methods, we made all
 LINQ operations instance methods on the base-most class in our collection type hierarchy.  That meant 100-ish nested
 classes, one for each LINQ operation, *for every single collection instantiated*!  Refactoring this was an easy way for
 me to save over 100MB of code size across the entire Midori "workstation" operating system image.  Yes, 100MB!
