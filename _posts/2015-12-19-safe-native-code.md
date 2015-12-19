@@ -125,8 +125,12 @@ small functions for two reasons: 1) properties, and 2) higher level programmers 
 
 Although it's seldom described this formally, there's an "ABI" ([Application Binary Interface](
 https://en.wikipedia.org/wiki/Application_binary_interface)) that governs interactions between code and the runtime.
-This is where things like calling conventions, exception handling, and, most notably, the GC manifest in code.  Thinking
-of it this way has been helpful to me, because the isomorphisms with C+ are immediately apparent.
+The ABI is where the rubber meets the road.  It's where things like calling conventions, exception handling, and, most
+notably, the GC manifest in machine code.  This is *not* unique to managed code!  C++ has a "runtime" and therfore an
+ABI too.  It's just that it's primarily composed of headers, libraries like allocators, and so on, that are more
+transparently linked into a program than with classical C# and Java virtual machines, where a runtime is non-negotiable
+(and in the JIT case, fairly heavy-handed).  Thinking of it this way has been helpful to me, because the isomorphisms
+with C+ suddenly become immediately apparent.
 
 The real biggie is array bounds checks.  A traditional approach is to check that the index is within the bounds of an
 array before accessing it, either for laoding or storing.  That's an extra field fetch, compare, and conditional
