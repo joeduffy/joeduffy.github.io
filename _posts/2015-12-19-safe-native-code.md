@@ -1285,10 +1285,12 @@ sprint?  We reviewed our competitors' latest compiler drops and monitored their 
 This process was enormously healthy.  Everyone was encouraged to be self-critical.  This was not a "witch hunt"; it was
 an opportunity to learn as a team how to do better at achieving our goals.
 
-I'm surprised at how contentious this can be with some folks.  They get threatened and worry their lack of progress
-makes them look bad.  They say "the numbers aren't changing because that's not our focus right now," however in my
-experience, so long as the code is changing, the numbers are changing.  It's best to keep your eye on them lest you get
-caught with your pants around your ankles many months later when it suddenly matters most.
+Post-Midori, I have kept this process.  I've been surprised at how contentious this can be with some folks.  They get
+threatened and worry their lack of progress makes them look bad.  They use "the numbers aren't changing because that's
+not our focus right now" as justification for getting out of the rhythm.  In my experience, so long as the code is
+changing, the numbers are changing.  It's best to keep your eye on them lest you get caught with your pants around your
+ankles many months later when it suddenly matters most.  The discipline and constant drumbeat are the most important
+parts of these reviews, so skipping even just one can be detrimental, and hence was verboten.
 
 This process was as much our secret sauce as anything else was.
 
