@@ -1178,8 +1178,8 @@ is a bad idea anyway](http://joeduffyblog.com/2006/10/26/concurrency-and-the-imp
 model (actually, to the contrary, it was improved), which is nothing to shake a stick at.
 
 At that point, the only overhead per object was the vtable pointer.  For structs, of course there wasn't one (unless
-they were boxed), and we did our best to eliminate these too.  Sadly, due to RTTI, it was difficult to be aggressive.  I
-think this is another area where I'd go back and entirely upend the C# type system, to follow a more C, C++, or even
+they were boxed).  And we did our best to eliminate all of them.  Sadly, due to RTTI, it was difficult to be aggressive.
+I think this is another area where I'd go back and entirely upend the C# type system, to follow a more C, C++, or even
 maybe Go-like, model.  In the end, however, I think we did get to be fairly competetive with your average C++ program.
 
 There were padding challenges.  Switching the `struct` layout from C#'s current default of `sequential`, to our
