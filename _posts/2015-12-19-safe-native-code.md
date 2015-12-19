@@ -846,7 +846,9 @@ But damn was it complex.
 
 It's funny, but C++ RTTI for template instantiations actually suffers from many of the same problems.  In fact, the
 Microsoft Visual C++ compiler resorts to a `strcmp` of the type names, to resolve diamond issues!  (Thankfully there are
-well-known, more efficient ways to do this, which we are actively pursuing for the next release.)
+[well-known, more efficient ways to do this](
+http://www6.open-std.org/JTC1/SC22/WG21/docs/papers/1992/WG21%201992/X3J16_92-0068%20WG21_N0145.pdf), which we are
+actively pursuing for the next release of VC++.)
 
 ## Virtual dispatch
 
