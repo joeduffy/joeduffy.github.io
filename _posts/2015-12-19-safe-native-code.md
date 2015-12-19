@@ -1303,7 +1303,7 @@ This journey took us over a decade, particularly if you account for the fact tha
 for many years even before Midori formed.  Merely AOT compiling C#, and doing it well, would have netted us many of the
 benefits above.  But to truly achieve the magical native-like performance, and indeed even exceed it in certain areas,
 required some key "whole system" architectural bets.  I hope that some day we can deliver safety into the world at this
-level of performance.  Given the state of security all-up in the industry, the world at large seriously needs it.
+level of performance.  Given the state of security all-up in the industry, mankind seriously needs it.
 
-I've now touched on our programming languages enough that I need to go deep on it.  Tune in next time!
+I've now touched on our programming language enough that I need to go deep on it.  Tune in next time!
 
