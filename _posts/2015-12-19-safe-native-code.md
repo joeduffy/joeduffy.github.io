@@ -1204,8 +1204,9 @@ share with a callee, but know for sure the callee does not remember a reference 
         ... guaranteed that `a` does not escape ...
     }
 
-The compiler used the `int&` information to stack allocate the array and, often, eliminating the vtable for it entirely.
-Coupled with the sophisticated elimination of bounds checking, this gave us something far closer to C performance.
+The compiler used the `int[]&` information to stack allocate the array and, often, eliminating the vtable for it
+entirely.  Coupled with the sophisticated elimination of bounds checking, this gave us something far closer to C
+performance.
 
 Lambdas/delegates in our system were also structs, so did not require heap allocation.  The captured display frame was
 subject to all of the above, so frequently we could stack allocate them.  As a result, the following code was heap
