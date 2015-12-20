@@ -13,10 +13,10 @@ author:
   last_name: Duffy
   email: joeduffy@acm.org
 ---
-Midori was built on a foundation of three kinds of safety: type, memory, and
-concurrency-safety.  These safeties eliminated whole classes of bugs
-"by-construction" and delivered significant improvements in areas like
-reliability, security, and developer productivity.  They also fundamentally
+[Midori](/2015/11/03/blogging-about-midori) was built on a foundation of three
+kinds of safety: type, memory, and concurrency-safety.  These safeties eliminated
+whole classes of bugs "by-construction" and delivered significant improvements in
+areas like reliability, security, and developer productivity.  They also fundamentally
 allowed us to depend on the type system in new and powerful ways, to deliver new
 abstractions, perform novel compiler optimizations, and more.  As I look back,
 the biggest contribution of our project was proof that an entire operating
