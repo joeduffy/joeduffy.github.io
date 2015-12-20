@@ -1208,7 +1208,7 @@ share with a callee, but know for sure the callee does not remember a reference 
         ... guaranteed that `a` does not escape ...
     }
 
-The compiler used the `int[]&` information to stack allocate the array and, often, eliminating the vtable for it
+The compiler used the `int[]&` information to stack allocate the array and, often, eliminate the vtable for it
 entirely.  Coupled with the sophisticated elimination of bounds checking, this gave us something far closer to C
 performance.
 
