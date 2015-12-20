@@ -130,7 +130,7 @@ notably, the GC manifest in machine code.  This is *not* unique to managed code!
 ABI too.  It's just that it's primarily composed of headers, libraries like allocators, and so on, that are more
 transparently linked into a program than with classical C# and Java virtual machines, where a runtime is non-negotiable
 (and in the JIT case, fairly heavy-handed).  Thinking of it this way has been helpful to me, because the isomorphisms
-with C+ suddenly become immediately apparent.
+with C++ suddenly become immediately apparent.
 
 The real biggie is array bounds checks.  A traditional approach is to check that the index is within the bounds of an
 array before accessing it, either for laoding or storing.  That's an extra field fetch, compare, and conditional
