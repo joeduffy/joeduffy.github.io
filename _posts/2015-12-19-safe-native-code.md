@@ -866,7 +866,7 @@ Although our defaults were right, m experience with C# developers is that they g
 overly abstract code.  I think the ecosystem of APIs that exploded around highly polymorphic abstractions, like LINQ and
 Reactive Extensions, encouraged this and instilled a bit of bad behavior ("gratuitous over-abstraction").  I guess you
 could make similar arguments about highly templated code in C++.  As you can guess, there wasn't very much of it in the
-lowest levels of our codebase -- where very allocation and instruction mattered -- but in higher level code, especially
+lowest levels of our codebase -- where every allocation and instruction mattered -- but in higher level code, especially
 in applications that tended to be dominated by high-latency asynchronous operations, the overheads were acceptable and
 productivity benefits high.  A strong culture around identifying and trimming excessive fat helped to ensure features
 like this were used appropriately, via code reviews, benchmarks, and aggressive static analysis checking.
