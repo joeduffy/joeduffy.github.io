@@ -1079,9 +1079,9 @@ Granted, we hope that these are predicted correctly, but the reality is, you're 
 
 Untyped exceptions suck when you're trying to build a reliable system.  Operating systems need to be reliable.  Not
 knowing that there's a hidden control flow path when you're calling a function is, quite simply, unacceptable.  They
-also require heavier weight runtime support to unwind stacks, search for handlers, and so on.  It's also a bitch to
-model exceptional control flow in the compiler.  (If you don't believe me, just read through [this mail exchange](
-http://lists.llvm.org/pipermail/llvm-dev/2015-May/085843.html).  So, lots to hate here.
+also require heavier weight runtime support to unwind stacks, search for handlers, and so on.  It's also a real pain in
+the arse to model exceptional control flow in the compiler.  (If you don't believe me, just read through [this mail
+exchange](http://lists.llvm.org/pipermail/llvm-dev/2015-May/085843.html)).  So, lots to hate here.
 
 Typed exceptions -- I got used to not saying checked exceptions for fear of hitting Java nerves -- address some of these
 shortcomings, but come with their own challenges.  Again, I'll save detailed analysis for my future post.
