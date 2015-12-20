@@ -97,7 +97,7 @@ Although having a safe language can throw some interesting curveballs your way t
 I'll cover below -- you'll need all of the standard optimizing compiler things.
 
 I hate to say it, but doing great at all of these things is "table stakes."  Back in the mid-2000s, we had to write
-everything by hand.  Thankfully, these days you can get an awesome off-the-shell optimizing compiler like [LLVM](
+everything by hand.  Thankfully, these days you can get an awesome off-the-shelf optimizing compiler like [LLVM](
 http://llvm.org) that has most of these things already battle tested, ready to go, and ready for you to help improve.
 
 ## What's different
@@ -633,10 +633,11 @@ Each vtable consumes image space to hold pointers to the virtual functions used 
 representation.  Each object with a vtable also has a vtable pointer embedded within it.  So, if you care about size
 (both image and runtime), you are going to care about vtables.
 
-In C++, you only get a vtable if you use virtual inheritance.  In languages like C# and Java, you get them even if you
-didn't want them.  In C#, at least, you can use a `struct` type to elide them.  I actually love this aspect of Go,
-where you get a virtual dispatch-like thing, via interfaces, without needing to pay for vtables on every type; you only
-pay for what you use, at the point of coercing something to an interface.
+In C++, you only get a vtable if your type is [polymorphic](http://www.cplusplus.com/doc/tutorial/typecasting/).  In
+languages like C# and Java, on the other hand, you get a vtable even if you don't want, need, or use it.  In C#, at
+least, you can use a `struct` type to elide them.  I actually love this aspect of Go, where you get a virtual dispatch-
+like thing, via interfaces, without needing to pay for vtables on every type; you only pay for what you use, at the
+point of coercing something to an interface.
 
 Another vtable problem in C# is that all objects inherit three virtuals from `System.Object`: `Equals`, `GetHashCode`,
 and `ToString`.  Besides the point that these generally don't do the right thing in the right way anyways -- `Equals`
@@ -863,9 +864,12 @@ multiple binaries were grouped together into a library group.
 
 Although our defaults were right, m experience with C# developers is that they go a little hog-wild with virtuals and
 overly abstract code.  I think the ecosystem of APIs that exploded around highly polymorphic abstractions, like LINQ and
-Reactive Extensions, encouraged this and instilled lots of bad behavior.  As you can guess, there wasn't very much of
-that floating around our codebase.  A strong culture around identifying and trimming excessive fat helped keep this in
-check, via code reviews, benchmarks, and aggressive static analysis checking.
+Reactive Extensions, encouraged this and instilled a bit of bad behavior ("gratuitous over-abstraction").  I guess you
+could make similar arguments about highly templated code in C++.  As you can guess, there wasn't very much of it in the
+lowest levels of our codebase -- where very allocation and instruction mattered -- but in higher level code, especially
+in applications that tended to be dominated by high-latency asynchronous operations, the overheads were acceptable and
+productivity benefits high.  A strong culture around identifying and trimming excessive fat helped to ensure features
+like this were used appropriately, via code reviews, benchmarks, and aggressive static analysis checking.
 
 Interfaces were a challenge.
 
