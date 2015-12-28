@@ -133,7 +133,7 @@ transparently linked into a program than with classical C# and Java virtual mach
 with C++ suddenly become immediately apparent.
 
 The real biggie is array bounds checks.  A traditional approach is to check that the index is within the bounds of an
-array before accessing it, either for laoding or storing.  That's an extra field fetch, compare, and conditional
+array before accessing it, either for loading or storing.  That's an extra field fetch, compare, and conditional
 branch.  [Branch prediction](https://en.wikipedia.org/wiki/Branch_predictor) these days is quite good, however it's just
 plain physics that if you do more work, you're going to pay for it.  Interestingly, the work we're doing with C++'s
 `array_view<T>` incurs all these same costs.
