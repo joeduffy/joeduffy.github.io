@@ -48,18 +48,26 @@ idea is you get a `Promise<T>` for any operation that will eventually yield a `T
 that may be running asynchronously within the process or even remotely somewhere else.  The consumer doesn't need to
 know or care.  They just deal with the `Promise<T>` as a first class value and, when the `T` is sought, must rendezvous.
 
-The basic callback model looked something like this:
+The basic callback model started something like this:
 
     Promise<T> p = ... some operation ...;
 
     ... optionally do some things concurrent with that operation ...;
 
-    Promise<U> u = p.When(
+    Promise<U> u = Promise.When(
+        p,
         (T t) => { ... the T is available ... },
         (Exception e) => { ... a failure occurred ... }
     );
 
-Notice that the promises chain.  The `When` operation's callbacks are expected to return a value of type `U` or throw an
+Eventually we switched over from static to instance methods:
+
+    Promise<U> u = p.WhenResolved(
+        (T t) => { ... the T is available ... },
+        (Exception e) => { ... a failure occurred ... }
+    );
+
+Notice that the promises chain.  The operation's callbacks are expected to return a value of type `U` or throw an
 exception, as appropriate.  Then the recipient of the `u` promise does the same, and so on, and so forth.
 
 This is [concurrent](https://en.wikipedia.org/wiki/Concurrent_computing#Concurrent_programming_languages) [dataflow](
@@ -84,7 +92,7 @@ UI thread), but it's a lot harder to shoot yourself in the foot.  Especially whe
 
 What if you didn't want to continue the dataflow chain?  No problem.
 
-    p.When(
+    p.WhenResolved(
         ... as above ...
     ).Ignore();
 
@@ -94,22 +102,23 @@ The `Ignore` warrants a quick explanation.  Our language didn't let you ignore r
 about doing so.  This specific `Ignore` method also addded some diagnostics to help debug situations where you
 accidentally ignored something important (and lost, for example, an exception).
 
-Eventually we added a bunch of `When`-like APIs for common patterns:
+Eventually we added a bunch of helper overloads and APIs for common patterns:
 
     // Just respond to success, and propagate the error automatically:
     Promise<U> u = p.WhenResolved((T t) => { ... the T is available ... });
 
     // Use a finally-like construct:
-    Promise<U> u = p.WhenFinally(
+    Promise<U> u = p.WhenResolved(
         (T t) => { ... the T is available ... },
         (Exception e) => { ... a failure occurred ... },
         () => { ... unconditionally executes ... }
     );
 
-    // Perform a for-loop:
-    Promise<void> u = Async.For(0, 10, (int i) => { ... the loop body ... });
+    // Perform various kinds of loops:
+    Promise<U> u = Async.For(0, 10, (int i) => { ... the loop body ... });
+    Promise<U> u = Async.While(() => ... predicate, () => { ... the loop body ... });
 
-And so on.
+    // And so on.
 
 This idea is most certainly not even close to new.  [Joule](https://en.wikipedia.org/wiki/Joule_(programming_language))
 and [Alice](https://en.wikipedia.org/wiki/Alice_(programming_language)) even have nice built-in syntax to make the
@@ -121,10 +130,10 @@ It got really bad.  Like really, really.  It led to callback soup, often nested 
 really important code to get right.  For example, imagine you're in the middle of a disk driver, and you see code like:
 
     Promise<void> DoSomething(Promise<string> cmd) {
-        return cmd.When(
+        return cmd.WhenResolved(
             s => {
                 if (s == "...") {
-                    return DoSomethingElse(...).When(
+                    return DoSomethingElse(...).WhenResolved(
                         v => {
                             return ...;
                         },
@@ -159,8 +168,9 @@ We began wide-scale use sometime in 2009.  And when I say wide-scale, I mean it.
 The async/await approach let us keep the non-blocking nature of the system and yet clean up some of the above usability
 mess.  In hindsight, it's pretty obvious, but remember back then the most mainstream language with await used at scale
 was F# with its [asynchronous workflows](
-http://blogs.msdn.com/b/dsyme/archive/2007/10/11/introducing-f-asynchronous-workflows.aspx).  And despite the boon
-to usability and productivity, it was also enormously controversial on the team.  More on that later.
+http://blogs.msdn.com/b/dsyme/archive/2007/10/11/introducing-f-asynchronous-workflows.aspx) (also see [this paper](
+http://research.microsoft.com/apps/pubs/default.aspx?id=147194)).  And despite the boon to usability and productivity,
+it was also enormously controversial on the team.  More on that later.
 
 What we had was a bit different from what you'll find in C# and .NET.  Let's walk through the progression from the
 promises model above to this new async/await-based one.  As we go, I'll point out the differences.
@@ -190,7 +200,7 @@ All this meant was that it was allowed to `await` inside of it:
         return x * x;
     }
 
-Originally this was merely syntactic sugar for all the `When` stuff above, like it is in C#.  Eventually, however, we
+Originally this was merely syntactic sugar for all the callback goop above, like it is in C#.  Eventually, however, we
 went way beyond this, in the name of performance, and added lightweight coroutines and linked stacks.  More below.
 
 A caller invoking an `async` method was forced to choose: use `await` and wait for its result, or use `async` and
@@ -203,22 +213,32 @@ launch an asynchronous operation.  All asynchrony in the system was thus explici
 This also gave us a very important, but subtle, property that we didn't realize until much later.  Because in Midori the
 only way to "wait" for something was to use the asynchronous model, and there was no hidden blocking, our type system
 told us the full set of things that could "wait."  More importantly, it told us the full set of things that could not
-wait, which told us what was pure synchronous computation!  As we'll see below, this gave us a powerful capability.
+wait, which told us what was pure synchronous computation!  This could be used to guarantee no code ever blocked the
+UI from painting and, as we'll see below, many other powerful capabilities.
 
 Because of the sheer magnitude of asynchronous code in the system, we embellished lots of patterns in the language that
 C# still doesn't support.  For example, iterators, for loops, and LINQ queries:
 
-    IAsyncEnumerable<T> GetMovies(string url) {
-        await using (var http = new HttpClient()) {
-            foreach (await var movie in http.Get(url)) {
-                yield return movie;
-            }
+    IAsyncEnumerable<Movie> GetMovies(string url) {
+        foreach (await var movie in http.Get(url)) {
+            yield return movie;
         }
     }
 
-We converted millions of lines of code from the old model to the new one.  We found plenty of bugs along the way, due
-to the complex control flow of the explicit callback model.  Especially in loops and error handling logic, which could
-now use the familiar programming language constructs, rather than clumsy API versions of them.
+Or, in LINQ style:
+
+    IAsyncEnumerable<Movie> GetMovies(string url) {
+        return
+            from await movie in http.Get(url)
+            ... filters ...
+            select ... movie ...;
+    }
+
+The entire LINQ infrastructure participated in streaming, including resource management and backpressure.
+
+We converted millions of lines of code from the old callback style to the new async/await one.  We found plenty of bugs
+along the way, due to the complex control flow of the explicit callback model.  Especially in loops and error handling
+logic, which could now use the familiar programming language constructs, rather than clumsy API versions of them.
 
 I mentioned this was controversial.  Most of the team loved the usability improvements.  But it wasn't unanimous.
 
@@ -248,8 +268,10 @@ On its own, this wasn't a killer.  It caused some anti-patterns in important are
 were prone to awaiting in areas they used to just pass around `Async<T>`s, leading to an accumulation of paused stack
 frames that really didn't need to be there.  We had good solutions to most patterns, but up to the end of the project
 we struggled with this, especially in the networking stack that was chasing 10GB NIC saturation at wire speed.  We'll
-discuss some of the techniques we employed below.  But at the end of it all, this change was well worth it, both in
-the simplicity and usability of the model, and also in some of the optimization doors it opened up for us.
+discuss some of the techniques we employed below.
+
+But at the end of this journey, this change was well worth it, both in the simplicity and usability of the model, and
+also in some of the optimization doors it opened up for us.
 
 ## The Execution Model
 
