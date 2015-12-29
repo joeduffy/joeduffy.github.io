@@ -3,7 +3,6 @@ layout: default
 ---
 <ul class="posts">
     <li>
-
         <div class="post_preheader">
             <span>
                 {{ page.date | date: "%B %-d, %Y" }} 
@@ -15,9 +14,10 @@ layout: default
         </div>
 
         <div id="post">
-          {{ content }}
-        </div>
+            {{ content }}
 
+            {% include disqus.html %}
+        </div>
     </li>
 </ul>
 
