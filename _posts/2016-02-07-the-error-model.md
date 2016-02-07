@@ -210,7 +210,7 @@ compilers do.  But once you've missed the opportunity to add it to the core of t
 those techniques will reach critical mass due to complaints about noisy analysis.
 
 For what it's worth, forgetting to use return values in our language was a compile time error.  You had to explicitly
-ignore them; early on we used an API for this, but eventually devised language syntax:
+ignore them; early on we used an API for this, but eventually devised language syntax -- the equivalent of `>/dev/null`:
 
     ignore foo();
 
