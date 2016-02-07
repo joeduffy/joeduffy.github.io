@@ -150,7 +150,7 @@ nicer syntax and libraries.
 Many functional languages use return codes disguised in monads and named things like `Option<T>`, `Maybe<T>`, or
 `Error<T>`, which, when coupled with a dataflow-style of programming and pattern matching, feel far more natural.  This
 approach removes several major drawbacks to return codes that we're about to discuss, especially compared to C.  Rust
-has largely adopted this model but has dome some exciting things with it specifically for systems programmers.
+has largely adopted this model but has dome some exciting things with it for systems programmers.
 
 Despite their simplicity, return codes do come with some baggage; in summary:
 
@@ -351,8 +351,13 @@ Functional languages address many of the usability challenges by packaging up th
 to do anything useful with the value at the callsite -- which, thanks to a dataflow style of programming, you probably
 will -- it's easy to avoid the killer problem of forgetting to check for errors.
 
-Haskell even [gives the illusion of exception handling while still using error values and local control flow](
-https://wiki.haskell.org/Exception):
+For an example of a modern take on this, check out [Scala's `Option` type](
+http://danielwestheide.com/blog/2012/12/19/the-neophytes-guide-to-scala-part-5-the-option-type.html).  The unfortunate
+news is that some languages, like those in the ML family and even Scala (thanks to its JVM heritage), mix this elegant
+model with the world of unchecked exceptions.  This taints the elegance of the monadic data structure approach.
+
+Haskell does something even cooler and [gives the illusion of exception handling while still using error values and
+local control flow](https://wiki.haskell.org/Exception):
 
 > There is an old dispute between C++ programmers on whether exceptions or error return codes are the right way.  Niklas
 > Wirth considered exceptions to be the reincarnation of GOTO and thus omitted them in his languages.  Haskell solves
