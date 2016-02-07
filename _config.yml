@@ -3,7 +3,7 @@ url: http://joeduffyblog.com
 description: Adventures in the high-tech underbelly
 email: joeduffy@acm.org
 
-highlighter: pygments
+highlighter: rouge
 markdown: kramdown
 excerpt_separator: "\n\n"
 
