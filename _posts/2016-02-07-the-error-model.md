@@ -127,7 +127,7 @@ This is the typical pattern, where a return of `0` means success and non-zero me
 
 Most systems offer constants representing the set of error codes rather than magic numbers.  There may or may not be
 functions you can use to get extra information about the most recent error (like `errno` in standard C and
-`GetLastError` in Win32)  A return code really isn't anything special in the language -- it's just a return value.
+`GetLastError` in Win32).  A return code really isn't anything special in the language -- it's just a return value.
 
 C has long used error codes.  As a result, most C-based ecosystems do.  More low-level systems code has been written
 using the return code discipline than any other.  [Linux does](http://linux.die.net/man/3/errno), as do countless
@@ -227,7 +227,8 @@ calls.  This can be especially tedious if many of your functions fail which, in 
 also communicated with return codes, is frequently the case.  It's also clumsy to return multiple values.
 
 A warning: this complaint is subjective.  In many ways, the usability of return codes is actually elegant.  You reuse
-very simple primitives -- integers, returns, and `if` branches -- that are used in myriad other situations.
+very simple primitives -- integers, returns, and `if` branches -- that are used in myriad other situations.  In my
+humble opinion, errors are an important enough aspect of programming that the language should be helping you out.
 
 Go has a nice syntactic shortcut to make the standard return code checking *slightly* more pleasant:
 
