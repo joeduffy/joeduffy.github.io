@@ -32,7 +32,7 @@ One of the biggest challenges in answering this question turns out to be definin
 languages lump bugs and recoverable errors into the same category, and use the same facilities to deal with them.  A
 `null` dereference or out-of-bounds array access is treated the same way as a network connectivity problem or parsing
 error.  This consistency may seem nice at first glance, but it has deep-rooted issues.  In particular, it is misleading
-and frequently leads to unreliable reliable code.
+and frequently leads to unreliable code.
 
 Our overall solution was to offer a two-pronged error model.  On one hand, you had fail-fast -- we called it
 *abandonment* -- for programming bugs.  And on the other hand, you had statically checked exceptions for recoverable
