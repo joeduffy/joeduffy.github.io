@@ -624,7 +624,7 @@ possible to audit a body of code and see precisely where exceptions come from.  
 
 Before moving on, let's recap where we are:
 
-![Good-Bad-Ugly](assets/img/2016-02-07-the-error-model-1.png)
+![Good-Bad-Ugly](/assets/img/2016-02-07-the-error-model-1.png)
 
 Wouldn't it be great if we could take all of The Goods and leave out The Bads and The Uglies?
 
