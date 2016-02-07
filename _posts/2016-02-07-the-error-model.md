@@ -18,10 +18,10 @@ language based on C#](http://joeduffyblog.com/2015/12/19/safe-native-code/).  As
 system was written in it, including drivers, the domain kernel, and all user code.  I've hinted at a few things along
 the way and now it's time to address them head-on.  The entire language is a huge space to cover and will take a series
 of posts.  First up?  The Error Model.  The way errors are communicated and dealt with is fundamental to any language,
-especially one used to write a reliable system in it.  Like many other things we did in Midori, a "whole system"
-approach was necessary to getting right.  It also took several iterations over several years to get right.  I regularly
-hear from old teammates, however, that this is the thing they miss most about programming in Midori.  It's right up
-there for me too.  So, without further ado, let's start.
+especially one used to write a reliable operating system.  Like many other things we did in Midori, a "whole system"
+approach was necessary to getting right, taking several iterations over several years.  I regularly hear from old
+teammates, however, that this is the thing they miss most about programming in Midori.  It's right up there for me too.
+So, without further ado, let's start.
 
 # The Error Model
 
