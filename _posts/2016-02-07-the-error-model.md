@@ -19,7 +19,7 @@ system was written in it, including drivers, the domain kernel, and all user cod
 the way and now it's time to address them head-on.  The entire language is a huge space to cover and will take a series
 of posts.  First up?  The Error Model.  The way errors are communicated and dealt with is fundamental to any language,
 especially one used to write a reliable operating system.  Like many other things we did in Midori, a "whole system"
-approach was necessary to getting right, taking several iterations over several years.  I regularly hear from old
+approach was necessary to getting it right, taking several iterations over several years.  I regularly hear from old
 teammates, however, that this is the thing they miss most about programming in Midori.  It's right up there for me too.
 So, without further ado, let's start.
 
@@ -1817,6 +1817,10 @@ At first, we didn't support exceptions across asynchronous boundaries.  Eventual
 declare `throws`, along with optional typed exceptions clauses, across asynchronous process boundaries.  This brought a
 rich, typed programming model to the asynchronous actors programming model and felt like a natural extension.  This
 borrowed a page from CLU's successor, [Argus](https://en.wikipedia.org/wiki/Argus_(programming_language)).
+
+Our diagnostics infrastructure embellished this to give developers debugging experiences with full-blown cross-process
+causality in their stack views.  Not only are stacks cactuses in a highly concurrent system, but they are often smeared
+across process message passing boundaries.  Being able to debug the system this way was a big time-saver.
 
 ### Aborts
 
