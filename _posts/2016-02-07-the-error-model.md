@@ -689,7 +689,7 @@ customers"; and, similarly, "That wouldn't be reliable at all!"  Reliability, it
 
 # Reliability, Fault-Tolerance, and Isolation
 
-Before we get any further, we need to state a central belief: ~~Shi~~Failure Happens.
+Before we get any further, we need to state a central belief: ~~Shi~~ Failure Happens.
 
 ## To Build a Reliable System
 
