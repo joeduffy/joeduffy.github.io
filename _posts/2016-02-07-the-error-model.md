@@ -1,7 +1,7 @@
 ---
 layout: post
 title: 'The Error Model'
-date: 2016-02-07 18:29:00.000000000 -08:00
+date: 2016-02-07 10:29:00.000000000 -08:00
 categories: []
 tags: []
 status: publish
