@@ -4,7 +4,7 @@ description: Adventures in the high-tech underbelly
 email: joeduffy@acm.org
 
 highlighter: pygments
-markdown: redcarpet
+markdown: kramdown
 excerpt_separator: "\n\n"
 
 permalink: /:year/:month/:day/:title/
