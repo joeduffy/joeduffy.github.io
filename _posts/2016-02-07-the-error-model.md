@@ -1485,7 +1485,7 @@ if the program you're using decided to wink out of existence every time your net
 
 ## Enter Exceptions
 
-We used exceptions for recoverable errors.  Not the unchecked kind, and not quite the Java unchecked kind, either.
+We used exceptions for recoverable errors.  Not the unchecked kind, and not quite the Java checked kind, either.
 
 First thing's first: although Midori had exceptions, a method that wasn't annotated as `throws` could never throw one.
 Never ever ever.  There were no sneaky `RuntimeException`s like in Java, for instance.  We didn't need them anyway,
