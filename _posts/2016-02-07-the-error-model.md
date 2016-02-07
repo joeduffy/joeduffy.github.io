@@ -1995,6 +1995,7 @@ But I hope all that background helped to take you through the evolution as we so
 
 In summary, the final model featured:
 
+* An architecture that assumed fine-grained isolation and recoverability from failure.
 * Distinguishing between bugs and recoverable errors.
 * Using contracts, assertions, and, in general, abandonment for all bugs.
 * Using a slimmed down checked exceptions model for recoverable errors, with a rich type system and language syntax.
