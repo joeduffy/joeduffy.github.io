@@ -446,7 +446,7 @@ program -- and the resulting state by the time it gets caught or goes unhandled.
 It's of course possible to try.  Doing so requires reading API documentation, doing manual audits of the code, leaning
 heavily on code reviews, and a healthy dose of luck.  The language isn't helping you out one bit here.  Because failures
 are rare, this tends not to be as utterly disastrous as it sounds.  My conclusion is that's why many people in industry
-think unchecked exceptions "good enough."  They stay out of your way for the common success paths and, because most
+think unchecked exceptions are "good enough."  They stay out of your way for the common success paths and, because most
 people don't write robust error handling code in non-systems programs, throwing an exception *usually* gets you out of a
 pickle fast.  Catching and then proceeding often works too.  No harm, no foul.  Statistically speaking, programs "work."
 
@@ -1562,8 +1562,8 @@ Encouraging a single failure mode was quite liberating.  A vast amount of the co
 exceptions evaporated immediately.  If you look at most APIs that fail, they have a single failure mode anyway (once all
 bug failure modes are done with abandonment): IO failed, parsing failed, etc.  And many recovery actions a developer
 tends to write don't actually depend on the specifics of *what exactly* failed when, say, doing an IO.  (Some do, and
-for those, the keeper pattern is often the better answer; more on this topic shortly.  Most of the information in modern
-exceptions are *not* actually there for programmatic use; instead, they are for diagnostics.
+for those, the keeper pattern is often the better answer; more on this topic shortly.)  Most of the information in
+modern exceptions are *not* actually there for programmatic use; instead, they are for diagnostics.
 
 We stuck with just this "single failure mode" for 2-3 years.  Eventually I made the controversial decision to
 support multiple failure modes.  It wasn't common, but the request popped up reasonably often from teammates, and the
@@ -1572,14 +1572,14 @@ subtyping ways.  And more sophisticated scenarios -- like aborts (more on that l
 
 The syntax looked like this:
 
-    int Foo() throws BarException, YazException {
+    int Foo() throws FooException, BarException {
         ...
     }
 
 In a sense, then, the single `throws` was a shortcut for `throws Exception`.
 
 It was very easy to "forget" the extra detail if you didn't care.  For example, perhaps you wanted to bind a lambda to
-the above `Foo` API, but didn't want callers to care about `BarException` or `YazException`.  That lambda must be marked
+the above `Foo` API, but didn't want callers to care about `FooException` or `BarException`.  That lambda must be marked
 `throws`, of course, but no more detail was necessary.  This turned out to be a very common pattern: An internal system
 would use typed exceptions like this for internal control flow and error handling, but translate all of them into just
 plain `throws` at the public boundary of the API, where the extra detail wasn't required.
