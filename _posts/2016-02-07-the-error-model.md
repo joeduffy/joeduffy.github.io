@@ -191,7 +191,7 @@ Now at the callsite, what if we silently ignore the returned value entirely, and
     foo();
     // Keep going -- but foo might have failed!
 
-At this point, you've masked a potentially critical error in your program.  This is the easily the most vexing and
+At this point, you've masked a potentially critical error in your program.  This is easily the most vexing and
 damaging problem with error codes.  As I will show later, option types help to address this for functional languages.
 But in C-based languages, and even Go with its modern syntax, this is a real issue.
 
@@ -199,8 +199,8 @@ This problem isn't theoretical.  I've encountered numerous bugs caused by ignori
 too.  Indeed, in the development of this very Error Model, my team encountered some fascinating ones.  For example, when
 we ported Microsoft's Speech Server to Midori, we found that 80% of Taiwan Chinese (`zh-tw`) requests were failing.  Not
 failing in a way the developers immediately saw, however; instead, clients would get a gibberish response.  At first, we
-thought it was our fault.  But then we discovered the silently swallowed `HRESULT` in the original code.  Once we got it
-over to Midori, the bug was throw into our faces, found, and fixed immediately after porting.  This experience certainly
+thought it was our fault.  But then we discovered they silently swallowed `HRESULT` in the original code.  Once we got it
+over to Midori, the bug was thrown into our faces, found, and fixed immediately after porting.  This experience certainly
 informed our opinion about error codes.
 
 It's surprising to me that Go made unused `import`s an error, and yet missed this far more critical one.  So close!
@@ -332,7 +332,7 @@ And callsites are much cleaner as a result.  Combined with the earlier feature o
     }
 
 Notice that this also helps to remind you to check the error.  It's not bulletproof, however, because functions can
-return an error and nothing else, at which point forgetting to check it just as easy as it is in C.
+return an error and nothing else, at which point forgetting to check it is just as easy as it is in C.
 
 As I mentioned above, some would argue against me on the usability point.  Especially Go's designers, I suspect.  A big
 appeal to Go using error codes is as a rebellion against the overly complex languages in today's landscape.  We have
@@ -400,13 +400,13 @@ abandonment) -- but as we will see, it's far better than any other exception-bas
 The history of exceptions is fascinating.  During this journey I spent countless hours retracing the industry's steps.
 That includes reading some of the original papers -- like Goodenough's 1975 classic, [Exception Handling: Issues
 and a Proposed Notation](https://www.cs.virginia.edu/~weimer/2006-615/reading/goodenough-exceptions.pdf) -- in addition
-to looking the approaches of several languages: Ada, Eiffel, Modula-2 and 3, ML, and, [most inspirationally, CLU](
+to looking at the approaches of several languages: Ada, Eiffel, Modula-2 and 3, ML, and, [most inspirationally, CLU](
 http://csg.csail.mit.edu/pubs/memos/Memo-155/Memo-155-3.pdf).  Many papers do a better job than I can summarizing the
 long and arduous journey, so I won't do that here.  Instead, I'll focus on what works and what doesn't work for building
 reliable systems.
 
 Reliability is the most important of our requirements above when developing the Error Model.  If you can't react
-appropriate to failures, your system, by definition, won't be very reliable.  Operating systems generally speaking need
+appropriately to failures, your system, by definition, won't be very reliable.  Operating systems generally speaking need
 to be reliable.  Sadly, the most commonplace model -- unchecked exceptions -- is the worst you can do in this dimension.
 
 For these reasons, most reliable systems use return codes instead of exceptions.  They make it possible to locally
@@ -440,12 +440,12 @@ system or a function's signature.  For example:
 In this model, any function call -- and sometimes any *statement* -- can throw an exception, transferring control
 non-locally somewhere else.  Where?  Who knows.  There are no annotations or type system artifacts to guide your
 analysis.  As a result, it's difficult for anyone to reason about a program's state at the time of the throw, the state
-changes that occur while that exception is propagate up the call stack -- and possibly across threads in a concurrent
+changes that occur while that exception is propagated up the call stack -- and possibly across threads in a concurrent
 program -- and the resulting state by the time it gets caught or goes unhandled.
 
 It's of course possible to try.  Doing so requires reading API documentation, doing manual audits of the code, leaning
 heavily on code reviews, and a healthy dose of luck.  The language isn't helping you out one bit here.  Because failures
-are rare, this tends not to be as utterly disastrous as it sounds.  My conclusion is that's why many people in industry
+are rare, this tends not to be as utterly disastrous as it sounds.  My conclusion is that's why many people in the industry
 think unchecked exceptions are "good enough."  They stay out of your way for the common success paths and, because most
 people don't write robust error handling code in non-systems programs, throwing an exception *usually* gets you out of a
 pickle fast.  Catching and then proceeding often works too.  No harm, no foul.  Statistically speaking, programs "work."
@@ -458,9 +458,9 @@ too: these are failures that are triggered by hardware faults, like access viola
 however.  An arbitrary thread can inject a failure at nearly any point in your code.  Even between the RHS and LHS of an
 assignment!  As a result, things that look atomic in source code aren't.  [I wrote about this 10 years ago](
 http://joeduffyblog.com/2005/03/18/atomicity-and-asynchronous-exception-failures/) and the challenges still exist,
-although the risk has lessened as the .NET generally learned that thread aborts are problematic.  The new CoreCLR even
-lacks AppDomains, and the new ASP.NET 5 stack certainly doesn't use thread aborts like it used to.  But the [APIs are
-still there](https://github.com/dotnet/coreclr/blob/master/src/mscorlib/src/System/Threading/Thread.cs#L517).
+although the risk has lessened as .NET generally learned that thread aborts are problematic.  The new CoreCLR even
+lacks AppDomains, and the new ASP.NET Core 1.0 stack certainly doesn't use thread aborts like it used to.  But the [APIs are
+still there](https://github.com/dotnet/coreclr/blob/99e7f7c741a847454ab0ace1febd911378dcb464/src/mscorlib/src/System/Threading/Thread.cs#L518).
 
 There's a famous interview with Anders Hejlsberg, C#'s chief designer, called [The Trouble with Checked Exceptions](
 http://www.artima.com/intv/handcuffs.html).  From a systems programmer's perspective, much of it leaves you scratching
@@ -505,7 +505,7 @@ http://en.cppreference.com/w/cpp/language/noexcept_spec) -- which, in my opinion
 
 For C++, the real solution is easy to predict, and rather straightforward: for robust systems programs, don't use
 exceptions.  That's the approach [Embedded C++](https://en.wikipedia.org/wiki/Embedded_C%2B%2B) takes, in addition to
-numerous realtime and mission critical guidelines for C++, including NASA's Jet Propulsion Labratory's.
+numerous realtime and mission critical guidelines for C++, including NASA's Jet Propulsion Laboratory's.
 [C++ on Mars sure ain't using exceptions anytime soon](https://www.youtube.com/watch?v=3SdSKZFoUa8).
 
 So if you can safely avoid exceptions and stick to C-like return codes in C++, what's the beef?
@@ -690,7 +690,7 @@ customers"; and, similarly, "That wouldn't be reliable at all!"  Reliability, it
 
 # Reliability, Fault-Tolerance, and Isolation
 
-Before we get any further, we need to state a central belief: ~~Shi~~ Failure Happens.
+Before we get any further, we need to state a central belief: <s>Shi</s> Failure Happens.
 
 ## To Build a Reliable System
 
@@ -851,7 +851,7 @@ compiler co-development, the result was far better than what most C++ compilers 
 arithmetic.  Also as with C#, [the `unchecked` scoping construct](
 https://msdn.microsoft.com/en-us/library/khy08726.aspx) could be used where over/underflow was intended.
 
-Although the initial reaction from most C# and C++ developers I've spoken to about this idea are negative about it, our
+Although the initial reactions from most C# and C++ developers I've spoken to about this idea are negative about it, our
 experience was that 9 times out of 10, this approach helped to avoid a bug in the program.  That remaining 1 time was
 usually an abandonment sometime late in one of our 72 hour stress runs -- in which we battered the entire system with
 browsers and multimedia players and anything else we could do to torture the system -- when some harmless counter
@@ -945,7 +945,7 @@ and `Release.Assert`), but I always liked them because it's pretty unambiguous w
 taxonomy was that nobody ever knew exactly when the assertions would be checked; confusion in this area is simply not
 acceptable, in my opinion, given how important good assertion discipline is to the reliability of one's program.
 
-As we moved contracts for the language (more on that soon), we tried making `assert` a keyword too.  However, we
+As we moved contracts to the language (more on that soon), we tried making `assert` a keyword too.  However, we
 eventually switched back to using APIs.  The primary reason was that assertions were *not* part of an API's signature
 like contracts are; and given that assertions could easily be implemented as a library, it wasn't clear what we gained
 from having them in the language.  Furthermore, policies like "checked in debug" versus "checked in release" simply
@@ -1117,7 +1117,7 @@ http://research.microsoft.com/en-us/projects/contracts/) effort discovered the h
 
 First, contracts written this way are part of the API's *implementation*, whereas we want them to be part of the
 *signature*.  This might seem like a theoretical concern but it is far from being theoretical.  We want the resulting
-program to contain built-in metadata so tools like IDEs and debuggers to display the contracts at callsites.  And we
+program to contain built-in metadata so tools like IDEs and debuggers can display the contracts at callsites.  And we
 want tools to be in a position to auto-generate documentation from the contracts.  Burying them in the implementation
 doesn't work unless you somehow disassemble the method to extract them later on (which is a hack).
 
@@ -1162,7 +1162,7 @@ As a result, we nuked the entire conditional compilation scheme.
 We ended up with a single kind of contract: one that was part of an API's signature and checked all the time.  If a
 compiler could prove the contract was satisfied at compile-time -- something we spent considerable energy on -- it was
 free to elide the check altogether.  But code was guaranteed it would never execute if its preconditions weren't
-satisfied.  For cases where you wanted conditional checks, you always had the assertion system (described below).
+satisfied.  For cases where you wanted conditional checks, you always had the assertion system (described above).
 
 I felt better about this bet when we deployed the new model and found that lots of people had been misusing the "weak"
 and "strong" notions above out of confusion.  Forcing developers to make the decision led to healthier code.
@@ -1176,7 +1176,7 @@ A number of areas of development were at varying stages of maturity when our pro
 We experimented **a lot** with invariants.  Anytime we spoke to someone versed in design-by-contract, they were
 borderline appalled that we didn't have them from day one.  To be honest, our design did include them from the outset.
 But we never quite got around to finishing the implementation and deploying it.  This was partly just due to engineering
-bandwdith, but also because some difficult questions remained.  And honestly the team was almost always satisfied with
+bandwidth, but also because some difficult questions remained.  And honestly the team was almost always satisfied with
 the combination of pre- and post-conditions plus assertions.  I suspect that in the fullness of time we'd have added
 invariants for completeness, but to this day some questions remain for me.  I'd need to see it in action for a while.
 
@@ -1209,15 +1209,15 @@ I really wish we had more time to explore invariants more deeply.  I don't think
 
 ### Advanced Type Systems
 
-I always liked to say that contracts begin where the type system leaves off.  A type system allows you to encoded
-attributes of variables using types.  A type limits the expected range values that a variables might hold.  A contract
+I always liked to say that contracts begin where the type system leaves off.  A type system allows you to encode
+attributes of variables using types.  A type limits the expected range values that a variable might hold.  A contract
 similarly checks the range of values that a variable holds.  The difference?  Types are proven at compile-time through
 rigorous and composable inductive rules that are moderately inexpensive to check local to a function, usually, but not
 always, aided by developer-authored annotations.  Contracts are proven at compile-time *where possible* and at runtime
 otherwise, and as a result, permit far less rigorous specification using arbitrary logic encoded in the language itself.
 
 Types are preferable, because they are *guaranteed* to be compile-time checked; and *guaranteed* to be fast to check.
-The assurances given to the developer are strongly and the overall developer productivity of using them is better.
+The assurances given to the developer are strong and the overall developer productivity of using them is better.
 
 Limitations in a type system are inevitable, however; a type system needs to leave *some* wiggle room, otherwise it
 quickly grows unwieldly and unusable and, in the extreme, devolves into bi-value bits and bytes.  On the other hand, I
@@ -1245,7 +1245,7 @@ And this code which didn't need to, and yet carried all the same guarantees, che
         ...
     }
 
-Placing these properties in the type system is significantly lessens the burden of checking for error conditions.  Lets
+Placing these properties in the type system significantly lessens the burden of checking for error conditions.  Lets
 say that for any given 1 producer of state there are 10 consumers.  Rather than having each of those 10 defend
 themselves against error conditions, we can push the responsibility back onto that 1 producer, and either require a
 single assertion that coerces the type, or even better, that the value is stored into the right type in the first place.
@@ -1368,7 +1368,7 @@ no longer simply be a front-end trick.  It requires back-end compiler support.
 (Note that this trick is not so easy to extend to `T??`!)
 
 Second, Midori supported safe covariant arrays, thanks to our mutability annotations.  If `T` and `T?` have a different
-physical representation, however, then converting `T[]` to `T?[]` is non-transforming operation.  This was a minor
+physical representation, however, then converting `T[]` to `T?[]` is a non-transforming operation.  This was a minor
 blemish, particularly since covariant arrays become far less useful once you plug the safety holes they already have.
 
 Anyway, we eventually burned the ships on .NET `Nullable<T>` and went with the more composable multi-`?` design.
@@ -1507,7 +1507,7 @@ At some point, I made a controversial observation and decision.  Just as you wou
 with the expectation of zero compatibility impact, you should not be changing a function's exception type with such an
 expectation.  *In other words, an exception, as with error codes, is just a different kind of return value!*
 
-This has been one of the parroted arguments against checked exceptions.  My answer my sound trite, but it's simple:
+This has been one of the parroted arguments against checked exceptions.  My answer may sound trite, but it's simple:
 too bad.  You're in a statically typed programming language, and the dynamic nature of exceptions is precisely the
 reason they suck.  We sought to address these very problems, so therefore we embraced it, embellished strong typing,
 and never looked back.  This alone helped to bridge the gap between error codes and exceptions.
@@ -1517,7 +1517,7 @@ due to the rare nature of exceptions compared to abandonment, this wasn't as pai
 intuitive properties flowed naturally from this decision.
 
 The first thing is the [Liskov substitution principle](https://en.wikipedia.org/wiki/Liskov_substitution_principle).  In
-order to avoid the mess that C++ found itself in, all "checking" has to happen statically, at compile time.  (As a
+order to avoid the mess that C++ found itself in, all "checking" has to happen statically, at compile time.  As a
 result, all of those performance problems mentioned in [the WG21 paper](
 http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2010/n3051.html) were not problems for us.  This type system must be
 bulletproof, however, with no backdoors to defeat it.  Because we needed to address those performance challenges by
@@ -1899,7 +1899,7 @@ operations that overflowed or divided-by-zero, etc.  In a few of these instances
 for dynamic error propagation and recovery, rather than abandonment.  Even if abandonment is better in the common case.
 
 This turned out to be a pattern.  Not terribly common, but it came up.  As a result, we had a whole set of arithmetic
-APIs that used a dataflow-style of propagation should overflow, NaN, or any number of things happened.
+APIs that used a dataflow-style of propagation should overflow, NaN, or any number of things happen.
 
 I also already mentioned a concrete instance of this earlier, which is the ability to `try new` an allocation, when OOM
 yields a recoverable error rather than abandonment.  This was super uncommon, but could crop up if you wanted to, say,
@@ -2023,7 +2023,7 @@ recoverable errors by a ratio approaching 10:1, making checked exceptions rare a
 Although we never had a chance to ship this, we have since brought some of these lessons learned to other settings.
 
 During the Microsoft Edge browser rewrite from Internet Explorer, for example, we adopted abandonment in a few areas.
-They key one, applied by a Midori engineer, was OOM.  The old code would attempt to limp along as I described earlier
+The key one, applied by a Midori engineer, was OOM.  The old code would attempt to limp along as I described earlier
 and almost always did the wrong thing.  My understanding is that abandonment has found numerous lurking bugs, as was our
 experience regularly in Midori when porting existing codebases.  The great thing too is that abandonment is more of an
 architectural discipline that can be adopted in existing code-bases ranging in programming languages.
