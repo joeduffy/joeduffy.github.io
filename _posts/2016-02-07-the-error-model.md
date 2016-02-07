@@ -624,12 +624,7 @@ possible to audit a body of code and see precisely where exceptions come from.  
 
 Before moving on, let's recap where we are:
 
-|                          | The Good | The Bad | The Ugly |
-| :----------------------- | :------- | :------ | :------- |
-| **Error Codes**          | * All function errors are explicit.<br>* All error handling at callsites is explicit.<br>* Low complexity. | * You can forgot to check them.<br>* Performance of success paths suffers. | * Usability is often substandard. |
-| **All Exceptions**       | * First class language support. | * Performance is typically worse than it could be.<br>* Handling is often done in a non-local manner, where less information about an error is known (`goto`-like). |
-| **Unchecked Exceptions** | * Conducive to rapid development where dealing with errors reliably isn't critical. | * Anything can fail without warning. | * Reliability is as bad as it gets. |
-| **Checked Exceptions**   | * All function errors are explicit. | * Callsites aren't always explicit about propagating errors.<br>* Systems that let some subset of exceptions go unchecked poison the well (not all errors are explicit). | * People hate them (in Java, at least). |
+![Good-Bad-Ugly](assets/img/2016-02-07-the-error-model-1.png)
 
 Wouldn't it be great if we could take all of The Goods and leave out The Bads and The Uglies?
 
