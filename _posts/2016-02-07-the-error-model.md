@@ -17,7 +17,7 @@ author:
 language based on C#](http://joeduffyblog.com/2015/12/19/safe-native-code/).  Aside from our microkernel, the whole
 system was written in it, including drivers, the domain kernel, and all user code.  I've hinted at a few things along
 the way and now it's time to address them head-on.  The entire language is a huge space to cover and will take a series
-of posts.  First up?  The Error Model.  The way errors are communicated and dealth with is fundamental to any language,
+of posts.  First up?  The Error Model.  The way errors are communicated and dealt with is fundamental to any language,
 especially one used to write a reliable system in it.  Like many other things we did in Midori, a "whole system"
 approach was necessary to getting right.  It also took several iterations over several years to get right.  I regularly
 hear from old teammates, however, that this is the thing they miss most about programming in Midori.  It's right up
@@ -28,7 +28,7 @@ there for me too.  So, without further ado, let's start.
 The basic question an Error Model seeks to answer is: how do "errors" get communicated to programmers and users of the
 system?  Pretty simple, no?  So it seems.
 
-One of the biggests challenges in answering this question turns out to be defining what an error actually *is*.  Most
+One of the biggest challenges in answering this question turns out to be defining what an error actually *is*.  Most
 languages lump bugs and recoverable errors into the same category, and use the same facilities to deal with them.  A
 `null` dereference or out-of-bounds array access is treated the same way as a network connectivity problem or parsing
 error.  This consistency may seem nice at first glance, but it has deep-rooted issues.  In particular, it is misleading
@@ -61,11 +61,11 @@ Let's start by examining our architectural principles, requirements, and learnin
 
 ## Principles
 
-As we set out on this joruney, we called out several requirements of a good Error Model:
+As we set out on this journey, we called out several requirements of a good Error Model:
 
 * **Usable.**  It must be easy for developers to do the "right" thing in the face of error, almost as if by accident.  A
   friend and colleague famously called this falling into the [The Pit of Success](
-  http://blogs.msdn.com/b/brada/archive/2003/10/02/50420.aspx).  The model should not impose excessive cerimony in order
+  http://blogs.msdn.com/b/brada/archive/2003/10/02/50420.aspx).  The model should not impose excessive ceremony in order
   to write idiomatic code.  Ideally it is cognitively familiar to our target audience.
 
 * **Reliable.**  The Error Model is the foundation of the entire system's reliability.  We were building an operating
@@ -196,7 +196,7 @@ damaging problem with error codes.  As I will show later, option types help to a
 But in C-based languages, and even Go with its modern syntax, this is a real issue.
 
 This problem isn't theoretical.  I've encountered numerous bugs caused by ignoring return codes and I'm sure you have
-too.  Indeed, in the development of this very Error Model, my team encountered some fascinatine ones.  For example, when
+too.  Indeed, in the development of this very Error Model, my team encountered some fascinating ones.  For example, when
 we ported Microsoft's Speech Server to Midori, we found that 80% of Taiwan Chinese (`zh-tw`) requests were failing.  Not
 failing in a way the developers immediately saw, however; instead, clients would get a gibberish response.  At first, we
 thought it was our fault.  But then we discovered the silently swallowed `HRESULT` in the original code.  Once we got it
@@ -505,7 +505,7 @@ http://en.cppreference.com/w/cpp/language/noexcept_spec) -- which, in my opinion
 For C++, the real solution is easy to predict, and rather straightforward: for robust systems programs, don't use
 exceptions.  That's the approach [Embedded C++](https://en.wikipedia.org/wiki/Embedded_C%2B%2B) takes, in addition to
 numerous realtime and mission critical guidelines for C++, including NASA's Jet Propulsion Labratory's.
-[C++ on Mars sure ain't using exceptiopns anytime soon](https://www.youtube.com/watch?v=3SdSKZFoUa8).
+[C++ on Mars sure ain't using exceptions anytime soon](https://www.youtube.com/watch?v=3SdSKZFoUa8).
 
 So if you can safely avoid exceptions and stick to C-like return codes in C++, what's the beef?
 
@@ -585,7 +585,7 @@ worse than error codes.  Either a function fails or it doesn't.  It's true that 
 have no failure mode, and then want to add failures in version 2, you're screwed.  As you should be, in my opinion.  An
 API's failure mode is a critical part of its design and contract with callers.  Just as you wouldn't change the return
 type of an API silently without callers needing to know, you shouldn't change its failure mode in a semantically
-meaningful way.  More on this controverisal point later on.
+meaningful way.  More on this controversial point later on.
 
 CLU has an interesting approach, as described in this crooked and wobbly scan of a 1979 paper by Barbara Liskov,
 [Exception Handling in CLU](http://csg.csail.mit.edu/pubs/memos/Memo-155/Memo-155-3.pdf).  Notice that they focus a lot
@@ -640,7 +640,7 @@ shaped everything to come.  For a significant class of error, *none* of these ap
 
 A critical distinction we made early on is the difference between recoverable errors and bugs:
 
-* A *recoverable error* is usually the result of progamamtic data validation.  Some code has examined the state of the
+* A *recoverable error* is usually the result of progammatic data validation.  Some code has examined the state of the
   world and deemed the situation unacceptable for progress.  Maybe it's some markup text being parsed, user input from a
   website, or a transient network connection failure.  In these cases, programs are expected to recover.  The developer
   who wrote this code must think about what to do in the event of failure because it will happen in well-constructed
@@ -737,7 +737,7 @@ them stay simpler.  As a result, recovering from failure is easier.  In our lang
 were explicit, further helping to keep those internal state machines correct, and pointing out those connections with
 the messier outside world.  In this world, the price of individual failure is not nearly as dire.  I can't
 over-emphasize this point.  None of the language features I describe later would have worked so well without this
-architectural foundation of cheap and everpresent isolation.
+architectural foundation of cheap and ever-present isolation.
 
 The key thing, then, is not preventing failure per se, but rather knowing how and when to deal with it.
 
@@ -821,7 +821,7 @@ with the program's logic, in that it attempted an undeniably illegal operation. 
 out (e.g., perhaps you want NaN-style propagation for DbZ).  But by default we assume it's a bug.
 
 Most programmers were willing to accept this without question.   And dealing with them as bugs this way brought
-abandonemnt to the inner development loop where bugs during development could be found and fixed fast.  Abandonment
+abandonment to the inner development loop where bugs during development could be found and fixed fast.  Abandonment
 really did help to make people more productive at writing code.  This was a surprise to me at first, but it makes sense.
 
 Some of these situations, on the other hand, are subjective.  We had to make a decision about the default behavior,
@@ -840,7 +840,7 @@ dozen of them in the past few years alone.  (Parsers tend to be farms for securi
 This has given rise to packages like [SafeInt](https://safeint.codeplex.com/), which
 essentially moves you away from your native language's arithmetic operations, in favor of checked library ones.
 
-Most of these exploits are of coure also coupled with an access to unsafe memory.  You could reasonably argue therefore
+Most of these exploits are of course also coupled with an access to unsafe memory.  You could reasonably argue therefore
 that overflows are innocuous in a safe language and therefore should be permitted.  It's pretty clear, however, based on
 the security experience, that a program often does the wrong thing in the face of an unintended over/underflow.  Simply
 put, developers frequently overlook the possibility, and the program proceeds to do unplanned things.  That's the
@@ -858,7 +858,7 @@ https://msdn.microsoft.com/en-us/library/khy08726.aspx) could be used where over
 Although the initial reaction from most C# and C++ developers I've spoken to about this idea are negative about it, our
 experience was that 9 times out of 10, this approach helped to avoid a bug in the program.  That remaining 1 time was
 usually an abandonment sometime late in one of our 72 hour stress runs -- in which we battered the entire system with
-browsers and multimedia players and anything else we could do to torture the system -- when some harmelss counter
+browsers and multimedia players and anything else we could do to torture the system -- when some harmless counter
 overflowed.  I always found it amusing that we spent time fixing these instead of the classical way products mature
 through the stress program, which is to say deadlocks and race conditions.  Between you and me, I'll take the overflow
 abandonments!
@@ -952,7 +952,7 @@ acceptable, in my opinion, given how important good assertion discipline is to t
 As we moved contracts for the language (more on that soon), we tried making `assert` a keyword too.  However, we
 eventually switched back to using APIs.  The primary reason was that assertions were *not* part of an API's signature
 like contracts are; and given that assertions could easily be implemented as a library, it wasn't clear what we gained
-from having them in the language.  Furthermore, polcies like "checked in debug" versus "checked in release" simply
+from having them in the language.  Furthermore, policies like "checked in debug" versus "checked in release" simply
 didn't feel like they belonged in a programming language.  I'll admit, years later, I'm still on the fence about this.
 
 ## Contracts
@@ -1126,7 +1126,7 @@ begin to wonder, why not simply acknowledge that this is a language expressivity
 
 Another area of perpetual struggle for us was whether contracts are conditional or not.  In many classical systems,
 you'd check contracts in debug builds, but not the fully optimized ones.  For a long time, we had the same three levels
-for contracts that we did assertions meantioned earlier:
+for contracts that we did assertions mentioned earlier:
 
 * Weak, indicated by `Contract.Weak.*`, meaning debug-only.
 * Normal, indicated simply by `Contract.*`, leaving it as an implementation decision when to check them.
@@ -1199,7 +1199,7 @@ there were ample cases where the presence of a contract actually made code quali
 example given above, I'm sure there would have been a performance penalty.  That would have put pressure on us changing
 the policy for when invariants are checked, which would have possibly complicated the overall contracts model.
 
-I really wish we had more time to explore invariants more deply.  I don't think the team sorely missed not having them
+I really wish we had more time to explore invariants more deeply.  I don't think the team sorely missed not having them
 -- certainly I didn't hear much complaining about their absence (probably because the team was so performance conscious)
 -- but I do think invariants would have been a nice icing to put on the contracts cake.
 
@@ -1330,7 +1330,7 @@ Generics are hard, because there are multiple levels of nullability to consider.
 The basic question is, what are the types of `a`, `b`, `c`, and `d`?
 
 I think we made this one harder initially than we needed to largely because C#'s existing nullable is a pretty odd duck
-and we got distracted trying to mimick it too much.  The good news is we finally found our way, but it took a while.
+and we got distracted trying to mimic it too much.  The good news is we finally found our way, but it took a while.
 
 To illustrate what I mean, let's go back to the example.  There are two camps:
 
@@ -1393,7 +1393,7 @@ altogether in C#.  The rationale for that'll become clearer in an upcoming post 
 ##### The Fate of Non-Null Types
 
 We had a solid design, and several prototypes, but never deployed this one across the entire operating system.  The
-reason why was tied up in our desired level of C# compatability.  To be fair, I waffled on this one quite a bit, and I
+reason why was tied up in our desired level of C# compatibility.  To be fair, I waffled on this one quite a bit, and I
 suppose it was ultimately my decision.  In the early days of Midori, we wanted "cognitive familiarity."  In the later
 days of the project, we actually considered whether all of the features could be done as "add on" extensions to C#.  It
 was that later mindset that prevented us from doing non-null types in earnest.  My belief to this day is that additive
@@ -1503,7 +1503,7 @@ At some point, I made a controversial observation and decision.  Just as you wou
 with the expectation of zero compatibility impact, you should not be changing a function's exception type with such an
 expectation.  *In other words, an exception, as with error codes, is just a different kind of return value!*
 
-This has been one of the parrotted arguments against checked exceptions.  My answer my sound trite, but it's simple:
+This has been one of the parroted arguments against checked exceptions.  My answer my sound trite, but it's simple:
 too bad.  You're in a statically typed programming language, and the dynamic nature of exceptions is precisely the
 reason they suck.  We sought to address these very problems, so therefore we embraced it, embellished strong typing,
 and never looked back.  This alone helped to bridge the gap between error codes and exceptions.
@@ -1519,7 +1519,7 @@ http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2010/n3051.html) were not pro
 bulletproof, however, with no backdoors to defeat it.  Because we needed to address those performance challenges by
 depending on `throws` annotations in our optimizing compiler, type safety hinged on this property.
 
-We tried many many many different syntaxes.  Before we committed to changing the language, we did everything with C#
+We tried many many different syntaxes.  Before we committed to changing the language, we did everything with C#
 attributes and static analysis.  The user experience wasn't very good and it's hard to do a real type system that way.
 Furthermore, it felt too bolted on.  We experimented with approaches from the Redhawk project -- what eventually became
 .NET Native and [CoreRT](https://github.com/dotnet/corert) -- however, that approach also didn't leverage the language
@@ -1720,7 +1720,7 @@ For example, let's say I have two `Result<int>`s and want to add them together. 
     Result<int> z = x + y;
 
 Notice that third line, where we added the two `Result<int>`s together, yielding a -- that's right -- third `Result<T>`.
-This is the NaN-style dataflow propagation, similar similar to C#'s new `.?` feature.
+This is the NaN-style dataflow propagation, similar to C#'s new `.?` feature.
 
 This approach blends what I found to be an elegant mixture of exceptions, return codes, and dataflow error propagation.
 
@@ -1790,7 +1790,7 @@ require an allocation:
     throw retryLayout;
 
 For systems with high rates of throwing and catching -- as in our parser, FRP UI framework, and other areas -- this was
-important to good performance.  And this demonstrates why the we couldn't simply take "exceptions are slow" as a given.
+important to good performance.  And this demonstrates why we couldn't simply take "exceptions are slow" as a given.
 
 ## Patterns
 
@@ -1851,7 +1851,7 @@ Notice that, at the time of construction, an immutable `token` is provided; in o
 called, and a matching `token` must be provided.  If the `token` doesn't match, abandonment occurs.  The idea is that
 the throwing and intended catching parties of an abort are usually the same, or at least in cahoots with one another,
 such that sharing the `token` securely with one another is easy to do.  This is a great example of objects as
-unforegable capabilities in action.
+unforgeable capabilities in action.
 
 And yes, an arbitrary piece of code on the stack can trigger an abandonment, but such code could already do that by
 simply dereferencing `null`.  This technique prohibits executing in the aborting context when it might not have been
@@ -2034,7 +2034,7 @@ https://github.com/dotnet/roslyn/issues/119) to bring some of these features to 
 admit, I wish all of those proposals the best, however nothing will be as bulletproof as an entire stack written in the
 same error discipline.  And remember, the entire isolation and concurrency model is essential for abandonment at scale.
 
-I am hopeful that continued sharing of knowledge will lead to even more widescale adoption some of these ideas.
+I am hopeful that continued sharing of knowledge will lead to even more wide-scale adoption some of these ideas.
 
 Next time I'll talk more about the language.  Specifically, we'll see how Midori was able to tame the garbage collector
 using a magical elixir of architecture, language support, and libraries.  I hope to see you again soon!
