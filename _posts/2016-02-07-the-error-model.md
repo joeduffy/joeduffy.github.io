@@ -994,7 +994,15 @@ In our final model, a postcondition was stated using the `ensures` keyword:
         // Proceed; the caller can be guaranteed the Count is 0 when we return.
     }
 
-Of course, these could be mixed.  For example, from our ring buffer in the Midori kernel:
+It was also possible to mention the return value in the postcondition, through the special name `return`.  Old values --
+such as necessary for mentioning an input in a post-condition -- could be captured through `old(..)`; for example:
+
+    int AddOne(int value)
+        ensures return == old(value)+1 {
+        ...
+    }
+
+Of course, pre- and postconditions could be mixed.  For example, from our ring buffer in the Midori kernel:
 
     public bool PublishPosition()
         requires RemainingSize == 0
