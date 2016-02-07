@@ -2031,6 +2031,10 @@ same error discipline.  And remember, the entire isolation and concurrency model
 
 I am hopeful that continued sharing of knowledge will lead to even more wide-scale adoption some of these ideas.
 
+And, of course, I've mentioned that Go, Rust, and Swift have given the world some very good systems-appropriate error
+models in the meantime.  I might have some minor nits here and there, but the reality is that they're worlds beyond
+what we had in the industry at the time we began the Midori journey.  It's a good time to be a systems programmer!
+
 Next time I'll talk more about the language.  Specifically, we'll see how Midori was able to tame the garbage collector
 using a magical elixir of architecture, language support, and libraries.  I hope to see you again soon!
 
