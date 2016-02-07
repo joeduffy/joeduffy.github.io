@@ -23,7 +23,7 @@ approach was necessary to getting right, taking several iterations over several 
 teammates, however, that this is the thing they miss most about programming in Midori.  It's right up there for me too.
 So, without further ado, let's start.
 
-# The Error Model
+# Introduction
 
 The basic question an Error Model seeks to answer is: how do "errors" get communicated to programmers and users of the
 system?  Pretty simple, no?  So it seems.
