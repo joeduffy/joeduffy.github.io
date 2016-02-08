@@ -269,8 +269,11 @@ use labels and `goto`s to structure such code.  For example:
     // Do something about `error`.
     return error;
 
-Needless to say, this is the kind of code only a mother could love.  C++'s `finally` can be used to make such code much
-nicer, even if you're not fully buying into exceptions.  And Go of course offers `defer`.
+Needless to say, this is the kind of code only a mother could love.
+
+In languages like D, C#, and Java, you have `finally` blocks to encode this "before scope exits" pattern more directly.
+Similarly, Microsoft's proprietary extensions to C++ offer `__finally`, even if you're not fully buying into RAII and
+exceptions.  And D provides `scope` and Go offers `defer`.  All of these help to eradicate the `goto Error` pattern.
 
 Next, imagine my function wants to return a real value *and* the possibility of an error?  We've burned the return slot
 already so there are two obvious possibilities:
