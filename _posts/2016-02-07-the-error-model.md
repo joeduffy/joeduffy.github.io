@@ -1100,7 +1100,7 @@ If we use Midori-style contracts, on the other hand, this collapses to:
         requires buffer != null
         requires index >= 0
         requires count >= 0
-        requires buffer.Length - index < count {
+        requires buffer.Length - index >= count {
         ...
     }
 
