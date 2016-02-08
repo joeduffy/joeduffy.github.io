@@ -199,9 +199,9 @@ This problem isn't theoretical.  I've encountered numerous bugs caused by ignori
 too.  Indeed, in the development of this very Error Model, my team encountered some fascinating ones.  For example, when
 we ported Microsoft's Speech Server to Midori, we found that 80% of Taiwan Chinese (`zh-tw`) requests were failing.  Not
 failing in a way the developers immediately saw, however; instead, clients would get a gibberish response.  At first, we
-thought it was our fault.  But then we discovered they silently swallowed `HRESULT` in the original code.  Once we got it
-over to Midori, the bug was thrown into our faces, found, and fixed immediately after porting.  This experience certainly
-informed our opinion about error codes.
+thought it was our fault.  But then we discovered a silently swallowed `HRESULT` in the original code.  Once we got it
+over to Midori, the bug was thrown into our faces, found, and fixed immediately after porting.  This experience
+certainly informed our opinion about error codes.
 
 It's surprising to me that Go made unused `import`s an error, and yet missed this far more critical one.  So close!
 
@@ -519,13 +519,14 @@ atomically and a failure will not leave behind partially committed state or brok
 that, though a function might partially commit state changes, invariants will not be broken and leaks are prevented; and
 finally, *no safety* means anything's possible.  This taxonomy is quite helpful and I encourage anyone to be intentional
 and rigorous about error behavior, either using this approach or something similar.  Even if you're using error codes.
-The problem is, it's essentially impossible to follow these guidelines in a checked exceptions system, except for leaf
-node data structures that call a small and easily auditable set of other functions.  Just think about it: to guarantee
-strong safety everywhere, you would need to safeguard against the possibility of *all function calls throwing*.  That
-either means programming defensively, trusting another function's documented English prose (that isn't being checked by
-a computer), getting lucky and only calling `noexcept` functions, or just hoping for the best.  Thanks to RAII, the
-leak-freedom aspect of basic safety is easier to attain -- and pretty common these days thanks to smart pointers -- but
-even broken invariants are tricky to prevent.  The article [Exception Handling: A False Sense of Security](
+The problem is, it's essentially impossible to follow these guidelines in a system using unchecked exceptions, except
+for leaf node data structures that call a small and easily auditable set of other functions.  Just think about it: to
+guarantee strong safety everywhere, you would need to consider the possibility of *all function calls throwing*, and
+safeguard the surrounding code accordingly.  That either means programming defensively, trusting another function's
+documented English prose (that isn't being checked by a computer), getting lucky and only calling `noexcept` functions,
+or just hoping for the best.  Thanks to RAII, the leak-freedom aspect of basic safety is easier to attain -- and pretty
+common these days thanks to smart pointers -- but even broken invariants are tricky to prevent.  The article
+[Exception Handling: A False Sense of Security](
 http://ptgmedia.pearsoncmg.com/images/020163371x/supplements/Exception_Handling_Article.html) sums this up well.
 
 For C++, the real solution is easy to predict, and rather straightforward: for robust systems programs, don't use
