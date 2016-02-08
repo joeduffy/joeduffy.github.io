@@ -511,6 +511,23 @@ of composition in generic code, could have been dealt with using a proper type s
 But the worst part is that the cure relies on yet another dynamically enforced construct -- the [`noexcept` specifier](
 http://en.cppreference.com/w/cpp/language/noexcept_spec) -- which, in my opinion, is just as bad as the disease.
 
+["Exception safety"](https://en.wikipedia.org/wiki/Exception_safety) is a commonly discussed practice in the C++
+community.  This approach neatly classifies how functions are intended to behave from a caller's perspective with
+respect to failure, state transitions, and memory management.  A function falls into one of four kinds: *no-throw* means
+forward progress is guaranteed and no exceptions will emerge; *strong safety* means that state transitions happen
+atomically and a failure will not leave behind partially committed state or broken invariants; *basic safety* means
+that, though a function might partially commit state changes, invariants will not be broken and leaks are prevented; and
+finally, *no safety* means anything's possible.  This taxonomy is quite helpful and I encourage anyone to be intentional
+and rigorous about error behavior, either using this approach or something similar.  Even if you're using error codes.
+The problem is, it's essentially impossible to follow these guidelines in a checked exceptions system, except for leaf
+node data structures that call a small and easily auditable set of other functions.  Just think about it: to guarantee
+strong safety everywhere, you would need to safeguard against the possibility of *all function calls throwing*.  That
+either means programming defensively, trusting another function's documented English prose (that isn't being checked by
+a computer), getting lucky and only calling `noexcept` functions, or just hoping for the best.  Thanks to RAII, the
+leak-freedom aspect of basic safety is easier to attain -- and pretty common these days thanks to smart pointers -- but
+even broken invariants are tricky to prevent.  The article [Exception Handling: A False Sense of Security](
+http://ptgmedia.pearsoncmg.com/images/020163371x/supplements/Exception_Handling_Article.html) sums this up well.
+
 For C++, the real solution is easy to predict, and rather straightforward: for robust systems programs, don't use
 exceptions.  That's the approach [Embedded C++](https://en.wikipedia.org/wiki/Embedded_C%2B%2B) takes, in addition to
 numerous realtime and mission critical guidelines for C++, including NASA's Jet Propulsion Laboratory's.
