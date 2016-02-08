@@ -1451,7 +1451,7 @@ would warn you.  In fact, the full set of numbers could be conceptually represen
     typedef short number<-32768..32768>;
     typedef ushort number<0..65536>;
     typedef int number<-2147483648..2147483648>;
-    typedef int number<0..4294967295>;
+    typedef uint number<0..4294967295>;
     // And so on ...
 
 The really "cool" -- but scary complicated -- part is to then use [dependent types](
