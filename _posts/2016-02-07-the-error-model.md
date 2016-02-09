@@ -761,6 +761,12 @@ the messier outside world.  In this world, the price of individual failure is no
 over-emphasize this point.  None of the language features I describe later would have worked so well without this
 architectural foundation of cheap and ever-present isolation.
 
+Erlang has been very successful at building this property into the language in a fundamental way.  It, like Midori,
+leverages lightweight processes connected by message passing, and encourages fault-tolerant architectures.  A common
+pattern is the "supervisor," where some processes are responsible for watching and, in the event of failure, restarting
+other processes.  [This article](http://ferd.ca/the-zen-of-erlang.html) does a terrific job articulating this philosophy
+-- "let it crash" -- and recommended techniques for architecting reliable Erlang programs in practice.
+
 The key thing, then, is not preventing failure per se, but rather knowing how and when to deal with it.
 
 Once you've established this architecture, you beat the hell out of it to make sure it works.  For us, this meant
