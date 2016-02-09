@@ -110,7 +110,12 @@ difficulty of trying to become resilient.
 
 As a simple example, all of this means that given trivial code like this:
 
-using (Foo x = new Foo()) { // … }
+```
+using (Foo x = new Foo()) 
+{ 
+  // … 
+}
+```
 
 It can fail in nontrivial ways. For example, if a ThreadAbortException were
 raised sometime between the invocation of Foo's constructor and the assignment
@@ -187,7 +192,7 @@ provoke aborts. Not likely, but not impossible either.
 leaks.** Eager cleanup is useful, but you should always use a finalizer to
 guarantee that important state gets rolled back and that resources get
 reclaimed. Better yet, use
-SafeHandle[http://blogs.msdn.com/bclteam/archive/2005/03/16/396900.aspx],
+[SafeHandle](http://blogs.msdn.com/bclteam/archive/2005/03/16/396900.aspx),
 especially for cross-AD state. SafeHandle uses critical finalization to ensure
 execution even in the face of rude thread aborts and unloads. Regular
 finalizers won't get a chance to run in such situations. True, lazy cleanup can
@@ -209,9 +214,25 @@ will result in a poor application experience for those who rely on your code.
 
 For example, consider this snippet:
 
-ReaderWriterLock rwl = /\*…\*/; bool taken = false; try { try {} finally {
-rwl.AcquireWriterLock(-1); taken = true; } // do some work } finally { if
-(taken) rwl.ReleaseWriterLock(); }
+```
+ReaderWriterLock rwl = /*…*/; 
+bool taken = false; 
+try 
+{ 
+  try {} 
+  finally 
+  {
+    rwl.AcquireWriterLock(-1); 
+    taken = true; 
+  } 
+  // do some work 
+} 
+finally 
+{ 
+  if (taken) 
+    rwl.ReleaseWriterLock(); 
+}
+```
 
 Yes, this prevents a normal asynchronous thread abort from occurring between
 the lock acquisition and entrance into the try block, but it also introduces
@@ -326,8 +347,19 @@ you've successfully taken the lock. This alleviates concern about #4 above
 causing problems. For example, one could imagine the C# 'lock' keyword emitted
 code like this in the future:
 
-bool took = false; try { Monitor.ReliableEnter(foo, out took); // code inside
-synchronized block } finally { if (took) Monitor.Exit(foo); }
+```
+bool took = false; 
+try 
+{ 
+  Monitor.ReliableEnter(foo, out took); // code inside synchronized block 
+} 
+finally 
+{ 
+  if (took) 
+    Monitor.Exit(foo); 
+}
+}
+```
 
 So long as you abide by rule #5 above, you will get the benefits of whatever
 innovation we do for free, and this doesn't rely on any JIT hackery. We will
