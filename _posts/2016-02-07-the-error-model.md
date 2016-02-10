@@ -1369,7 +1369,7 @@ To illustrate what I mean, let's go back to the example.  There are two camps:
 
 In other words, the .NET camp thinks you should collapse any sequence of 1 or more `?`s into a single `?`.  The
 functional language camp -- who understands the elegance of mathematical composition -- eschews the magic and lets the
-world be as it is.  We eventually realized that the .NET route is incredible complex, and requires runtime support.
+world be as it is.  We eventually realized that the .NET route is incredibly complex, and requires runtime support.
 
 The functional language route does bend your mind slightly at first.  For example, the map example from earlier:
 
