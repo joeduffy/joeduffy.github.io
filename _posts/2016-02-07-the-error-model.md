@@ -1453,7 +1453,7 @@ an integer that could only hold the numbers 0 through 1,000,000, exclusively.  I
 would warn you.  In fact, the full set of numbers could be conceptually represented as ranges in this way:
 
     typedef byte number<0..256>;
-    typedef sbyte number<-128..256>;
+    typedef sbyte number<-128..128>;
     typedef short number<-32768..32768>;
     typedef ushort number<0..65536>;
     typedef int number<-2147483648..2147483648>;
