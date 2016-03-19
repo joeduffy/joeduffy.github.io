@@ -42,8 +42,8 @@ the software. I hope you enjoy.
 3. [A Rising Tide Lifts All Boats](/2013/03/16/software-leadership-3-a-rising-tide-lifts-all-boats)
 4. [Slow Down to Speed Up](/2013/04/12/software-leadership-4-slow-down-to-speed-up)
 5. [Read Every Checkin](/2014/02/12/software-leadership-6-read-every-checkin)
-6. [Codevelopment is a Powerful Thing](/2014/10/10/software-leadership-7-codevelopment-is-a-powerful-thing)
-7. [Empower Bottom Up Innovation](/2014/09/10/software-leadership-8-empower-bottom-up-innovation)
+6. [Codevelopment is a Powerful Thing](/2014/09/10/software-leadership-7-codevelopment-is-a-powerful-thing)
+7. [Empower Bottom Up Innovation](/2014/10/10/software-leadership-8-empower-bottom-up-innovation)
 8. [On the Importance of Intellectual Honesty](
         /2015/11/02/software-leadership-9-on-the-importance-of-intellectual-honesty)
 
