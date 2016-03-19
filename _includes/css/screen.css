@@ -147,6 +147,13 @@ nav h1, nav h2 {
   border-width: 1px 0;
 }
 
+#series {
+  margin-top: 10px;
+  margin-bottom: 15px;
+  border-bottom: dotted #ddd;
+  border-width: 1px 0;
+}
+
 .pagination {
   border: solid #333;
   background-color: #eef;
@@ -154,10 +161,7 @@ nav h1, nav h2 {
 }
 
 #social {
-  margin-top: 10px;
   margin-bottom: 15px;
-  border: dotted #ddd;
-  border-width: 1px 0;
   font-size: 13px;
 }
 
