@@ -1375,7 +1375,7 @@ To illustrate what I mean, let's go back to the example.  There are two camps:
 
 In other words, the .NET camp thinks you should collapse any sequence of 1 or more `?`s into a single `?`.  The
 functional language camp -- who understands the elegance of mathematical composition -- eschews the magic and lets the
-world be as it is.  We eventually realized that the .NET route is incredible complex, and requires runtime support.
+world be as it is.  We eventually realized that the .NET route is incredibly complex, and requires runtime support.
 
 The functional language route does bend your mind slightly at first.  For example, the map example from earlier:
 
@@ -1453,7 +1453,7 @@ an integer that could only hold the numbers 0 through 1,000,000, exclusively.  I
 would warn you.  In fact, the full set of numbers could be conceptually represented as ranges in this way:
 
     typedef byte number<0..256>;
-    typedef sbyte number<-128..256>;
+    typedef sbyte number<-128..128>;
     typedef short number<-32768..32768>;
     typedef ushort number<0..65536>;
     typedef int number<-2147483648..2147483648>;
