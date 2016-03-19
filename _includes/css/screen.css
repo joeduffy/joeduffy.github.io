@@ -154,7 +154,10 @@ nav h1, nav h2 {
 }
 
 #social {
-  margin-bottom: 10px;
+  margin-top: 10px;
+  margin-bottom: 15px;
+  border: dotted #ddd;
+  border-width: 1px 0;
   font-size: 13px;
 }
 
