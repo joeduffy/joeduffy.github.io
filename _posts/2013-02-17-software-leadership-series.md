@@ -36,3 +36,14 @@ stuff down, I'm sure it will crystalize even further.
 The series will be called "Software Leadership" because, after all, it's about
 the software. I hope you enjoy.
 
+0. [The Role of Software Architects](/2008/10/02/a-few-thoughts-on-the-role-of-software-architects) (grandfathered)
+1. [Code Speaks; Love the Code](/2013/02/17/software-leadership-1-code-speaks-love-the-code)
+2. [Authority is an Illusion](/2013/03/03/software-leadership-2-authority-is-an-illusion)
+3. [A Rising Tide Lifts All Boats](/2013/03/16/software-leadership-3-a-rising-tide-lifts-all-boats)
+4. [Slow Down to Speed Up](/2013/04/12/software-leadership-4-slow-down-to-speed-up)
+5. [Read Every Checkin](/2014/02/12/software-leadership-6-read-every-checkin)
+6. [Codevelopment is a Powerful Thing](/2014/09/10/software-leadership-7-codevelopment-is-a-powerful-thing)
+7. [Empower Bottom Up Innovation](/2014/10/10/software-leadership-8-empower-bottom-up-innovation)
+8. [On the Importance of Intellectual Honesty](
+        /2015/11/02/software-leadership-9-on-the-importance-of-intellectual-honesty)
+
