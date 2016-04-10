@@ -30,10 +30,11 @@ attempting to recover it later on.  I've also worked on many teams, some that ha
 done terribly, and many in between.  The one universal truth is that the differentiating factor is always culture.
 
 Partly it's because, no matter the kind of software, performance is almost always worse than our customers would like
-it to be.  This is a simple matter of physics: it's impossible to speed up all aspects of a program, given the tradeoffs
-involved between size, speed, and increased functionality.  But I firmly believe that on the average teams spend way
-less attention to developing a rigorous performance culture.  I've heard the "performance isn't a top priority for us"
-statement many times only to later be canceled out by a painful realization that without it the product won't succeed.
+it to be.  This is a simple matter of physics: it's impossible to speed up all aspects of a program, given finite time,
+and the tradeoffs involved between size, speed, and functionality.  But I firmly believe that on the average teams spend
+way less attention to developing a rigorous performance culture.  I've heard the "performance isn't a top priority for
+us" statement many times only to later be canceled out by a painful realization that without it the product won't
+succeed.
 
 And partly it's just been top of mind for all of us in DevDiv, as we focus on .NET core performance, ASP.NET
 scalability, integrating performance-motivated features into C# and the libraries, making Visual Studio faster, and
