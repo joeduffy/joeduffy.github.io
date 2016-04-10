@@ -340,7 +340,7 @@ the baseline automatically to within some percentage of the current performance,
 and/or CV.  Another approach is to require that developers do it manually, so that all ratcheting is intentional and
 accounted for.  And interestingly, you may find it helpful to ratchet in the other direction too.  That is, block
 commits that *improve* performance dramatically and yet do not ratchet the baseline.  This forces engineers to stop and
-think about whether performance changes were intentional -- even the good ones!
+think about whether performance changes were intentional -- even the good ones!  A.k.a., "confirm your kill."
 
 It's of course common that sprint goals remain stable from one sprint to the next.  All numbers can't be improving all
 the time.  But this system also helps to ensure that the team doesn't backslide on prior achievements.
