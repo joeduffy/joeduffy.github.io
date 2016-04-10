@@ -68,7 +68,7 @@ rare to see everything in here working in harmony in practice.  But when it is, 
 The key components of a healthy performance culture are:
 
 1. Performance is part of the daily dialogue and "buzz" within the team.  Everybody plays a role.
-2. Management must care -- truly, not superficially -- about good performance, and understands what it takes.
+2. Management must care -- truly, not superficially -- about good performance, and understand what it takes.
 3. Engineers take a scientific, data-driven, inquisitive approach to performance.  (Measure, measure, measure!)
 4. Robust engineering systems are in place to track goals, past and present performance, and to block regressions.
 
@@ -195,8 +195,9 @@ they will simply live with what should be an infuriating lack of rigor.  And goo
 of this infrastructure.  Here is the bare minimum in my book:
 
 * All commits must pass a set of gated performance tests beforehand.
-* Any commits that slip past this and regress performance are reverted without question (zero tolerance).
-* Continuous performance telemetry is reported, both out of the lab and from flighting/live metrics.
+* Any commits that slip past this and regress performance are reverted without question.  I call this the zero
+  tolerance rule.
+* Continuous performance telemetry is reported from the lab, flighting, and live environments.
 * This implies that performance tests and infrastructure have a few important characteristics:
     - They aren't noisy.
     - They measure the "right" thing.
@@ -376,7 +377,7 @@ be disciplined in these areas, and it's easy to trick yourself into thinking run
 about performance later is the right call.  Well, I'm sorry to tell you, sometimes it is.  You've got to use your
 intuition and your gut, however, in my experience, we tend to undervalue performance considerably compared to features.
 
-I'd love to hear what you think.  If you're a manager, your team will thank you for instilling a culture like this.  If
-you're an engineer, I guarantee you'll spend far less time scrambling, more time being proactive, and more time having
-fun, in a team obsessed over customer performance, and practicing good performance culture.
+If you're a manager, your team will thank you for instilling a culture like this.  If you're an engineer, I guarantee
+you'll spend far less time scrambling, more time being proactive, and more time having fun, in a team obsessed over
+customer performance.  I'd love to hear what you think and your own experiences establishing a performance culture.
 
