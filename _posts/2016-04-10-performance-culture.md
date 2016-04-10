@@ -128,7 +128,7 @@ the window.  Blame doesn't solve anything.  Blaming is what jerks do.
 
 Notice I said management must be "*deeply* involved": this isn't some superficial level of involvement.  Sure, charts
 with greens, reds, and trendlines probably need to be floating around, and regular reviews are important.  I suppose you
-could say that these are pointy-haired manager things.  (Believe be, however they do help.)  A manager must go deeper
+could say that these are pointy-haired manager things.  (Believe me, however they do help.)  A manager must go deeper
 than this, however, proactively and regularly reviewing the state of performance across the product, alongside the other
 basic quality metrics and progress on features.  It's a core tenet of the way the team does its work.  It must be
 treated as such.  A manager must wonder about the competetive landscape and ask the team good, insightful questions
