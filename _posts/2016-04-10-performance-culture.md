@@ -14,11 +14,12 @@ author:
   email: joeduffy@acm.org
 ---
 In this essay, I'll talk about "performance culture."  Performance is one of the key pillars of software engineering,
-and is something that's remarkably hard to do right.  I've spoken at length about performance and culture independently
-before, however the intersection of the two is where things get interesting.  Teams who do this well have performance
-ingrained into nearly all aspects of how the team operates from the start, and are able to proactively deliver loveable
-customer experiences that crush the competition.  There's no easy cookie-cutter recipe for achieving a good performance
-culture, however there are certainly some best practices you can follow to plant the requisite seeds into your team.
+and is something that's hard to do right, and sometimes even difficult to recognize.  As a famous judge once said, "I
+know it when I see it."  I've spoken at length about performance and culture independently before, however the
+intersection of the two is where things get interesting.  Teams who do this well have performance ingrained into nearly
+all aspects of how the team operates from the start, and are able to proactively deliver loveable customer experiences
+that crush the competition.  There's no easy cookie-cutter recipe for achieving a good performance culture, however
+there are certainly some best practices you can follow to plant the requisite seeds into your team.  So, let's go!
 
 # Introduction
 
