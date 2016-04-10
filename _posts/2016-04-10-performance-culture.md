@@ -56,10 +56,11 @@ How can you tell whether your performance culture is on track?  Well, here are s
 These may sound like technical problems.  It may come as a surprise, however, that they are primarily human problems.
 
 The solution isn't easy, especially once your culture is in the weeds.  It's always easier to not dig a hole in the
-first place than it is to climb out of one later on.  The culture must start from the top -- management taking an active
-role in performance, asking questions, seeking insights, demanding rigor -- while it simultaneously comes from the
-bottom -- engineers proactively seeking to understand performance of the code they are writing, ruthlessly taking a
-zero-tolerance stance on regressions, and being ever-self-critical and on the lookout for proactive improvements.
+first place than it is to climb out of one later on.  But the first rule when you're in a hole is to stop digging!  The
+cultural transformation must start from the top -- management taking an active role in performance, asking questions,
+seeking insights, demanding rigor -- while it simultaneously comes from the bottom -- engineers actively seeking to
+understand performance of the code they are writing, ruthlessly taking a zero-tolerance stance on regressions, and
+being ever-self-critical and on the lookout for proactive improvements.
 
 This essay will describe some ways to ensure this sort of a culture, in addition to some best practices I've found help
 to increase its effectiveness once you have one in place.  A lot of it may seem obvious, but believe me, it's pretty
