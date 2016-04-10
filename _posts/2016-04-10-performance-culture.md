@@ -241,6 +241,7 @@ A decent approach for this is to organize tests into so-called "rings":
 * Any number of successive rings outside of this:
     - Gates for each code-flow point between branches.
     - Post-commit testing -- nightly, weekly, etc. -- based on time/resource constraints.
+    - Pre-release testing.
 
 As you can see, there's a bit of flexibility in how this gets structured in practice.  I wish I could lie and say that
 it's a science, however it's an art that requires intelligently trading off many factors.  This is a constant source of
