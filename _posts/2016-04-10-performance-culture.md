@@ -1,7 +1,7 @@
 ---
 layout: post
 title: 'Performance Culture'
-date: 2016-04-10 14:34:00.000000000 -08:00
+date: 2016-04-10 12:00:00.000000000 -08:00
 categories: []
 tags: []
 status: publish
