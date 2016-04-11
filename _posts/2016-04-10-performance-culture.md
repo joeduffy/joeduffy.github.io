@@ -15,11 +15,12 @@ author:
 ---
 In this essay, I'll talk about "performance culture."  Performance is one of the key pillars of software engineering,
 and is something that's hard to do right, and sometimes even difficult to recognize.  As a famous judge once said, "I
-know it when I see it."  I've spoken at length about performance and culture independently before, however the
-intersection of the two is where things get interesting.  Teams who do this well have performance ingrained into nearly
-all aspects of how the team operates from the start, and are able to proactively deliver loveable customer experiences
-that crush the competition.  There's no easy cookie-cutter recipe for achieving a good performance culture, however
-there are certainly some best practices you can follow to plant the requisite seeds into your team.  So, let's go!
+know it when I see it."  I've spoken at length about [performance](/2010/09/06/the-premature-optimization-is-evil-myth/)
+and [culture](/2013/02/17/software-leadership-series/) independently before, however the intersection of the two is
+where things get interesting.  Teams who do this well have performance ingrained into nearly all aspects of how the
+team operates from the start, and are able to proactively deliver loveable customer experiences that crush the
+competition.  There's no easy cookie-cutter recipe for achieving a good performance culture, however there are certainly
+some best practices you can follow to plant the requisite seeds into your team.  So, let's go!
 
 # Introduction
 
@@ -40,7 +41,7 @@ succeed.
 And partly it's just been top of mind for all of us in DevDiv, as we focus on .NET core performance, ASP.NET
 scalability, integrating performance-motivated features into C# and the libraries, making Visual Studio faster, and
 more.  It's particularly top of mind for me, as I've been comparing our experiences to my own in [Midori](
-joeduffyblog.com/2015/11/03/blogging-about-midori/) (which heavily inspired this blog post).
+/2015/11/03/blogging-about-midori/) (which heavily inspired this blog post).
 
 # Diagnosis and The Cure
 
@@ -100,10 +101,10 @@ team forward, naturally, and without relying on some heavyweight management "sti
 
 I hate blame and I hate defensiveness.  My number one rule is "no jerks," so naturally all critiques must be delivered
 in the most constructive and respectful way.  I've found a high occurrence of blame, defensiveness, and [intellectual
-dishonesty](http://joeduffyblog.com/2015/11/02/software-leadership-9-on-the-importance-of-intellectual-honesty/) in
-teams that do poorly on performance, however.  Like jerks, these are toxic to team culture and must be weeded out
-aggressively.  It can easily make or break your ability to develop the right performance culture.  There's nothing wrong
-with saying we need to do better on some key metric, especially if you have some good ideas on how to do so!
+dishonesty](/2015/11/02/software-leadership-9-on-the-importance-of-intellectual-honesty/) in teams that do poorly on
+performance, however.  Like jerks, these are toxic to team culture and must be weeded out aggressively.  It can easily
+make or break your ability to develop the right performance culture.  There's nothing wrong with saying we need to do
+better on some key metric, especially if you have some good ideas on how to do so!
 
 In addition to the ad-hoc communication, there of course needs to be structured communication also.  I'll describe some
 techniques later on.  But getting a core group of people in a room regularly to discuss the past, present, and future of
@@ -162,7 +163,7 @@ engineering systems surrounding them.  Consider two managers:
 
 Which manager do you think is going to ship a quality product, on time, that customers are in love with?  My money is
 on Manager B.  Sometimes you've got to [slow down to speed up](
-http://joeduffyblog.com/2013/04/12/software-leadership-4-slow-down-to-speed-up/).
+/2013/04/12/software-leadership-4-slow-down-to-speed-up/).
 
 Microsoft is undergoing two interesting transitions recently that are related to this point: on one hand, the
 elimination of "test" as a discipline mentioned earlier; and, on the other hand, a renewed focus on engineering systems.
@@ -241,7 +242,7 @@ A decent approach for this is to organize tests into so-called "rings":
 * Any number of successive rings outside of this:
     - Gates for each code-flow point between branches.
     - Post-commit testing -- nightly, weekly, etc. -- based on time/resource constraints.
-    - Pre-release testing.
+    - Pre-release verification.
     - Post-release telemetry and monitoring.
 
 As you can see, there's a bit of flexibility in how this gets structured in practice.  I wish I could lie and say that
@@ -262,13 +263,13 @@ from easier to harder to pinpoint the source of a regression, respectively.  (Mi
 fluctuations tend to be easier to understand, whereas macro measures an entire system, where fluctuations tend to take a
 bit of elbow grease to track down.)  A web server team might include a range of micro and macro tests in the innermost
 pre-commit suite of tests: number of bytes allocated per requests (micro), request response time (micro), ... perhaps
-a half dozen other micro-to-midpoint benchmarks ..., and TechEmpower (macro), let's say.  Thanks to lab resources and
-test parallelism, let's say these all complete in 15 minutes.  Not too bad.  But this clearly isn't perfect coverage.
-Maybe every night, [TechEmpower](https://www.techempower.com/benchmarks/) is run for 4 hours, to measure performance
-over a longer period of time to identify leaks.  It's possible a developer could pass the pre-commit tests, and then
-fail this longer test, of course.  Hence, the team lets developers run this test on-demand, so a good doobie can avoid
-getting egg on his or her face.  But alas, mistakes happen, and again there isn't a culture of blame or witchhunting;
-it is what it is.
+a half dozen other micro-to-midpoint benchmarks ..., and [TechEmpower](https://www.techempower.com/benchmarks/) (macro),
+let's say.  Thanks to lab resources, test parallelism, and the awesomeness of GitHub webhooks, let's say these all
+complete in 15 minutes, nicely integrated into your pull request and code review processes.  Not too bad.  But this
+clearly isn't perfect coverage.  Maybe every night, TechEmpower is run for 4 hours, to measure performance over a longer
+period of time to identify leaks.  It's possible a developer could pass the pre-commit tests, and then fail this longer
+test, of course.  Hence, the team lets developers run this test on-demand, so a good doobie can avoid getting egg on his
+or her face.  But alas, mistakes happen, and again there isn't a culture of blame or witchhunting; it is what it is.
 
 This leads me to back to the zero tolerance rule.
 
@@ -298,7 +299,7 @@ for different reasons.
 
 Seeing a team measure time and time alone literally brings me to tears.  It's a good measure of what an end-user will
 see -- and therefore makes a good high-level test -- however it is seriously lacking in the insights it can give you.
-And if there's no visibility into variants, it can be borderline useless.
+And if there's no visibility into variance, it can be borderline useless.
 
 Consumption metrics are obviously much more helpful to an engineer trying to understand why something changed.  In our
 above web server team example, imagine request response time regressed by 30%.  All the test report tells us is the
@@ -382,7 +383,8 @@ be disciplined in these areas, and it's easy to trick yourself into thinking run
 about performance later is the right call.  Well, I'm sorry to tell you, sometimes it is.  You've got to use your
 intuition and your gut, however, in my experience, we tend to undervalue performance considerably compared to features.
 
-If you're a manager, your team will thank you for instilling a culture like this.  If you're an engineer, I guarantee
-you'll spend far less time scrambling, more time being proactive, and more time having fun, in a team obsessed over
-customer performance.  I'd love to hear what you think and your own experiences establishing a performance culture.
+If you're a manager, your team will thank you for instilling a culture like this, and you'll be rewarded by shipping
+better performing software on schedule.  If you're an engineer, I guarantee you'll spend far less time scrambling, more
+time being proactive, and more time having fun, in a team obsessed over customer performance.  I'd love to hear what you
+think and your own experiences establishing a performance culture.
 
