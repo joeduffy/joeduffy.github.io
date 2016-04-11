@@ -67,6 +67,10 @@ This essay will describe some ways to ensure this sort of a culture, in addition
 to increase its effectiveness once you have one in place.  A lot of it may seem obvious, but believe me, it's pretty
 rare to see everything in here working in harmony in practice.  But when it is, wow, what a difference it can make.
 
+*A quick note on OSS software.  I wrote this essay from the perspective of commercial software development.  As
+such, you'll see the word "management" a lot.  Many of the same principles work in OSS too.  So, if you like, anytime
+you see "management," mentally transform it into "management or the project's committers."*
+
 # It Starts, and Ends, with Culture
 
 The key components of a healthy performance culture are:
