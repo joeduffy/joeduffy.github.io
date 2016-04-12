@@ -87,12 +87,12 @@ I'll spend a bit of time talking about each of these roughly in turn.
 The entire team needs to be on the hook for performance.
 
 In many teams where I've seen this go wrong, a single person is annointed the go-to performance guy or gal.  Now, that's
-fine and can help the team scale, and can be useful when someone needs to spearhead an investigation, but it *must not*
-come at the expense of the rest of the team's involvement.
+fine and can help the team scale, can be useful when someone needs to spearhead an investigation, and having a vocal
+advocate of performance is great, but it *must not* come at the expense of the rest of the team's involvement.
 
 This can lead to problems similar to those Microsoft use to have with the "test" discipline; engineers learned bad
 habits by outsourcing the basic quality of their code, assuming that someone else would catch any problems that arise.
-The same risks happening when there's a central performance czar: engineers on the team won't write performance tests,
+The same risks are present when there's a central performance czar: engineers on the team won't write performance tests,
 won't proactively benchmark, won't profile, won't ask questions about the competetive standing of the product, and
 generally won't do all the things you need all of the engineers doing to build a healthy performance culture.
 
