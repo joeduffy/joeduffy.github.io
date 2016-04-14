@@ -55,6 +55,7 @@ I shall update this list as new articles are published:
 3. [Asynchronous Everything](/2015/11/19/asynchronous-everything/)
 4. [Safe Native Code](/2015/12/19/safe-native-code)
 5. [The Error Model](/2016/02/07/the-error-model)
+6. [Performance Culture](/2016/04/10/performance-culture)
 
 Midori was a fascinating journey, and the most fun I've had in my career
 to-date.  I look forward to sharing some of that journey with you.
