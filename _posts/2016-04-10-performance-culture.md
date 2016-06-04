@@ -255,7 +255,7 @@ debate and one that the management team should be actively involved in.
 
 A small team might settle on one standard set of benchmarks across the whole team.  A larger team might need to split
 inner ring tests along branching lines.  And no matter the size, we would expect the master/main branch to enforce the
-most important performance metrics for the whole team, ensuring no code every flows in that damages a core scenario.
+most important performance metrics for the whole team, ensuring no code ever flows in that damages a core scenario.
 
 In some cases, we might leave running certain pre-commit tests to the developer's discretion.  (Note, this does not mean
 running pre-commit tests altogether is optional -- only a particular set of them!)  This might be the case if, for
