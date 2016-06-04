@@ -86,14 +86,14 @@ I'll spend a bit of time talking about each of these roughly in turn.
 
 The entire team needs to be on the hook for performance.
 
-In many teams where I've seen this go wrong, a single person is annointed the go-to performance guy or gal.  Now, that's
+In many teams where I've seen this go wrong, a single person is anointed the go-to performance guy or gal.  Now, that's
 fine and can help the team scale, can be useful when someone needs to spearhead an investigation, and having a vocal
 advocate of performance is great, but it *must not* come at the expense of the rest of the team's involvement.
 
 This can lead to problems similar to those Microsoft use to have with the "test" discipline; engineers learned bad
 habits by outsourcing the basic quality of their code, assuming that someone else would catch any problems that arise.
 The same risks are present when there's a central performance czar: engineers on the team won't write performance tests,
-won't proactively benchmark, won't profile, won't ask questions about the competetive standing of the product, and
+won't proactively benchmark, won't profile, won't ask questions about the competitive standing of the product, and
 generally won't do all the things you need all of the engineers doing to build a healthy performance culture.
 
 Magical things happen when the whole team is obsessed about performance.  The hallways are abuzz with excitement, as
@@ -136,7 +136,7 @@ with greens, reds, and trendlines probably need to be floating around, and regul
 could say that these are pointy-haired manager things.  (Believe me, however they do help.)  A manager must go deeper
 than this, however, proactively and regularly reviewing the state of performance across the product, alongside the other
 basic quality metrics and progress on features.  It's a core tenet of the way the team does its work.  It must be
-treated as such.  A manager must wonder about the competetive landscape and ask the team good, insightful questions
+treated as such.  A manager must wonder about the competitive landscape and ask the team good, insightful questions
 that get them thinking.
 
 Performance doesn't come for free.  It costs the team by forcing them to slow down at times, to spend energy on things
@@ -155,7 +155,7 @@ engineering systems surrounding them.  Consider two managers:
   impressive clip, delivers fresh demos to the board every single time, and gives the sales team plenty of ammo to
   pursue new leads.  There aren't performance gates and engineers generally don't bother to think much about it.
 
-* *Manager B* takes a more balanced approach.  She believes that given the competetive landscape, and the need to
+* *Manager B* takes a more balanced approach.  She believes that given the competitive landscape, and the need to
   impress customers and board members with whizbang demos, new features need to keep coming.  But she is also wary of
   building up too much debt in areas like performance, reliability, and quality for areas she expects to stick.  So she
   intentionally puts her foot on the brake and pushes the team just as hard on these areas as she does features.  She
@@ -255,7 +255,7 @@ debate and one that the management team should be actively involved in.
 
 A small team might settle on one standard set of benchmarks across the whole team.  A larger team might need to split
 inner ring tests along branching lines.  And no matter the size, we would expect the master/main branch to enforce the
-most important performance metrics for the whole team, ensuring no code every flows in that damages a core scenario.
+most important performance metrics for the whole team, ensuring no code ever flows in that damages a core scenario.
 
 In some cases, we might leave running certain pre-commit tests to the developer's discretion.  (Note, this does not mean
 running pre-commit tests altogether is optional -- only a particular set of them!)  This might be the case if, for
@@ -324,7 +324,7 @@ in the wild, and correlate it back to key metrics.  [StatsD](https://github.com/
 Finally, it's important to measure these metrics as scientifically as possible.  That includes tracking [standard
 deviation](https://en.wikipedia.org/wiki/Standard_deviation), [coefficient of variation (CV)](
 https://en.wikipedia.org/wiki/Coefficient_of_variation), and [geomean](https://en.wikipedia.org/wiki/Geometric_mean),
-and using these to ensure tests don't very wildly from one run to the next.  (Hint: commits that tank CV should be
+and using these to ensure tests don't vary wildly from one run to the next.  (Hint: commits that tank CV should be
 blocked, just as those that tank the core metric itself.)  Having a statistics wonk on your team is also a good idea!
 
 ## Goals and Baselines
@@ -335,7 +335,7 @@ four distinct concepts in your infrastructure and processes:
 * *Current*: the current performance (which can span multiple metrics).
 * *Baseline*: the threshold the product must stay above/below, otherwise tests fail.
 * *Sprint Goal*: where the team must get to before the current sprint ends.
-* *Ship Goal*: where the team must get to in order to ship a competetive feature/scenario.
+* *Ship Goal*: where the team must get to in order to ship a competitive feature/scenario.
 
 Assume a metric where higher is better (like throughput); then it's usually the case that Ship Goal &gt;= Sprint Goal
 &gt;= Current &gt;= Baseline.  As wins and losses happen, continual adjustments should be made.
