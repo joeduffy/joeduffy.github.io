@@ -662,7 +662,7 @@ shaped everything to come.  For a significant class of error, *none* of these ap
 
 A critical distinction we made early on is the difference between recoverable errors and bugs:
 
-* A *recoverable error* is usually the result of progammatic data validation.  Some code has examined the state of the
+* A *recoverable error* is usually the result of programmatic data validation.  Some code has examined the state of the
   world and deemed the situation unacceptable for progress.  Maybe it's some markup text being parsed, user input from a
   website, or a transient network connection failure.  In these cases, programs are expected to recover.  The developer
   who wrote this code must think about what to do in the event of failure because it will happen in well-constructed

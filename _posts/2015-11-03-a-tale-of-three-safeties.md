@@ -116,7 +116,7 @@ pretty sure it will work for mostly anything you can throw at it.
 You may be wondering what all this safety cost.  Simply put, there are things
 you can't do without pointer arithmetic, race conditions, and the like.  Much of
 what we did went into minimizing these added costs.  And I'm happy to say, in the
-end, we did end up with a competetive system.  Building the system on itself was
+end, we did end up with a competitive system.  Building the system on itself was
 key to keeping us honest.  It turns out architectural decisions like no blocking
 IO, lightweight processes, fine grained concurrency, asynchronous message
 passing, and more, far outweighed the "minor" costs incurred by requiring safety

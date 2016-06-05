@@ -15,7 +15,7 @@ author:
 ---
 In my [first Midori post](http://joeduffyblog.com/2015/11/03/a-tale-of-three-safeties/), I described how safety was the
 foundation of everything we did.  I mentioned that we built an operating system out of safe code, and yet stayed
-competetive with operating systems like Windows and Linux written in C and C++.  In many ways, system architecture
+competitive with operating systems like Windows and Linux written in C and C++.  In many ways, system architecture
 played a key role, and I will continue discussing how in future posts.  But, at the foundation, an optimizing compiler
 that often eeked out native code performance from otherwise "managed", type- and memory-safe code, was one of our most
 important weapons.  In this post, I'll describe some key insights and techniques that were essential to our success.
@@ -656,7 +656,7 @@ cases, type discriminated unions or pattern matching are more appropriate soluti
 
 I've mentioned [profile guided optimization](https://en.wikipedia.org/wiki/Profile-guided_optimization) (PGO) already.
 This was a critical element to "go that last mile" after mostly everything else in this article had been made
-competetive.  This gave our browser program boosts in the neighborhood of 30-40% on benchmarks like [SunSpider](
+competitive.  This gave our browser program boosts in the neighborhood of 30-40% on benchmarks like [SunSpider](
 https://webkit.org/perf/sunspider/sunspider.html) and [Octane](https://developers.google.com/octane/).
 
 Most of what went into PGO was similar to classical native profilers, with two big differences.
@@ -1184,7 +1184,7 @@ model (actually, to the contrary, it was improved), which is nothing to shake a 
 At that point, the only overhead per object was the vtable pointer.  For structs, of course there wasn't one (unless
 they were boxed).  And we did our best to eliminate all of them.  Sadly, due to RTTI, it was difficult to be aggressive.
 I think this is another area where I'd go back and entirely upend the C# type system, to follow a more C, C++, or even
-maybe Go-like, model.  In the end, however, I think we did get to be fairly competetive with your average C++ program.
+maybe Go-like, model.  In the end, however, I think we did get to be fairly competitive with your average C++ program.
 
 There were padding challenges.  Switching the `struct` layout from C#'s current default of `sequential`, to our
 preferred default of `auto`, certainly helped.  As did optimizations like the well-known C++ [empty base optimization](

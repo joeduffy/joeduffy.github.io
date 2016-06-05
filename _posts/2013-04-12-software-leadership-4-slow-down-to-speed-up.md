@@ -119,6 +119,6 @@ Slowing down to fix them incrementally, as soon as they are noticed, speeds you 
 down the road.
 
 Building a quality-focused team isn't easy. But creating a culture that slows down
-to do the right thing, while simultaneously moving fast, provides an enormous competetive
+to do the right thing, while simultaneously moving fast, provides an enormous competitive
 advantage. It's not as common as you might think.
 

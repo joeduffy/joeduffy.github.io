@@ -56,7 +56,7 @@ and the pursuit of excellence isn't the norm.  People "game the system" and
 start playing politics, rather than letting technical innovation shine through.
 People with an innate ability to find flaws and help patch them are discouraged
 from participating, left frustrated and therefore under-utilized, and often end
-up leaving, despite them being an enormous competetive advantage to your
+up leaving, despite them being an enormous competitive advantage to your
 company.
 
 Unfortunately, I have a hard time forgiving intellectual dishonesty.  As soon as
