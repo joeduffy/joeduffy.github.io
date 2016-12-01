@@ -99,7 +99,7 @@ critical tasks like encryption and compression](https://www.wired.com/2016/09/mi
 The real big miss, in my opinion, was mobile.  This was precisely when the thinking around power curves, density, and
 heterogeneity should have told us that mobile was imminent, and in a big way.  Instead of looking to beefier PCs, we
 should have been looking to PCs in our pockets.  Instead, the natural instinct was to cling to the past and "save" the
-PC business.  This is a classical [innovator's dillema](https://en.wikipedia.org/wiki/The_Innovator's_Dilemma) although
+PC business.  This is a classical [innovator's dilemma](https://en.wikipedia.org/wiki/The_Innovator's_Dilemma) although
 it sure didn't seem like one at the time.  And of course PCs didn't die overnight, so the innovation here was not
 wasted, it just feels imbalanced against the backdrop of history.  Anyway, I digress.
 
@@ -214,8 +214,8 @@ at Microsoft still to this date.
 
 Developing PLINQ was a fond time in my career and a real turning point.  I collaborated and built relationships with
 some amazing people.  BillG wrote a full-page review of the idea, concluding with "We will have to put more resources
-specifically on this work."  Such strong words of encoragement didn't hurt with securing funding to deliver on the idea.
-It also attracted the attention of some incredible people.  For example, [Jim Gray](
+specifically on this work."  Such strong words of encouragement didn't hurt with securing funding to deliver on the
+idea.  It also attracted the attention of some incredible people.  For example, [Jim Gray](
 https://en.wikipedia.org/wiki/Jim_Gray_(computer_scientist)) took notice, and I got to experience his notorious
 generosity 1st hand, just two months before his tragic disappearance.
 
@@ -251,7 +251,7 @@ that they required that a task run on a separate thread, even if doing so was no
 to threads was fairly rudimentary, although [we did make improvements to that over the years](
 http://www.sigmetrics.org/conferences/sigmetrics/2009/workshops/papers_hotmetrics/session2_2.pdf).
 
-Given my love of Cilk, and the need to schedule lots of potentially-resursive fine-grained tasks, choosing a
+Given my love of Cilk, and the need to schedule lots of potentially-recursive fine-grained tasks, choosing a
 [work stealing scheduler](https://en.wikipedia.org/wiki/Work_stealing) for our scheduling architecture was a no-brainer.
 
 At first, our eyes were locked squarely on PLINQ, and so we didn't pay as much attention to the abstractions.  Then MSR
@@ -285,7 +285,7 @@ lock-free data structures that would be required to scale to large numbers of pr
 This was the first mainstream attempt I saw to raise the abstraction level beyond threads, locks, and events, to
 something more approachable: concurrent collections, [fork/join](http://gee.cs.oswego.edu/dl/papers/fj.pdf), and more.
 It also brought the industry closer to some of the beautiful concurrent programming languages in academia.  These
-efforts were a huge influence on us.  I especially admired how academia and indstry partnered closely to bring decades'
+efforts were a huge influence on us.  I especially admired how academia and industry partnered closely to bring decades'
 worth of knowledge to the table, and explicitly [sought to emulate](
 http://www.cs.washington.edu/events/colloquia/search/details?id=768) this approach in the years to come.
 
@@ -351,7 +351,7 @@ First, there were many competing efforts, and none of them "felt" right.  For in
 Coordination Runtime (CCR)](https://en.wikipedia.org/wiki/Concurrency_and_Coordination_Runtime) was very complex (but
 had many satisfied customers); the Axum language was, well, a new language; MSR's [Cω](
 http://research.microsoft.com/en-us/um/cambridge/projects/comega/) was powerful, but required language changes which
-we were hesitant to pursue (though the derivative library-only work, [Joins](
+some were hesitant to pursue (though the derivative library-only work, [Joins](
 http://research.microsoft.com/en-us/um/people/crusso/joins/), held some promise); and so on.  Second, it didn't help
 that everyone seemed to have a different idea on what the fundamental concepts should be.
 
@@ -682,7 +682,7 @@ Although the above makes intuitive sense, there was a formal type system behind 
 Being central to the entire system, we partnered with MSR to prove the soundness of this approach, especially
 `isolated`, and published the paper in [OOPSLA'12](http://dl.acm.org/citation.cfm?id=2384619) (also available as a free
 [MSR tech report](http://research-srv.microsoft.com/pubs/170528/msr-tr-2012-79.pdf)).  Although the paper came out a
-couple years before this final model solidifed, most of the critical ideas were taking shape and well underway by then.
+couple years before this final model solidified, most of the critical ideas were taking shape and well underway by then.
 
 For a simple mental model, however, I always thought about things in terms of subtyping and substitution.
 
@@ -696,7 +696,7 @@ conversions, overrides, and subtypes.
 This formed a two-dimensional lattice wherein one dimension was "type" in the classical sense
 and the other "permission", such that all types could convert to `readonly Object`.  This diagram illustrates:
 
-![Permission Latice](/assets/img/2016-11-30-15-years-of-concurrency.lattice.jpg)
+![Permission Lattice](/assets/img/2016-11-30-15-years-of-concurrency.lattice.jpg)
 
 The system could obviously be used fairly easily without familiarity with the formalisms.  However, I had lived through
 enough sufficiently [scary, yet subtle, security problems over the years due to type system gotchas](
@@ -716,7 +716,7 @@ simply ensuring that activities do not have `mutable` rights to overlapping regi
 Beyond what this disallows, it actually allows for some interesting patterns.  For instance, any number of concurrent
 activities may share `readonly` access to the same object.  Remember that we can convert `mutable` to `readonly`, which
 means that, given an activity with `mutable` access, we can use fork/join parallelism that captures an object with
-`readonly` permissions, provided the mutator is temporally paused for the duriation of this fork/join operation.
+`readonly` permissions, provided the mutator is temporally paused for the duration of this fork/join operation.
 
 Or, in code:
 
@@ -827,7 +827,7 @@ responsible for obeying the semantic contract of safe concurrency by decorating 
 ownership, even if the implementation physically violated them.  But it is important to note: this is the only code in
 the system -- plus the 1st party kernel code -- that had to deal with concurrency at the threads, locks, events, and
 lock-free level of abstraction.  Everything else built atop the higher-level abstractions, where barriers had already
-been placed into the instuction stream at all the right places, thanks to the infrastructure.
+been placed into the instruction stream at all the right places, thanks to the infrastructure.
 
 This had another consequence: no [struct tearing](
 http://joeduffyblog.com/2006/02/07/threadsafety-torn-reads-and-the-like/) was visible in the 3rd party programming
@@ -909,7 +909,7 @@ type variable, despite looking like a naked type, actually carried *both* a perm
 I then came up with `immutable`, however it wasn't what you see today.  Instead, it had the slightly confusing meaning
 of being a "view" over just the immutable subset of data in the target object graph.  (This was at first limited to only
 `readonly` fields (in the classical C# sense) that were of a primitive type.)  If you tried reading a non-immutable part
-from this view, you'd get a compiler error.  Bizzarrely, this meant you could have an `immutable List<T>` that wasn't
+from this view, you'd get a compiler error.  Bizarrely, this meant you could have an `immutable List<T>` that wasn't
 actually immutable.  In hindsight, this was pretty wonky, but it got us thinking about and discussing immutability.
 
 Somewhere in here, we recognized the need for generic parameterization over permissions, and so we added that.
@@ -948,7 +948,7 @@ might have differing permissions.  This was the right idea, but like most ideas 
 inordinately more complex, before recognizing the inner beauty and collapsing it back down to its essence.
 
 At the tail end of our project, we were working to integrate our ideas back into C# and .NET proper.  That's when I was
-adament that we unify the concept of `readable` with `readonly`, leading to several keyword renames.  Ironically,
+adamant that we unify the concept of `readable` with `readonly`, leading to several keyword renames.  Ironically,
 despite me having left .NET to pursue this project several years earlier, I was the most optimistic out of anybody that
 this could be done tastefully.  Sadly, it turned out I was wrong, and the project barely got off the ground before
 getting axed, however the introductory overview above is my best approximation of what it would have looked like.
@@ -1034,7 +1034,7 @@ might block or throw an exception, respectively.  Thanks to the additive and sub
 propagate naturally, and are even amenable to parametric polymorphism.
 
 It turns out that permissions can be seen as a kind of effect, particularly when annotating an instance method.  In a
-sence, a `mutable` instance method, when invoked, has the "effect" of mutating the receiving object.  This realization
+sense, a `mutable` instance method, when invoked, has the "effect" of mutating the receiving object.  This realization
 was instrumental in pushing me towards leveraging subtyping for modeling the relationship between permissions.
 
 Related to this, the various ownership systems over the years were also top-of-mind, particularly given Midori's
@@ -1173,7 +1173,7 @@ importantly, that you learned something new.  If you want to understand anything
 OOPSLA paper](https://www.microsoft.com/en-us/research/wp-content/uploads/2016/02/msr-tr-2012-79.pdf), or just ask.
 
 It's been a couple years since I've been away from this.  As most of you know, Midori happened before the OSS
-rennaisance at Microsoft, and so it never saw the light of day.  In that time, I've pondered what we learned on this
+renaissance at Microsoft, and so it never saw the light of day.  In that time, I've pondered what we learned on this
 journey, and whether any of it is relevant beyond the hallways of our old building 34.  I believe they are, otherwise
 I'd not have even bothered to write up this article.
 
