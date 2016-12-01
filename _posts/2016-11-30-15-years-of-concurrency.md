@@ -235,9 +235,10 @@ So, obviously, I said yes.
 I named the team ["PFX"](https://en.wikipedia.org/wiki/Parallel_Extensions), initially short for "parallel frameworks",
 although by the time we shipped marketing working its magic on us, renaming it to "Parallel Extensions to .NET."  This
 team's initial deliverable encompassed PLINQ, task parallelism, and a new effort, Coordination Data Structures (CDS),
-meant to handle advanced synchronization efforts, like barrier-style synchronization, [concurrent collections](
-https://github.com/dotnet/corefx/tree/master/src/System.Collections.Concurrent/src/System/Collections/Concurrent), and
-more.
+meant to handle advanced synchronization efforts, like [barrier-style synchronization](
+https://en.wikipedia.org/wiki/Barrier_(computer_science)), [concurrent and lock-free collections](
+https://github.com/dotnet/corefx/tree/master/src/System.Collections.Concurrent/src/System/Collections/Concurrent)
+derived from [many great research papers](http://cs.rochester.edu/u/scott/papers/1995_TR600.pdf), and more.
 
 ### Task Parallel Library
 
