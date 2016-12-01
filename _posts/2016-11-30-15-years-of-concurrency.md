@@ -595,9 +595,9 @@ The safety of this also depends on the elimination of ambient authority and leak
 
 ### No Ambient Authority
 
-A principle in Midori was the elimination of ambient authority.  This enabled [capability-based security](
-/2015/11/10/objects-as-secure-capabilities/), however in a subtle way was also necessary for immutability and the safe
-concurrency abstractions that are to come.
+A principle in Midori was the elimination of [ambient authority](https://en.wikipedia.org/wiki/Ambient_authority).
+This enabled [capability-based security](/2015/11/10/objects-as-secure-capabilities/), however in a subtle way was also
+necessary for immutability and the safe concurrency abstractions that are to come.
 
 To see why, let's take our `PureFunc` example from earlier.  This gives us a way to reason locally about the state
 captured by a lambda.  In fact, a desired property was that functions accepting only `immutable` inputs would result in
