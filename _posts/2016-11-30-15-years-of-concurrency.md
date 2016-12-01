@@ -1028,6 +1028,10 @@ It turns out that permissions can be seen as a kind of effect, particularly when
 sence, a `mutable` instance method, when invoked, has the "effect" of mutating the receiving object.  This realization
 was instrumental in pushing me towards leveraging subtyping for modeling the relationship between permissions.
 
+Related to this, the various ownership systems over the years were also top-of-mind, particularly given Midori's
+heritage with Singularity, which used the Spec# language.  This language featured [ownership annotations](
+https://www.microsoft.com/en-us/research/wp-content/uploads/2016/02/specsharp-tim.pdf).
+
 ### Regions
 
 [Regions](https://en.wikipedia.org/wiki/Region-based_memory_management), despite classically beinag used mostly for
