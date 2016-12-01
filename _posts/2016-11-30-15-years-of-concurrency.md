@@ -211,10 +211,12 @@ at Microsoft still to this date.
 
 Developing PLINQ was a fond time in my career and a real turning point.  I collaborated and built relationships with
 some amazing people.  BillG wrote a full-page review of the idea, concluding with "We will have to put more resources
-specifically on this work."  Needless to say, these words of encoragement helped secure funding for the idea.  It also
-attracted the attention of some incredible people.  For example, [Jim Gray](
+specifically on this work."  Such strong words of encoragement didn't hurt with securing funding to deliver on the idea.
+It also attracted the attention of some incredible people.  For example, [Jim Gray](
 https://en.wikipedia.org/wiki/Jim_Gray_(computer_scientist)) took notice, and I got to experience his notorious
-generosity 1st hand, just two months before his tragic disappearance.  Needless to say, this was an exciting time!
+generosity 1st hand, just two months before his tragic disappearance.
+
+Needless to say, this was an exciting time!
 
 ### Interlude: Forming the PFX Team
 
@@ -306,7 +308,7 @@ where, if your program compiled, you could know it was free of race conditions. 
 Well, actually, I tried.  I prototyped a variant of the system using C# custom attributes and static analysis, but
 quickly concluded that the problems ran deep in the language and had to be integrated into the type system for any of
 the ideas to work.  And for them to be even remotely usable.  Although we had some fun incubation projects at the time
-(like [Axum](https://en.wikipedia.org/wiki/Axum_(programming_language)), given the scope of the vision, and for a
+(like [Axum](https://en.wikipedia.org/wiki/Axum_(programming_language))), given the scope of the vision, and for a
 mixture of cultural and technical reasons, I knew this work needed a new home.
 
 So I joined Midori.
@@ -525,7 +527,7 @@ object in the object graph, and no "out-references" (except for immutable object
 
 A visual aid might help to conceptualize this:
 
-![Isolation Bubbles](/assets/img/2016-11-30-15-years-of-concurrency.isoalted-bubble.jpg)
+![Isolation Bubbles](/assets/img/2016-11-30-15-years-of-concurrency.isolated-bubble.jpg)
 
 Given an isolated object, we can mutate it in-place:
 
