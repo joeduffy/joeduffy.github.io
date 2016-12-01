@@ -561,8 +561,9 @@ It's also possible to destroy the isolated-ness, and just get back an ordinary `
 
     List<int> built = consume(builder);
 
-This enabled a form of linearity that was useful for safe concurrency -- so objects could be handed off safely -- and
-also enabled patterns like builders that laid the groundwork for strong immutability.
+This enabled a form of linearity that was useful for safe concurrency -- so objects could be handed off safely,
+subsuming the special case of the exchange heap for buffers -- and also enabled patterns like builders that laid the
+groundwork for strong immutability.
 
 To see why this matters for immutability, notice that we skipped over exactly how an immutable object gets created.
 For it to be safe, the type system needs to prove that no other `mutable` reference to that object (graph) exists at a
