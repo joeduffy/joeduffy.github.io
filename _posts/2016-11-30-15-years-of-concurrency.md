@@ -1162,7 +1162,11 @@ I'm thrilled that the world has adopted tasks in a big way, although it was for 
 (asynchronous and not parallelism).  In many ways this was inevitable, however I have to think that doing tasks a
 half-decade ahead of the curve at least had a minor influence, including the `async` and `await` ideas built atop it.
 
-Safe concurrency is still critically important, and I think the world has less of it than we need.  I think we
+Data parallelism has taken off...sort of.  Far fewer people leverage CPUs in the way we imagined, but that's for good
+reason: GPUs are architected for extremely wide SIMD operations over floating points, which is essentially the killer
+scenario for this sort of parallelism.  It doesn't cover all of the cases, but man does it scream.
+
+Safe concurrency is still critically important, yet lacking, and I think the world still needs it.  I think we
 collectively underestimated how long it would take for the industry to move to type- and memory-safe programming models.
 Despite the increasing popularity of safe systems languages like Go and Rust, it pains me to say it, but I still believe
 we are a decade away from our fundamental technology stacks -- like the operating systems themselves -- being safe to
