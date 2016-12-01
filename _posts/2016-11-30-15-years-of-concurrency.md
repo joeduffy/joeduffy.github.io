@@ -846,7 +846,8 @@ everywhere.
 
 Message passing helps tremendously when building correct, reliable concurrent systems, however it is not a panacea.  I
 had mentioned shared nothing earlier on.  It's a dirty little secret, however, even if you don't have shared memory, but
-agents can communicate with one another, you still have shared state encoded in the messaging between those agents.
+agents can communicate with one another, you still have shared state encoded in the messaging between those agents, and
+the opportunity for race conditions due to the generally unpredictable order of arrival of these messages.
 
 This is [understood](http://erlang.org/workshop/2004/cronqvist.pdf), although [perhaps not very widely](
 https://www.it.uu.se/research/group/hipe/dialyzer/publications/races.pdf).  The most worrisome outcome from these kind
