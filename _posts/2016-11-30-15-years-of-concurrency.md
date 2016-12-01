@@ -342,14 +342,18 @@ So, we made some:
 
 To reach these conclusions we were heavily inspired by [Hoare CSPs](
 https://en.wikipedia.org/wiki/Communicating_sequential_processes), Gul Agha's and Carl Hewitt's work on [Actors](
-https://en.wikipedia.org/wiki/Actor_model), [E](https://en.wikipedia.org/wiki/E_(programming_language)), [π](
-https://en.wikipedia.org/wiki/%CE%A0-calculus), [Erlang](https://en.wikipedia.org/wiki/Erlang_(programming_language)),
-and our own collective experiences building concurrent, distributed, and various RPC-based systems over the years.
+https://en.wikipedia.org/wiki/Actor_model), [E](https://en.wikipedia.org/wiki/E_(programming_language)), [Erlang](
+https://en.wikipedia.org/wiki/Erlang_(programming_language)), and our own collective experiences building concurrent,
+distributed, and various RPC-based systems over the years.
 
 I didn't say this before, however message passing was notably absent in my work on PFX.  There were multiple reasons.
 First, there were many competing efforts, and none of them "felt" right.  For instance, the [Concurrency and
-Coordination Runtime (CCR)](https://en.wikipedia.org/wiki/Concurrency_and_Coordination_Runtime) was very complex; the
-Axum language was, well, a new language; and so on.
+Coordination Runtime (CCR)](https://en.wikipedia.org/wiki/Concurrency_and_Coordination_Runtime) was very complex (but
+had many satisfied customers); the Axum language was, well, a new language; MSR's [Cω](
+http://research.microsoft.com/en-us/um/cambridge/projects/comega/) was powerful, but required language changes which
+we were hesitant to pursue (though the derivative library-only work, [Joins](
+http://research.microsoft.com/en-us/um/people/crusso/joins/), held some promise); and so on.  Second, it didn't help
+that everyone seemed to have a different idea on what the fundamental concepts should be.
 
 But it really came down to isolation.  Windows processes are too heavyweight for the fine-grained isolation we thought
 necessary to deliver safe, ubiquitous and easy message passing.  And no sub-process isolation technology on Windows was
