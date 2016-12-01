@@ -333,6 +333,12 @@ So, we made some:
     - All asynchronous activity in the system is explicit.
     - Sophsiticated coordination patterns are possible without resorting to locks and events.
 
+To reach these conclusions we were heavily inspired by [Hoare CSPs](
+https://en.wikipedia.org/wiki/Communicating_sequential_processes), Gul Agha's and Carl Hewitt's work on [Actors](
+https://en.wikipedia.org/wiki/Actor_model), [E](https://en.wikipedia.org/wiki/E_(programming_language)), [Erlang](
+https://en.wikipedia.org/wiki/Erlang_(programming_language)), and our own collective experiences building concurrent,
+distributed, and various RPC-based systems over the years.
+
 I didn't say this before, however message passing was notably absent in my work on PFX.  There were multiple reasons.
 First, there were many competing efforts, and none of them "felt" right.  For instance, the [Concurrency and
 Coordination Runtime (CCR)](https://en.wikipedia.org/wiki/Concurrency_and_Coordination_Runtime) was very complex; the
