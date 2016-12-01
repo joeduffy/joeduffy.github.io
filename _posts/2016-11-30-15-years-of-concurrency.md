@@ -310,7 +310,7 @@ Bill again concluded with a "We need to do this."  So I got to work!
 
 But there was still a huge problem.  I couldn't possibly imagine doing this work incrementally in the context of the
 existing languages and runtimes.  I wasn't looking for a warm-and-cozy approximation of safety, but rather something
-where, if your program compiled, you could know it was free of race conditions.  It needed to be bulletproof.
+where, if your program compiled, you could know it was free of data races.  It needed to be bulletproof.
 
 Well, actually, I tried.  I prototyped a variant of the system using C# custom attributes and static analysis, but
 quickly concluded that the problems ran deep in the language and had to be integrated into the type system for any of
@@ -412,10 +412,10 @@ However, a number of things kept us pushing for more:
   exchanging them between processes without copying as part of the   RPC protocol.  This idea seemed useful enough to
   generalize and offer for higher-level data structures.
 
-* Even intra-process "race conditions" existed, due to multiple asynchronous activities in-flight and interleaving.
-  Despite the simplification of the single message loop model described above, race conditions still existed.  A benefit
-  of the `await` model is that interleaving are at least visible and auditable in the source code; but they could still
-  trigger bugs.  We saw opportunities for the language and frameworks to help developers get this correct.
+* Even intra-process race conditions existed, due to multiple asynchronous activities in-flight and interleaving,
+  despite the lack of data races thanks to the single message loop model described above.  A benefit   of the `await`
+  model is that interleaving are at least visible and auditable in the source code; but they could still trigger
+  concurrency errors.  We saw opportunities for the language and frameworks to help developers get this correct.
 
 * Finally, we also had a vague desire to have more immutability in the system.  Doing so could help with concurrency
   safety, of course, but we felt the language should also help developers get existing commonplace patterns
@@ -423,7 +423,7 @@ However, a number of things kept us pushing for more:
 
 We went back to academia and the ThinkWeek paper in search of inspiration.  These approaches, if combined in a tasteful
 way, seemed like they could give us the tools necessary to deliver not only safe task and data parallelism, but also
-finer-grained isolation, immutability, and tools to possibly address some of the intra-process "race conditions."
+finer-grained isolation, immutability, and tools to possibly address some of the intra-process race conditions.
 
 So, we forked the C# compiler, and went to town.
 
@@ -1150,7 +1150,7 @@ beyond the threads, thread-pools, locks, and events that I mention us beginning 
 On one hand, I see that Go has brought its usual approach to bear here; namely, eschewing needless complexity, and
 exposing just the bare essentials.  I compare this to the system we built, with its handful of keywords and associated
 concept count, and admire the simplicity of Go's approach.  It even has nice built-in deadlock detection.  And yet, on
-the other hand, when I find myself debugging classical race conditions, and [torn structs or interfaces](
+the other hand, when I find myself debugging classical data races, and [torn structs or interfaces](
 https://blog.golang.org/share-memory-by-communicating), I clamor for more.  I have remarked before that simply running
 with [`GOMAXPROCS=1`](https://golang.org/pkg/runtime/#GOMAXPROCS), coupled with a simple [RPC system](
 http://www.grpc.io/) -- ideally integrated in such a way where you needn't step outside of Go's native type system --

@@ -41,7 +41,7 @@ First, let us define the three safeties, in foundational order:
 
 * [Concurrency Safety](https://en.wikipedia.org/wiki/Thread_safety) prohibits
   unsafe concurrent use of shared memory.  These concurrency hazards are widely
-  known in the form of [race conditions](
+  known in the form of [data races](
   https://en.wikipedia.org/wiki/Race_condition), or read-write, write-read, and
   write-write hazards.   Generally speaking, if concurrency safety is violated,
   it can frequently lead to type, and therefore memory, safety being violated.
@@ -114,7 +114,7 @@ the compiler itself, all written in your safe programming model, you can be
 pretty sure it will work for mostly anything you can throw at it.
 
 You may be wondering what all this safety cost.  Simply put, there are things
-you can't do without pointer arithmetic, race conditions, and the like.  Much of
+you can't do without pointer arithmetic, data races, and the like.  Much of
 what we did went into minimizing these added costs.  And I'm happy to say, in the
 end, we did end up with a competitive system.  Building the system on itself was
 key to keeping us honest.  It turns out architectural decisions like no blocking
@@ -160,7 +160,7 @@ message passing between lightweight [software isolated processes](
 http://research.microsoft.com/apps/pubs/default.aspx?id=71996).  Second, within
 a process, we formalized the rules of safe shared memory parallelism, enforced
 through type system and programming model rules.  The net result was that you
-couldn't write a shared memory race condition.
+couldn't write a shared memory data race.
 
 They key insight driving the formalism here was that no two "threads" sharing an
 address space were permitted to see the same object as mutable at the same time.
@@ -185,7 +185,7 @@ bearing fruit.
 The combination of memory, type, and concurrency safety gave us a powerful
 foundation to stand on.  Most of all, it delivered a heightened level of
 developer productivity and let us move fast.  The extremely costly buffer
-overflows, race conditions, deadlocks, and so on, simply did not happen.
+overflows, data races, deadlocks, and so on, simply did not happen.
 Someday all operating systems will be written this way.
 
 In the next article in this series, we'll look at how this foundational safety
