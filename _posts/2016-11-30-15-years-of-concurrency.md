@@ -154,8 +154,9 @@ My brief summary is that it's more important to encourage good concurrency archi
 "just work", although I have written more details [here](/2010/01/03/a-brief-retrospective-on-transactional-memory/) and
 [here](/2010/05/16/more-thoughts-on-transactional-memory/).  It was this higher level architecture that we should focus
 on solving first and foremost and, after the dust settled, see what gaps remained.  It wasn't even clear that STM would
-be the correct tool for the job once we got to that point.  (In hindsight, I do think it's one of many tools in the
-toolbelt, although with more distributed application architectures on the rise, it's risky.)
+be the correct tool for the job once we got to that point.  (In hindsight, I do think it's one of the very many
+reasonable tools in the toolbelt, although with more distributed application architectures on the rise, it's [a
+dangerous thing to give to people](http://wiki.c2.com/?DistributedTransactionsAreEvil).)
 
 Our STM efforts weren't a complete failure, however.  It was during this time that I began experimenting with type
 systems for safe concurrency.  Moreover, bits and pieces ended up incorporated into Intel's Haswell processor as the
