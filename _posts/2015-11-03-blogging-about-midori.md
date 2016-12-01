@@ -56,6 +56,7 @@ I shall update this list as new articles are published:
 4. [Safe Native Code](/2015/12/19/safe-native-code)
 5. [The Error Model](/2016/02/07/the-error-model)
 6. [Performance Culture](/2016/04/10/performance-culture)
+7. [15 Years of Concurrency](/2016/11/30/15-years-of-concurrency/)
 
 Midori was a fascinating journey, and the most fun I've had in my career
 to-date.  I look forward to sharing some of that journey with you.
