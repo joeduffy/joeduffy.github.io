@@ -633,7 +633,8 @@ In C#, `const` is limited to primitive constants, like `int`s, `bool`s, and `str
 capability to arbitrary types, like lists, maps, ..., anything really.
 
 Here's where it gets interesting.  Just like C#'s current notion of `const`, our compiler evaluated all such objects at
-compile-time and froze them into the readonly segment of the resulting binary image.
+compile-time and froze them into the readonly segment of the resulting binary image.  Thanks to the type system's
+guarantee that immutability meant immutability, there was no risk of runtime failures as a result of doing so.
 
 Freezing had two fascinating performance consequences.  First, we could share pages across multiple processes, cutting
 down on overall memory usage and TLB pressure.  (For instance, lookup tables held in maps were automatically shared
