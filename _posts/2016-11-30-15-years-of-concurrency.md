@@ -523,7 +523,8 @@ unify them.  So that's what I am presenting here.  The only hitch is that `reado
 meaning.  On a field, `readonly` today means "the value cannot be changed"; in the case of a pointer, therefore, the
 `readonly` of today did not impact the referent object graph.  In this new model, it would.  Given that we anticipated
 an opt-in flag, `--strict-mutability`, this would be acceptable, and would require `readonly mutable`, a slight wart, to
-get the old behavior.  This wasn't a deal-breaker to me, and obvious similarities to `const` come to mind.
+get the old behavior.  This wasn't a deal-breaker to me -- especially given that a very common bug in C# is developers
+assuming that `readonly` is deep (which now it would be), and obvious similarities to `const` come to mind.
 
 ### Ownership
 
