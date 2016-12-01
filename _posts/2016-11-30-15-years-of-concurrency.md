@@ -364,7 +364,8 @@ even cheaper than Windows threads thanks to software isolation.  Even coarser-gr
 form of domains, adding added belts-and-suspenders hardware protection for hosting untrusted or logically separate code.
 In the early days, we certainly wanted to go finer-grained too -- inspired by [E's concept of "vats"](
 http://www.erights.org/elib/concurrency/vat.html), the abstraction we already began with for process message pumps --
-but weren't sure how to do it safely.  So we waited on this.
+but weren't sure how to do it safely.  So we waited on this.  But this gave us precisely what we needed for a robust,
+performant, and safe message passing foundation.
 
 Important to the discussion of this architecture is the notion of [shared nothing](
 https://en.wikipedia.org/wiki/Shared_nothing_architecture), something Midori leveraged as a core operating principle.
