@@ -772,7 +772,7 @@ Now we can linearly hand off entire object graphs to a task, either permanently 
         // in here, we own `data`.
     });
 
-Notice that we leveraged lambda capture lists to make linear captures of objects striahgtforward.  There's an [active
+Notice that we leveraged lambda capture lists to make linear captures of objects straightforward.  There's an [active
 proposal](https://github.com/dotnet/roslyn/issues/117) to consider adding a feature like this to a future C#, however
 without many of the Midori features, it remains to be seen whether the feature stands on its own.
 
@@ -1039,7 +1039,7 @@ https://www.microsoft.com/en-us/research/wp-content/uploads/2016/02/specsharp-ti
 
 ### Regions
 
-[Regions](https://en.wikipedia.org/wiki/Region-based_memory_management), despite classically beinag used mostly for
+[Regions](https://en.wikipedia.org/wiki/Region-based_memory_management), despite classically being used mostly for
 deterministic and efficient memory management, were incredibly interesting towards the days of figuring out `isolated`.
 
 They aren't identical for several reasons, however.
@@ -1084,7 +1084,7 @@ It's easy to confuse this with static analysis, however, model checking is far m
 goes beyond heuristics and therefore statistics.  [MSR's Zing](
 https://www.microsoft.com/en-us/research/wp-content/uploads/2016/02/zing-tool.pdf) and, although we used it to verify
 the correctness of certain aspects of our implementation, I don't think we sufficiently considered how model checking
-might impact the way safety was attaned.  Especially as we look to the future with more distributed-style concurrency
+might impact the way safety was attained.  Especially as we look to the future with more distributed-style concurrency
 than intra-process parallelism, where state machine verification is critical, many key ideas in here are relevant.
 
 ### Other Languages
