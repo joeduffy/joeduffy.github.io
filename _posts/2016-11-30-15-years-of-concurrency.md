@@ -557,8 +557,9 @@ And/or destroy the original reference and transfer ownership to a new one:
     isolated List<int> builder2 = consume(builder);
 
 The compiler from here on would mark `builder` as uninitialized, though if it is stored in the heap multiple possible
-aliases might lead to it, so this analysis could never be bulletproof.  (This was one of many examples of making
-compromises in order to integrate more naturally into the existing C# type system.)
+aliases might lead to it, so this analysis could never be bulletproof.  In such cases, the original reference would be
+`null`ed out to avoid safety gotchas.  (This was one of many examples of making compromises in order to integrate more
+naturally into the existing C# type system.)
 
 It's also possible to destroy the isolated-ness, and just get back an ordinary `List<int>`:
 
