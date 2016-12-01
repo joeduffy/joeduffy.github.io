@@ -1130,7 +1130,9 @@ concept count, and admire the simplicity of Go's approach.  It even has nice bui
 I find myself debugging classical race conditions, and [torn structs or interfaces](
 https://blog.golang.org/share-memory-by-communicating), I find myself wishing for more.  I have remarked before that
 simply running with [`GOMAXPROCS=1`](https://golang.org/pkg/runtime/#GOMAXPROCS), coupled with a simple [RPC system](
-http://www.grpc.io/) can get you close to the simple "no intra-process parallelism" Midori model that we began with.
+http://www.grpc.io/) -- ideally integrated in such a way where you needn't step outside of your native type system --
+can get you close to the simple "no intra-process parallelism" Midori model that we began with.  And perhaps the best
+sweet spot of all.
 
 #### Rust
 
