@@ -1168,7 +1168,8 @@ In particular, I'm still conflicted about whether all those type system extensio
 immutability helped with things far beyond safe concurrency.  And so did the side-effect annotations, as they commonly
 helped to root out bugs caused by unintended side-effects.  The future for our industry is a massively distributed one,
 however, where you want simple individual components composed into a larger fabric.  In this world, individual nodes are
-less "precious", and arguably the correctness of the overall orchestration will become far more important.
+less "precious", and arguably the correctness of the overall orchestration will become far more important.  I do think
+this points to a more Go-like approach, with a focus on the RPC mechanisms connecting disparate pieces.
 
 The model of leveraging decades of prior research was fascinating and I'm so happy we took this approach.  I literally
 tried not to invent anything new.  I used to joke that our job was to sift through decades of research and attempt to
