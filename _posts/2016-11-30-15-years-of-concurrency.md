@@ -338,7 +338,7 @@ So, we made some:
 * A "promises-like" programming model will be first class so that:
     - Synchronous blocking is disallowed.
     - All asynchronous activity in the system is explicit.
-    - Sophsiticated coordination patterns are possible without resorting to locks and events.
+    - Sophisticated coordination patterns are possible without resorting to locks and events.
 
 To reach these conclusions we were heavily inspired by [Hoare CSPs](
 https://en.wikipedia.org/wiki/Communicating_sequential_processes), Gul Agha's and Carl Hewitt's work on [Actors](
