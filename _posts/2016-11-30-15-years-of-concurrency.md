@@ -1093,6 +1093,11 @@ This story spans many years.  During those years, we saw several other languages
 in similar ways.  Because of the complex timeline, it's hard to trace every single influence to a given point in time,
 however it's fair to say that four specific languages had a noteworthy influence on us.
 
+(Note that there are [dozens of influential concurrent and parallel languages](
+https://en.wikipedia.org/wiki/List_of_concurrent_and_parallel_programming_languages) that inspired our work.  I'm sure I
+haven't read everything there is to read -- there's always more to learn -- however I did my best to survey the field.
+I will focus here on the most mainstream and relevant to people writing production code in the year 2016.)
+
 #### (Modern) C++
 
 I already mentioned `const` and its influence.
