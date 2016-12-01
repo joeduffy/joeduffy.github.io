@@ -401,9 +401,10 @@ However, a number of things kept us pushing for more:
   Midori, they were cheap enough for this to work.  Doing that, however, entailed marshaling data.  Not only could that
   be an expensive operation, not all types were marshalable, severely limiting parallelizable operations.
 
-* In fact, an existing "exchange heap" was developed for buffers, loosely based on the concept of linearity.  To avoid
-  marshaling large buffers, we already had a system for exchanging them between processes without copying as part of the
-  RPC protocol.  This idea seemed useful enough to generalize and offer for higher-level data structures.
+* In fact, an existing ["exchange heap"](http://read.seas.harvard.edu/cs261/2011/singularity.html) was developed for
+  buffers, loosely based on the concept of linearity.  To avoid marshaling large buffers, we already had a system for
+  exchanging them between processes without copying as part of the   RPC protocol.  This idea seemed useful enough to
+  generalize and offer for higher-level data structures.
 
 * Even intra-process "race conditions" existed, due to multiple asynchronous activities in-flight and interleaving.
   Despite the simplification of the single message loop model described above, race conditions still existed.  A benefit
