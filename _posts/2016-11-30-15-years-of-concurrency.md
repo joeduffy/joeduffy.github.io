@@ -178,11 +178,12 @@ The idea behind parallel LINQ (PLINQ) was to steal a page from three well-resear
 
 2. Declarative and functional languages, which often used [list comprehensions](
    https://en.wikipedia.org/wiki/List_comprehension) to express higher-level language operations that could be
-   aggressively optimized, including parallelism.  For this, I deepened my obsession with Haskell, and was inspired by
-   [APL](https://en.wikipedia.org/wiki/APL_(programming_language)).
+   aggressively optimized, including parallelism.  For this, I deepened my obsession with [Haskell](
+   https://wiki.haskell.org/GHC/Data_Parallel_Haskell), and was inspired by [APL](
+   https://en.wikipedia.org/wiki/APL_(programming_language)).
 
 3. Data parallelism, which had quite a [lengthy history in academia](https://en.wikipedia.org/wiki/Data_parallelism)
-   and even some more mainstream incarnations, like [OpenMP](https://en.wikipedia.org/wiki/OpenMP).
+   and even some more mainstream incarnations, most notably [OpenMP](https://en.wikipedia.org/wiki/OpenMP).
 
 The idea was pretty straightforward.  Take existing LINQ queries, which already featured operations like maps, filters,
 and aggregations -- things that were classically parallelizable in both languages and databases -- and auto-parallelize
@@ -224,16 +225,19 @@ Needless to say, this was an exciting time!
 Around this time, I decided to broaden the scope of our efforts beyond just data parallelism, tackling task parallelism
 and other concurrency abstractions.  So I went around pitching the idea of forming a new team.
 
-Much to my surprise, a new parallel computing group was being created in the Developer Division, and they wanted to
-sponsor these projects.  It was an opportunity to roll everything up under a nice top-level business theme, unify
-recruiting efforts, and take things even further, eventually branching out into C++, GPGPUs, and more.
+Much to my surprise, a new parallel computing group was being created in the Developer Division in response to the
+changing technology landscape, and they wanted to sponsor these projects.  It was an opportunity to roll everything up
+under a nice top-level business theme, unify recruiting efforts, and take things even further, eventually branching out
+into C++, GPGPUs, and more.
 
 So, obviously, I said yes.
 
 I named the team ["PFX"](https://en.wikipedia.org/wiki/Parallel_Extensions), initially short for "parallel frameworks",
 although by the time we shipped marketing working its magic on us, renaming it to "Parallel Extensions to .NET."  This
 team's initial deliverable encompassed PLINQ, task parallelism, and a new effort, Coordination Data Structures (CDS),
-meant to handle advanced synchronization efforts, like barrier-style synchronization, concurrent collections, and more.
+meant to handle advanced synchronization efforts, like barrier-style synchronization, [concurrent collections](
+https://github.com/dotnet/corefx/tree/master/src/System.Collections.Concurrent/src/System/Collections/Concurrent), and
+more.
 
 ### Task Parallel Library
 
