@@ -1164,10 +1164,16 @@ It's not clear the exact formulation of techniques I demonstrated above is the a
 parallelism over asynchrony, surely it is not -- however we will need *some* answer.  It's just too damn hard to build
 robust, secure, and safe concurrent programs, still, to this day, 15 years later.
 
-I also believe the model of leveraging decades of prior research was fascinating and I'm so happy we took this approach.
-I literally tried not to invent anything new.  I used to joke that our job was to sift through decades of research and
-attempt to combine them in new and novel ways.  Although it sounds less glamorous, the reality is that this is how a lot
-of our industry's innovation takes place; very seldom does it happen by inventing new ideas out of thin air.
+In particular, I'm still conflicted about whether all those type system extensions were warranted.  Certainly
+immutability helped with things far beyond safe concurrency.  And so did the side-effect annotations, as they commonly
+helped to root out bugs caused by unintended side-effects.  The future for our industry is a massively distributed one,
+however, where you want simple individual components composed into a larger fabric.  In this world, individual nodes are
+less "precious", and arguably the correctness of the overall orchestration will become far more important.
+
+The model of leveraging decades of prior research was fascinating and I'm so happy we took this approach.  I literally
+tried not to invent anything new.  I used to joke that our job was to sift through decades of research and attempt to
+combine them in new and novel ways.  Although it sounds less glamorous, the reality is that this is how a lot of our
+industry's innovation takes place; very seldom does it happen by inventing new ideas out of thin air.
 
 Anyway, there you have it.  Next up in the series, we will talk about Battling the GC.
 
