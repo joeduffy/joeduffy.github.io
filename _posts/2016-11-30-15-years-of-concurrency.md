@@ -1112,9 +1112,12 @@ lessons learned to the discussion, and I like to think it has had a positive imp
 
 #### D
 
-The system we came up with has obvious comparisons to D's version of `const` and `immutable`; just as D's `const` is a
-view over mutable or immutable data, so is our `readonly`.  And just as D added deepness to the concept of `const`, so
-did we in our permissions model generally.  This is perhaps the closest analogy in any existing systems.
+The system we came up with has obvious comparisons to D's take on [`const` and `immutable`](
+https://dlang.org/spec/const3.html); just as D's `const` is a view over mutable or immutable data, so too is our
+`readonly`.  And just as D added deepness to the concept of `const`, so did we in our permissions model generally.
+This is perhaps the closest analogy in any existing systems.  I am frankly surprised it doesn't get used an order of
+magnitude more than it does, although Andrei, one of its chief developers, [has some thoughts on that topic](
+https://www.quora.com/Which-language-has-the-brightest-future-in-replacement-of-C-between-D-Go-and-Rust-And-Why).
 
 #### Go
 
