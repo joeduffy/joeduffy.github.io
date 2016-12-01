@@ -15,9 +15,10 @@ author:
 ---
 In [a Tale of Three Safeties](/2015/11/03/a-tale-of-three-safeties/), we discussed three kinds of safety: type, memory,
 and concurrency.  In this follow-on article, we will dive deeper into the last, and perhaps the most novel yet
-difficult, one.  Concurrency-safety led me to the Midori project in the first place, having spent years on .NET and C++
-concurrency models leading up to joining.  We built some great things that I'm very proud of during this time.  Perhaps
-more broadly interesting, however, are the reflections on this experience after a few years away from the project.
+difficult, one.  Concurrency-safety led me to the [Midori](/2015/11/03/blogging-about-midori/) project in the first
+place, having spent years on .NET and C++ concurrency models leading up to joining.  We built some great things that
+I'm very proud of during this time.  Perhaps more broadly interesting, however, are the reflections on this experience
+after a few years away from the project.
 
 I've tried to write this article about 6 times since earlier this year, and I'm thrilled to finally share it.  I hope
 that it's useful to anyone interested in the field, and especially anybody who is actively innovating in this area.
