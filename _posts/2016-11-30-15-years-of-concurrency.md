@@ -359,7 +359,14 @@ built in part by some ex-Midori members -- [TPL Dataflow](
 https://msdn.microsoft.com/en-us/library/hh228603(v=vs.110).aspx), and [Akka.NET](http://getakka.net/).  If you want
 to do actors and/or message passing in .NET today, I recommend checking them out.)
 
-Even more relevant to the discussion of safety, however, is the notion of [shared nothing](
+Midori, on the other hand, embraced numerous levels of isolation, beginning with processes themselves, which were
+even cheaper than Windows threads thanks to software isolation.  Even coarser-grained isolation was available in the
+form of domains, adding added belts-and-suspenders hardware protection for hosting untrusted or logically separate code.
+In the early days, we certainly wanted to go finer-grained too -- inspired by [E's concept of "vats"](
+http://www.erights.org/elib/concurrency/vat.html), the abstraction we already began with for process message pumps --
+but weren't sure how to do it safely.  So we waited on this.
+
+Important to the discussion of this architecture is the notion of [shared nothing](
 https://en.wikipedia.org/wiki/Shared_nothing_architecture), something Midori leveraged as a core operating principle.
 Shared nothing architectures are great for reliability, eliminating single points of failure, however they are great
 for concurrency safety too.  If you don't share anything, there is no opportunity for race conditions!  (This is a bit
@@ -369,12 +376,6 @@ It's interesting to note that we were noodling on this around the same time Node
 idea of an asynchronous, non-blocking, single process-wide event loop, is remarkably similar.  Perhaps something tasty
 was in the water during 2007-2009.  In truth, many of these traits are common to [event-loop concurrency](
 https://en.wikipedia.org/wiki/Event_loop).
-
-Midori embraced numerous levels of isolation, beginning with processes themselves thanks to software isolation.  Even
-coarser-grained isolation was available in the form of domains, adding added belts-and-suspenders hardware protection
-for hosting untrusted or logically separate code.  In the early days, we certainly wanted to go finer-grained too --
-inspired by [E's concept of "vats"](http://www.erights.org/elib/concurrency/vat.html), the abstraction we already began
-with for process message pumps -- but weren't sure how to do it safely.  So we waited on this.
 
 This formed the canvas on top of which the entire concurrency model was painted.  I've already discussed this in the
 [asynchronous everything](http://joeduffyblog.com/2015/11/19/asynchronous-everything/) article.  But there was more...
