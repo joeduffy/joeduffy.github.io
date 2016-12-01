@@ -1162,7 +1162,7 @@ For example, [`simple_parallel`](http://huonw.github.io/simple_parallel/simple_p
 PFX `Parallel` API described earlier with safety annotations applied to it.  I trust their system more than ours,
 because they have shipped and had thousands of eyes and real-world experience applied to it.
 
-# Prologue and Conclusion
+# Epilogue and Conclusion
 
 Although I've glossed over many details, I hope you enjoyed the journey, and that the basic ideas were clear.  And, most
 importantly, that you learned something new.  If you want to understand anything in greater detail, please see [our
