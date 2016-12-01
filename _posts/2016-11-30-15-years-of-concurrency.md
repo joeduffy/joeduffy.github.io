@@ -587,13 +587,13 @@ In a sense, we have turned our isolation bubble (as shown earlier) entirely gree
 
 ![Immutability from Isolation Bubbles](/assets/img/2016-11-30-15-years-of-concurrency.immutable-bubble.jpg)
 
-Any expression consuming only `isolated` and/or `immutable` inputs and evaluating to a `readonly` type was implicitly
-upgradeable to `immutable`; and, a similar expression, evaluating to a `mutable` type, was upgradeable to `isolated`.
-This meant that making new `isolated` and `immutable` things was straightforward using ordinary expressions.
-
 Behind the scenes, the thing powering the type system here is `isolated` and ownership analysis.  We will see more of
 the formalisms at work in a moment, however there is a simple view of this: all inputs to the `List<int>`'s constructor
 are `isolated` -- namely, in this case, the array produced by `new[]` -- and therefore the resulting `List<int>` is too.
+
+In fact, any expression consuming only `isolated` and/or `immutable` inputs and evaluating to a `readonly` type was
+implicitly upgradeable to `immutable`; and, a similar expression, evaluating to a `mutable` type, was upgradeable to
+`isolated`. This meant that making new `isolated` and `immutable` things was straightforward using ordinary expressions.
 
 The safety of this also depends on the elimination of ambient authority and leaky construction.
 
@@ -662,10 +662,10 @@ particularly in the face of construction failure, however they pose a risk to im
 In our particular case, how are we to know that after creating a new supposedly-immutable object, someone isn't
 secretively holding on to a mutable reference?  In that case, tagging the object with `immutable` is a type hole.
 
-We banned leaky constructors altogether.  The secret?  A special, `init`, that meant the target object is undergoing
-initialization and did not obey the usual rules.  For example, it meant fields weren't yet guaranteed to be assigned to,
-non-nullability hadn't yet been established, and that the reference could *not* convert to the so-called "top"
-permission, `readonly`.   Any constructor got this permission by default and you couldn't override it.  We also
+We banned leaky constructors altogether.  The secret?  A special permission, `init`, that meant the target object is
+undergoing initialization and does not obey the usual rules.  For example, it meant fields weren't yet guaranteed to be
+assigned to, non-nullability hadn't yet been established, and that the reference could *not* convert to the so-called
+"top" permission, `readonly`.   Any constructor got this permission by default and you couldn't override it.  We also
 automatically used `init` in select areas where it made the language work more seamlessly, like in object initializers.
 
 This had one unfortunate consequence: by default, you couldn't invoke other instance methods from inside a constructor.
@@ -698,7 +698,7 @@ and the other "permission", such that all types could convert to `readonly Objec
 
 ![Permission Lattice](/assets/img/2016-11-30-15-years-of-concurrency.lattice.jpg)
 
-The system could obviously be used fairly easily without familiarity with the formalisms.  However, I had lived through
+The system could obviously be used without any knowledge of these formalisms.  However, I had lived through
 enough sufficiently [scary, yet subtle, security problems over the years due to type system gotchas](
 https://www.microsoft.com/en-us/research/wp-content/uploads/2007/01/appsem-tcs.pdf), so going the extra mile and doing
 the formalism not only helped us understand our own system better, but also helped us sleep better at night.
@@ -714,9 +714,10 @@ Also note that I've said "object"; that too is a gross simplification, since for
 simply ensuring that activities do not have `mutable` rights to overlapping regions is sufficient.
 
 Beyond what this disallows, it actually allows for some interesting patterns.  For instance, any number of concurrent
-activities may share `readonly` access to the same object.  Remember that we can convert `mutable` to `readonly`, which
-means that, given an activity with `mutable` access, we can use fork/join parallelism that captures an object with
-`readonly` permissions, provided the mutator is temporally paused for the duration of this fork/join operation.
+activities may share `readonly` access to the same object.  (This is a bit like a reader/writer lock, just without any
+locks or runtime overheads.)  Remember that we can convert `mutable` to `readonly`, which means that, given an activity
+with `mutable` access, we can use fork/join parallelism that captures an object with `readonly` permissions, provided
+the mutator is temporally paused for the duration of this fork/join operation.
 
 Or, in code:
 
@@ -787,14 +788,15 @@ Eventually, we created higher level frameworks to help with data partitioning, n
 array-like structures, and more.  All of it free from data races, deadlocks, and the associated concurrency hazards.
 
 Although we designed what running subsets of this on a GPU would look like, I would be lying through my teeth if I
-claimed we had it figured out.  All that I can say is understanding the [side-effects and ownership of memory are very
-important concepts](https://docs.nvidia.com/cuda/cuda-c-programming-guide/#shared-memory) when programming GPUs, and we
-had hoped the above building blocks would help create a more elegant and unified programming model.
+claimed we had it entirely figured out.  All that I can say is understanding the [side-effects and ownership of memory
+are very important concepts](https://docs.nvidia.com/cuda/cuda-c-programming-guide/#shared-memory) when programming
+GPUs, and we had hoped the above building blocks would help create a more elegant and unified programming model.
 
-The final major model this enabled was fine-grained "actors".  I mentioned the vat concept earlier, but that we didn't
-know how to make it safe.  Finally we had found the missing clue: a vat was really just an `isolated` bubble of state.
-Now that we had this concept in the type system, we could permit "marshaling" of `immutable` and `isolated` objects as
-part of the message passing protocol without marshaling of any sort -- they could be shared safely by-reference!
+The final major programming model enhancement this enabled was fine-grained "actors", a sort of mini-process inside of a
+process.  I mentioned the vat concept earlier, but that we didn't know how to make it safe.  Finally we had found the
+missing clue: a vat was really just an `isolated` bubble of state.  Now that we had this concept in the type system, we
+could permit "marshaling" of `immutable` and `isolated` objects as part of the message passing protocol without
+marshaling of any sort -- they could be shared safely by-reference!
 
 I would say that the major weakness of this system was also its major benefit.  The sheer permutations of concepts could
 be overwhelming.  Most of them composed nicely, however the poor developers creating the underlying "safe concurrency"
@@ -806,21 +808,23 @@ etc. -- could now use safe intra-process parallelism in addition to being constr
 Even more interestingly, our one production workload -- taking Speech Recognition traffic for Bing.com -- actually saw
 significant reductions in latency and improvements in throughput as a result.  In fact, Cortana's [DNN](
 https://en.wikipedia.org/wiki/Deep_learning)-based speech recognition algorithms, which delivered a considerable boost
-to accuracy, could have never reached its latency targets were it not for this overall parallelism model.
+to accuracy, could have never reached their latency targets were it not for this overall parallelism model.
 
 ### Sequential Consistency and Tear-Free Code
 
-There was another unanticipated consequence of safe concurrency that I quite liked: [sequential consistency](
+There was another unanticipated consequence of safe concurrency that I quite liked: [sequential consistency (SC)](
 https://en.wikipedia.org/wiki/Sequential_consistency).
 
 For free.
 
 After all those years trying to achieve a sane memory model, and ultimately [realizing that most of the popular
 techniques were fundamentally flawed](http://joeduffyblog.com/2010/12/04/sayonara-volatile/), we had cracked the nut.
-All developers got sequential consistency without the price of barriers everywhere.  Given that we had been running on
-ARM processors where a barrier cost you 160 cycles, this gave us not only a usability edge, but also a performance one.
+All developers got SC without the price of barriers everywhere.  Given that we had been running on ARM processors where
+a barrier cost you 160 cycles, this gave us not only a usability edge, but also a performance one.  This also gave our
+optimizing compiler much more leeway on code motion, because it could now freely order what used to be possibly-side-
+effectful operations visible to multiple threads.
 
-To see how this works, consider how the overall system was layered.
+To see how we got SC for free, consider how the overall system was layered.
 
 At the bottom of all of the above safe concurrency abstractions, there was indeed `unsafe` code.  This code was
 responsible for obeying the semantic contract of safe concurrency by decorating APIs with the right permissions and
@@ -939,9 +943,9 @@ granted, but it wasn't always the case.  The outer `readonly` would infect the i
 
 Our initial whack at this was to come up with shallow variants of all the permissions.  This yielded keywords that
 became a never-ending source of jokes in our hallways: `shreadable`, `shimmutable`, and -- our favorite -- `shisolated`
-(which sounds like a German swear word when said aloud).  Our original motivation was the in C#, the signed and unsigned
-versions of some types used abbreviations (`sbyte`, `uint`, etc.), and `shallow` sure would make them quite lengthy, so
-we were therefore justified in our shortening into a `sh` prefix.  How wrong we were.
+(which sounds like a German swear word when said aloud).  Our original justification for such nonsense was that in C#,
+the signed and unsigned versions of some types used abbreviations (`sbyte`, `uint`, etc.), and `shallow` sure would make
+them quite lengthy, so we were therefore justified in our shortening into a `sh` prefix.  How wrong we were.
 
 From there, we ditched the special permissions and recognized that objects had "layers", and that outer and inner layers
 might have differing permissions.  This was the right idea, but like most ideas of this nature, we let the system get
@@ -970,12 +974,12 @@ working on all of this stuff, as evidenced by the gigantic tower of papers still
 
 The similarities with `const` should, by now, be quite evident.  Although people generally have a love/hate relationship
 with it, I've always found that being [`const` correct](https://isocpp.org/wiki/faq/const-correctness) is worth the
-effort for any project larger than a hobby project.  (I know plenty of people who would disagree with me.)
+effort for anything bigger than a hobby project.  (I know plenty of people who would disagree with me.)
 
-That said, `const` is best known for its unsoundness, thanks to the pervasive use of `const_cast`.  This is almost
-always used at the seams of libraries with different views on `const` correctness, although it's often used to cheat;
+That said, `const` is best known for its unsoundness, thanks to the pervasive use of `const_cast`.  This is commonly
+used at the seams of libraries with different views on `const` correctness, although it's also often used to cheat;
 this is often for laziness, but also due to some compositional short-comings.  The lack of parameterization over
-`const`, for example, forces one to duplicate code; faced with that, many developers would choose to cast it away.
+`const`, for example, forces one to duplicate code; faced with that, many developers would rather just cast it away.
 
 `const` is also not deep in the same way that our permissions were, which was required to enable the safe concurrency,
 isolation, and immutability patterns which motivated the system.  Although many of the same robustness benefits that
@@ -1061,6 +1065,9 @@ from the developer through more sophisticated compiler analysis -- much like [Cy
 https://en.wikipedia.org/wiki/Cyclone_(programming_language)) did -- however, we worried that in some very common cases,
 regions would rear their ugly heads and then the developer would be left confused and dismayed.
 
+All that said, given our challenges with garbage collection, in addition to our sub-process actor model, we often
+pondered whether some beautiful unification of `isolated` object graphs and regions awaited our discovery.
+
 ### Separation Logic
 
 Particularly in the search for formalisms to prove the soundness of the system we built, [separation logic](
@@ -1088,8 +1095,9 @@ It's easy to confuse this with static analysis, however, model checking is far m
 goes beyond heuristics and therefore statistics.  [MSR's Zing](
 https://www.microsoft.com/en-us/research/wp-content/uploads/2016/02/zing-tool.pdf) and, although we used it to verify
 the correctness of certain aspects of our implementation, I don't think we sufficiently considered how model checking
-might impact the way safety was attained.  Especially as we look to the future with more distributed-style concurrency
-than intra-process parallelism, where state machine verification is critical, many key ideas in here are relevant.
+might impact the way safety was attained.  This was top-of-mind as we faced intra-process interleaving race conditions.
+Especially as we look to the future with more distributed-style concurrency than intra-process parallelism, where state
+machine verification is critical, many key ideas in here are relevant.
 
 ### Other Languages
 
@@ -1133,19 +1141,19 @@ https://www.quora.com/Which-language-has-the-brightest-future-in-replacement-of-
 
 #### Go
 
-Although I personally love programming in Go, it didn't have as much influence on our system as you might think.  Go
-lists concurrency as one of its primary features.  Although concurrency is easy to generate thanks to the [`go`routine](
+Although I personally love programming in Go, it didn't have as much influence on our system as you might expect.  Go
+lists concurrency as one of its primary features.  Although concurrency is easy to generate thanks to [`go`routines](
 https://gobyexample.com/goroutines), and best practices encourage wonderful things like ["Share Memory by
 Communicating"](https://blog.golang.org/share-memory-by-communicating), the basic set of primitives doesn't go much
 beyond the threads, thread-pools, locks, and events that I mention us beginning with in the early days of this journey.
 
 On one hand, I see that Go has brought its usual approach to bear here; namely, eschewing needless complexity, and
 exposing just the bare essentials.  I compare this to the system we built, with its handful of keywords and associated
-concept count, and admire the simplicity of Go's approach.  It even has nice built-in deadlock detection.  And yet when
-I find myself debugging classical race conditions, and [torn structs or interfaces](
-https://blog.golang.org/share-memory-by-communicating), I find myself wishing for more.  I have remarked before that
-simply running with [`GOMAXPROCS=1`](https://golang.org/pkg/runtime/#GOMAXPROCS), coupled with a simple [RPC system](
-http://www.grpc.io/) -- ideally integrated in such a way where you needn't step outside of your native type system --
+concept count, and admire the simplicity of Go's approach.  It even has nice built-in deadlock detection.  And yet, on
+the other hand, when I find myself debugging classical race conditions, and [torn structs or interfaces](
+https://blog.golang.org/share-memory-by-communicating), I clamor for more.  I have remarked before that simply running
+with [`GOMAXPROCS=1`](https://golang.org/pkg/runtime/#GOMAXPROCS), coupled with a simple [RPC system](
+http://www.grpc.io/) -- ideally integrated in such a way where you needn't step outside of Go's native type system --
 can get you close to the simple "no intra-process parallelism" Midori model that we began with.  And perhaps the best
 sweet spot of all.
 
@@ -1173,23 +1181,23 @@ importantly, that you learned something new.  If you want to understand anything
 OOPSLA paper](https://www.microsoft.com/en-us/research/wp-content/uploads/2016/02/msr-tr-2012-79.pdf), or just ask.
 
 It's been a couple years since I've been away from this.  As most of you know, Midori happened before the OSS
-renaissance at Microsoft, and so it never saw the light of day.  In that time, I've pondered what we learned on this
-journey, and whether any of it is relevant beyond the hallways of our old building 34.  I believe they are, otherwise
-I'd not have even bothered to write up this article.
+renaissance at Microsoft, and so it never saw the light of day.  In that time, I've pondered what lessons we learned on
+this journey, and whether any of it is relevant beyond the hallways of our old building 34.  I believe it is, otherwise
+I'd not have taken the time to write up this article.
 
 I'm thrilled that the world has adopted tasks in a big way, although it was for a different reason than we expected
-(asynchronous and not parallelism).  In many ways this was inevitable, however I have to think that doing tasks a
+(asynchrony and not parallelism).  In many ways this was inevitable, however I have to think that doing tasks a
 half-decade ahead of the curve at least had a minor influence, including the `async` and `await` ideas built atop it.
 
 Data parallelism has taken off...sort of.  Far fewer people leverage CPUs in the way we imagined, but that's for good
 reason: GPUs are architected for extremely wide SIMD operations over floating points, which is essentially the killer
 scenario for this sort of parallelism.  It doesn't cover all of the cases, but man does it scream.
 
-Safe concurrency is still critically important, yet lacking, and I think the world still needs it.  I think we
-collectively underestimated how long it would take for the industry to move to type- and memory-safe programming models.
-Despite the increasing popularity of safe systems languages like Go and Rust, it pains me to say it, but I still believe
-we are a decade away from our fundamental technology stacks -- like the operating systems themselves -- being safe to
-the core.  But our industry desperately needs this to happen, given that [buffer errors remain the #1 attack type](
+Safe concurrency is still critically important, yet lacking, and the world still needs it.  I think we collectively
+underestimated how long it would take for the industry to move to type- and memory-safe programming models.  Despite the
+increasing popularity of safe systems languages like Go and Rust, it pains me to say it, but I still believe we are a
+decade away from our fundamental technology stacks -- like the operating systems themselves -- being safe to the core.
+But our industry desperately needs this to happen, given that [buffer errors remain the #1 attack type](
 https://nvd.nist.gov/visualizations/cwe-over-time) for critical security vulnerabilities in our software.
 
 I do think that concurrency-safety will be our next frontier after type- and memory-safety have arrived.  TOCTOU, and
