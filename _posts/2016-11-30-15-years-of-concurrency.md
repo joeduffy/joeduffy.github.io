@@ -1117,7 +1117,7 @@ I already mentioned `const` and its influence.
 
 It is also interesting to note the similarities between `isolated` and C++11's [`std::unique_ptr`](
 https://en.wikipedia.org/wiki/Smart_pointer#unique_ptr).  Although born in different times, and in very different
-worlds, they both clearly deliver similar a understanding of ownership.  Noted difference include deepness -- C++'s
+worlds, they both clearly deliver a similar perspective on ownership.  Noted difference include deepness -- C++'s
 approach is "deep" insofar as you leverage RAII faithfully in your data structures -- and motivations -- C++'s
 motivation being primarily memory management, and neither safe concurrency nor immutability.
 
