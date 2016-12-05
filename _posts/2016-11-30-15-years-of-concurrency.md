@@ -997,9 +997,10 @@ some of our ideas around `isolated` eventually assisted the compiler in performi
 ### Linear Types
 
 Phillip Wadler's 1990 ["Linear types can change the world!"](
-https://isocpp.org/wiki/faq/const-correctness) was immensely influential for me in the early days.  I remember a huge
-lightbulb going off when I first read this paper.  Linear types are inspired by the [linear logic of J.-Y. Girard](
-https://en.wikipedia.org/wiki/Linear_logic), and it is easy to get lost in the mathematics for hours.
+http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.55.5439&rep=rep1&type=pdf) was immensely influential for me in
+the early days.  I remember a huge lightbulb going off when I first read this paper.  Linear types are inspired by the
+[linear logic of J.-Y. Girard](https://en.wikipedia.org/wiki/Linear_logic), and it is easy to get lost in the
+mathematics for hours.
 
 In a nutshell, a linear type lets you prove that a variable is used exactly once.  This is similar to `isolated`,
 however due to the aliasing properties of an imperative language like C# (especially for heap structures with possible
