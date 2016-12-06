@@ -837,7 +837,7 @@ are built and/or aggressively patched at runtime.  In Midori, on the other hand,
 be in readonly data segments and hence shareable across processes, wherever possible.
 
 Again, everything can be solved with an indirection.  But unlike solution #2 above, solution #3 permits you to stick
-instantiations only in the rare places where you need them.  And for purposes of this one, that meant RTTI and accessing
+indirections only in the rare places where you need them.  And for purposes of this one, that meant RTTI and accessing
 static variables of just those generic types that might have been subject to PMI.  First, that affected a vast subset of
 code (versus #2 which generally affects even loading of instance fields).  Second, it could be optimized away for
 instantiations that were known not to be PMI, by attaching state and operations to the existing generic dictionary that
