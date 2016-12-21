@@ -859,7 +859,7 @@ Although people used to hate it when I compared this situation to COM STAs, for 
 apt.  If you need to block a thread inside of a COM STA, you must decide: Do I pump the message loop, or do I not pump
 the message loop?  If you choose to pump the message loop, you can suffer [reentrancy](
 https://en.wikipedia.org/wiki/Reentrancy_(computing)), and that reentrancy might be witness to broken invariants, or
-even mutate state out from underneath the blocking call, must to its dismay after it reawakens.  If you choose not to
+even mutate state out from underneath the blocking call, much to its dismay after it reawakens.  If you choose not to
 pump the message loop, you can suffer deadlock, as calls pile up, possibly ones that are required to unblock the thread.
 
 In Midori's system, we did not give this choice to the developer.  Instead, every `await` was an opportunity to pump the
