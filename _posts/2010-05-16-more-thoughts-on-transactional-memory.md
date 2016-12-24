@@ -55,7 +55,7 @@ out, are a convenient way of implementing this requirement.
 You will observe a similar architecture in other places, including in some languages
 that have adopted TM.  Haskell has moved in this direction.  Everything
 is purely functional and so, of course, no state is mutated in an unsafe way by default.
-However, with the introduction of concucrrency comes mutable cells for message passing
+However, with the introduction of concurrency comes mutable cells for message passing
 and with parallelism comes indeterminism.  You can push the state management
 problem up indefinitely, but at the top there are almost always mutable operations
 on real-world state (even if it is "just I/O").  Haskell programs have a safe
