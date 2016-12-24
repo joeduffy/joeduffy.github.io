@@ -209,7 +209,7 @@ an order of magnitude simpler.  There have even been studies whose conclusions
 
 (Transactions unfortunately do not address one other issue, which turns out to be
 the most fundamental of all: sharing.  Indeed, TM is insufficient -- indeed,
-even dangerous -- on its own is because it makes it very easy to share data and
+even dangerous -- on its own because it makes it very easy to share data and
 access it from multiple threads; first class isolation is far more important to achieve
 than faux isolation.  This is perhaps one major difference between client and
 server transactions.  Most server sessions are naturally isolated, and so transactions
@@ -218,7 +218,7 @@ return to this point much, much later in this essay.)
 
 TM also has the attractive quality of automatic rollback of partial state updates.
 (How did I get this far without discussing rollback?)  Concurrency aside, this
-avoids needing to write backout code to run in the face unhandled exceptions.
+avoids needing to write backout code to run in the face of unhandled exceptions.
 In retrospect this capability alone is almost enough to justify TM in limited quantities.
 Reams of code "out there" contain brittle, untested, and, therefore, incorrect
 error handling code.  We have seen such code lead to problems ranging in severity:
