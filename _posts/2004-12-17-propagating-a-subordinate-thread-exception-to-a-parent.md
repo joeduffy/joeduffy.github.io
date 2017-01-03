@@ -40,238 +40,63 @@ this. I figured somebody out there might also find it useful.
 The basic idea is to create a thread worker class which encapsulates thread
 execution and handling of any subsequent errors and calculated values. E.g.
 
-> public class ThreadWorker<T>
->
->
->
-> {
->
->
->
->
->
->
->
->     // fields
->
->
->
->
->
->
->
->     private T workerReturnValue;
->
->
->
->     private Exception workerException;
->
->
->
->     private Thread workerThread;
->
->
->
->     private ThreadWorkerStart<T> workerStart;
->
->
->
->
->
->
->
->     // ctors
->
->
->
->
->
->
->
->     public ThreadWorker(ThreadWorkerStart<T> start)
->
->
->
->     {
->
->
->
->         workerStart = start;
->
->
->
->     }
->
->
->
->
->
->
->
->     // properties
->
->
->
->
->
->
->
->     public T WorkerReturnValue
->
->
->
->     {
->
->
->
->         get { return workerReturnValue; }
->
->
->
->     }
->
->
->
->
->
->
->
->     public Exception WorkerException
->
->
->
->     {
->
->
->
->         get { return workerException; }
->
->
->
->     }
->
->
->
->
->
->
->
->     // methods
->
->
->
->
->
->
->
->     public void Start()
->
->
->
->     {
->
->
->
->         workerThread = new Thread(Worker);
->
->
->
->         workerThread.Start();
->
->
->
->     }
->
->
->
->
->
->
->
->     public T Join()
->
->
->
->     {
->
->
->
->         workerThread.Join();
->
->
->
->         if (workerException != null)
->
->
->
->             throw new Exception("Worker threw exception", workerException);
->
->
->
->         return workerReturnValue;
->
->
->
->     }
->
->
->
->
->
->
->
->     private void Worker()
->
->
->
->     {
->
->
->
->         try
->
->
->
->         {
->
->
->
->             workerReturnValue = workerStart();
->
->
->
->         }
->
->
->
->         catch (Exception e)
->
->
->
->         {
->
->
->
->             workerException = e;
->
->
->
->         }
->
->
->
->     }
->
->
->
->
->
->
->
-> }
+    public class ThreadWorker<T>
+    {
+      // fields
+      private T workerReturnValue;
+      private Exception workerException;
+      private Thread workerThread;
+      private ThreadWorkerStart<T> workerStart;
 
-The Join() method here will either re-throw the exception generated in the
-ThreadWorkerStart method, or return the calculated value if no exception was
+      // ctors
+      public ThreadWorker(ThreadWorkerStart<T> start)
+      {
+        workerStart = start;
+      }
+
+      // properties
+      public T WorkerReturnValue
+      {
+        get { return workerReturnValue; }
+      }
+
+      public Exception WorkerException
+      {
+        get { return workerException; }
+      }
+
+      // methods
+      public void Start()
+      {
+        workerThread = new Thread(Worker);
+        workerThread.Start();
+      }
+
+      public T Join()
+      {
+        workerThread.Join();
+
+        if (workerException != null)
+          throw new Exception("Worker threw exception", workerException);
+
+        return workerReturnValue;
+      }
+
+      private void Worker()
+      {
+        try
+        {
+          workerReturnValue = workerStart();
+        }
+        catch (Exception e)
+        {
+          workerException = e;
+        }
+      }
+    }
+
+The `Join()` method here will either re-throw the exception generated in the
+`ThreadWorkerStart` method, or return the calculated value if no exception was
 generated. This enables you to handle it in the parent thread. Admittedly, the
 only case you want to do this is when the parent thread can take some
 corrective action and/or re-run the thread entirely. Most of the time, you want
@@ -281,92 +106,31 @@ leak is sometimes the right thing to do.
 
 For example, this snippetdemonstrates both scenarios:
 
-> Random r = new Random();
->
->
->
-> for (int i = 0; i < 15; i++)
->
->
->
-> {
->
->
->
->     ThreadWorker<int> t = new ThreadWorker<int>(delegate()
->
->
->
->     {
->
->
->
->         int value = r.Next();
->
->
->
->         if ((value % 3) == 0)
->
->
->
->             throw new Exception("Uh oh, something bad happened");
->
->
->
->         else
->
->
->
->             return value;
->
->
->
->     });
->
->
->
->     t.Start();
->
->
->
->
->
->
->
->     try
->
->
->
->     {
->
->
->
->         Console.WriteLine("{0}. Worker output: {1}", i, t.Join());
->
->
->
->     }
->
->
->
->     catch (Exception ex)
->
->
->
->     {
->
->
->
->         Console.WriteLine("{0}. Worker exception: {1}", i,
->         ex.InnerException.ToString());
->
->
->
->     }
->
->
->
-> }
+    Random r = new Random();
+
+    for (int i = 0; i < 15; i++)
+    {
+      ThreadWorker<int> t = new ThreadWorker<int>(delegate()
+      {
+        int value = r.Next();
+
+        if ((value % 3) == 0)
+          throw new Exception("Uh oh, something bad happened");
+        else
+          return value;
+      });
+
+      t.Start();
+
+      try
+      {
+        Console.WriteLine("{0}. Worker output: {1}", i, t.Join());
+      }
+      catch (Exception ex)
+      {
+        Console.WriteLine("{0}. Worker exception: {1}", i, ex.InnerException.ToString());
+      }
+    }
 
 Here, we generate, execute, and join on 15 threads, each of which will throw an
 exception should a random number be divisible by 3. Our code will print out

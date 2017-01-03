@@ -18,158 +18,103 @@ author:
   last_name: ''
 ---
 Lazy, functional streams go hand in hand with
-[thunks](http://www.bluebytesoftware.com/blog/PermaLink.aspx?guid=ce8e15bf-c038-48af-b6e1-1d90c03e671cThunks).
+[thunks](http://joeduffyblog.com/2004/11/02/thunkt-in-c/).
 They enable lazy loading and calculation of algorithms, and can be particularly
 interesting due to the ease with which they compose. The examples I provide
 below make heavy use of new C# 2.0 features, such as anonymous delegates and
 iterators. Some will notice my undeniable influence by the Wizard book in the
 concepts presented here.
 
-First, consider a new type Stream<T>:
+First, consider a new type `Stream<T>`:
 
     public class Stream<T> : IEnumerable<T>
-
     {
+      //fields
+      private List<T> memory = new List<T>();
+      private Evaluator evaluator;
+      private int count;
 
-        //fields
+      public delegate Nullable<T> Evaluator();
 
-        private List<T> memory = new List<T>();
+      //ctors
+      public Stream(Evaluator evaluator) : this(evaluator, -1)
+      {
+      }
 
-        private Evaluator evaluator;
+      public Stream(Evaluator evaluator, int count)
+      {
+        this.evaluator = evaluator;
+        this.count = count;
+      }
 
-        private int count;
-
-        public delegate Nullable<T> Evaluator();
-
-        //ctors
-
-        public Stream(Evaluator evaluator) : this(evaluator, -1)
-
+      //properties
+      public int Capacity
+      {
+        get
         {
+          if (count == -1)
+            return int.MaxValue;
 
+          return count;
         }
+      }
 
-        public Stream(Evaluator evaluator, int count)
-
+      public int Count
+      {
+        get
         {
+          if (count == -1)
+            return MemoryCount;
 
-            this.evaluator = evaluator;
-
-            this.count = count;
-
+           return count;
         }
+      }
 
-        //properties
-
-        public int Capacity
-
+      public int MemoryCount
+      {
+        get
         {
-
-            get
-
-            {
-
-                if (count == -1)
-
-                    return int.MaxValue;
-
-                return count;
-
-            }
-
+          return memory.Count;
         }
+      }
 
-        public int Count
-
+      public T this[int index]
+      {
+        get
         {
+          if (memory.Count <= index)
+            for (int i = memory.Count; i <= index; i++)
+              Memoize();
 
-            get
-
-            {
-
-                if (count == -1)
-
-                    return MemoryCount;
-
-                return count;
-
-            }
-
+          return memory[index];
         }
+      }
 
-        public int MemoryCount
+      //methods
+      public IEnumerator<T> GetEnumerator()
+      {
+        int i = 0;
 
+        while (i <= Capacity)
         {
-
-            get
-
-            {
-
-                return memory.Count;
-
-            }
-
+          yield return this[i];
+          i++;
         }
+      }
 
-        public T this[int index]
+      private void Memoize()
+      {
+        Nullable<T> n = evaluator();
 
-        {
+        if (!n.HasValue)
+          throw new ArgumentOutOfRangeException("No value for the specified index");
 
-            get
-
-            {
-
-                if (memory.Count <= index)
-
-                    for (int i = memory.Count; i <= index; i++)
-
-                        Memoize();
-
-                return memory[index];
-
-            }
-
-        }
-
-        //methods
-
-        public IEnumerator<T> GetEnumerator()
-
-        {
-
-            int i = 0;
-
-            while (i <= Capacity)
-
-            {
-
-                yield return this[i];
-
-                i++;
-
-            }
-
-        }
-
-        private void Memoize()
-
-        {
-
-            Nullable<T> n = evaluator();
-
-            if (!n.HasValue)
-
-                throw new ArgumentOutOfRangeException("No value for the
-specified index");
-
-            memory.Add(n.Value);
-
-        }
-
+        memory.Add(n.Value);
+      }
     }
 
-This takes an Evaluator delegate, a no-args method which returns an instance of
-Nullable<T>. I have chosen to implement a memoized stream, to make re-accessing
+This takes an `Evaluator` delegate, a no-args method which returns an instance of
+`Nullable<T>`. I have chosen to implement a memoized stream, to make re-accessing
 previously computed indexes possible. This simply means that calculated values
 are "remembered" once they have been generated. My implementation actually
 wouldn't work without memoization since it uses state variables to track its
@@ -177,203 +122,91 @@ computation. This will lazily load up to the index which is requested.
 
 This can be used, for example, to calculate numbers in the Fibonacci series.
 
-> Stream<long> CreateFibStream()
->
->
->
-> {
->
->
->
->     long i1 = 1;
->
->
->
->     long i2 = 1;
->
->
->
->     return new Stream<long>(delegate
->
->
->
->     {
->
->
->
->         long t = i1;
->
->
->
->         i1 = i2;
->
->
->
->         i2 = t + i2;
->
->
->
->         return t \* 4;
->
->
->
->     });
->
->
->
-> }
+    Stream<long> CreateFibStream()
+    {
+      long i1 = 1;
+      long i2 = 1;
+
+      return new Stream<long>(delegate
+      {
+        long t = i1;
+        i1 = i2;
+        i2 = t + i2;
+
+        return t * 4;
+      });
+    }
 
 This code can be used to calculate the first 10 numbers in the Fibonacci series
 as follows:
 
-> Stream<long> fib = CreateFibStream();
->
->
->
-> for (int i = 0; i < 10; i++)
->
->
->
->     Console.WriteLine(fib[i]);
+    Stream<long> fib = CreateFibStream();
+
+    for (int i = 0; i < 10; i++)
+      Console.WriteLine(fib[i]);
 
 The output of this program is as follows:
 
-> > 1
-> >
-> >
-> >
-> > 1
-> >
-> >
-> >
-> > 2
-> >
-> >
-> >
-> > 3
-> >
-> >
-> >
-> > 5
-> >
-> >
-> >
-> > 8
-> >
-> >
-> >
-> > 13
-> >
-> >
-> >
-> > 21
-> >
-> >
-> >
-> > 34
-> >
-> >
-> >
-> > 55
+> 1 1 2 3 5 8 13 21 34 55
 
 Notice that, because of the indexer, you can request, say, the 15th Fibonacci
 number directly:
 
-> > Console.WriteLine(fib[14]);
+    Console.WriteLine(fib[14]);
 
 This prints out the number 610.
 
 Because streams are easily composable, I've easily created a few standard
 factory methods which construct an augmented stream. These simply wrap an
 existing stream and lazily change the output as it is requested. For example,
-Amplifier<T> will amplify the numbers generated by a target stream by a
+`Amplifier<T>` will amplify the numbers generated by a target stream by a
 constant number as they are retrieved.
 
-> public static Stream<U> Transform<T, U>(Converter<T, U> c, Stream<T> s)
->
->
->
-> {
->
->
->
->     IEnumerator<T> e = s.GetEnumerator();
->
->
->
->     return new Stream<U>(delegate
->
->
->
->     {
->
->
->
->         e.MoveNext();
->
->
->
->         return c(e.Current);
->
->
->
->     });
->
->
->
-> }
->
->
+    public static Stream<U> Transform<T, U>(Converter<T, U> c, Stream<T> s)
+    {
+      IEnumerator<T> e = s.GetEnumerator();
 
-public static Stream<double> Amplifier<T>(Stream<T> s, double y)
+      return new Stream<U>(delegate
+      {
+        e.MoveNext();
 
-{
+        return c(e.Current);
+      });
+    }
 
-    return Transform<T, double>(new Converter<T, double>(delegate(T x) {
-
-        return Convert.ToDouble(x) \* y; }),
-
+    public static Stream<double> Amplifier<T>(Stream<T> s, double y)
+    {
+      return Transform<T, double>(
+        new Converter<T, double>(delegate(T x) { return Convert.ToDouble(x) * y; }),
         s);
+    }
 
-}
+For instance, we can use this in calculation of `pi` as follows:
 
-For instance, we can use this in calculation of pi as follows:
+    Stream<double> CreatePiStream()
+    {
+      double n = 1.0;
+      double last = 0.0;
 
-Stream<double> CreatePiStream()
+      bool add = true;
 
-{
-
-    double n = 1.0;
-
-    double last = 0.0;
-
-    bool add = true;
-
-    return StreamFactory.Amplifier<double>(
-
+      return StreamFactory.Amplifier<double>(
         new Stream<double>(delegate
-
         {
+          double d = 1 / n;
 
-            double d = 1 / n;
+          if (!add)
+            d *= -1;
 
-            if (!add)
+          add = !add;
 
-                d \*= -1;
+          last += d;
+          n += 2;
 
-            add = !add;
-
-            last += d;
-
-            n += 2;
-
-            return last;
-
+          return last;
         }),
-
         4.0);
-
-}
+    }
 
 The first 15 iterations of this produce these numbers:
 
@@ -387,89 +220,47 @@ towards the real pi.
 
 Another useful standard augmentation is a so-called Euler transform, which acts
 as an accelerator causing our pi generator to converge more rapidly. The
-technique used is to calculate any number S as Sn+1 - ((Sn+1 - Sn)2)/(Sn-1 -
-2Sn + Sn+1), where _n_ is an index into the sequence of values.
+technique used is to calculate any number `S` as `Sn+1 - ((Sn+1 - Sn)2)/(Sn-1 -
+2Sn + Sn+1)`, where _n_ is an index into the sequence of values.
 
-> public static Stream<double> EulerTransform<T>(Stream<T> s)
->
->
->
-> {
->
->
->
->     int i = 0;
->
->
->
->     return new Stream<double>(delegate
->
->
->
->     {
->
->
->
->         double s0 = Convert.ToDouble(s[i++]);
->
->
->
->         double s1 = Convert.ToDouble(s[i++]);
->
->
->
->         double s2 = Convert.ToDouble(s[i++]);
->
->
->
->         return s2 - (Math.Pow(s2 - s1, 2) / (s0 - (2 \* s1) + s2));
->
->
->
->     });
->
->
->
-> }
+    public static Stream<double> EulerTransform<T>(Stream<T> s)
+    {
+      int i = 0;
+
+      return new Stream<double>(delegate
+      {
+        double s0 = Convert.ToDouble(s[i++]);
+        double s1 = Convert.ToDouble(s[i++]);
+        double s2 = Convert.ToDouble(s[i++]);
+
+        return s2 - (Math.Pow(s2 - s1, 2) / (s0 - (2 * s1) + s2));
+      });
+    }
 
 For example, consider this method of accelerating our generation of pi:
 
-> Stream<double> pis = StreamFactory.EulerTransform<double>(CreatePiStream());
->
->
->
-> for (int i = 0; i < 15; i++)
->
->
->
->     Console.WriteLine(pis[i]);
+    Stream<double> pis = StreamFactory.EulerTransform<double>(CreatePiStream());
+
+    for (int i = 0; i < 15; i++)
+      Console.WriteLine(pis[i]);
 
 The output of the first 15 iterations is as follows - notice that it converges
 towards pi much more rapidly than the previous example:
 
-> > 3.16666666666667 3.13968253968254 3.14207181707182 3.1414067184965
-> > 3.14168318920776 3.14154198599778 3.14162380666784 3.14157215448297
-> > 3.14160685134755 3.14158241824775 3.14160027369869 3.14158682862116
-> > 3.14159720571187 3.14158902894078 3.14159558652131
+> 3.16666666666667 3.13968253968254 3.14207181707182 3.1414067184965
+> 3.14168318920776 3.14154198599778 3.14162380666784 3.14157215448297
+> 3.14160685134755 3.14158241824775 3.14160027369869 3.14158682862116
+> 3.14159720571187 3.14158902894078 3.14159558652131
 
 And, lastly, the 100th number using the Euler accelerated sequence is
 3.14159264423745. Interestingly, we can do accelerate an accelerated sequence,
 and so on, for example as in:
 
-> Stream<double> pis = StreamFactory.EulerTransform<double>(
->
->
->
->     StreamFactory.EulerTransform<double>(
->
->
->
->     StreamFactory.EulerTransform<double>(
->
->
->
->     CreatePiStream())));
+    Stream<double> pis = StreamFactory.EulerTransform<double>(
+      StreamFactory.EulerTransform<double>(
+        StreamFactory.EulerTransform<double>(
+          CreatePiStream())));
 
 Indexing into the 100th number here is 3.14159265358979, the same exact number
-returned by the Math.PI constant.
+returned by the `Math.PI` constant.
 

@@ -36,155 +36,118 @@ this data, possibly because one of the other arguments was in an invalid format
 or out of the valid range. It's terribly inefficient that the client had to
 compute this in the first place!
 
-Just playing around, I've thrown together a Thunk<T> class. It's nothing
+Just playing around, I've thrown together a `Thunk<T>` class. It's nothing
 special, but it seems to work rather nicely with C#'s new anonymous delegate
 syntax.
 
-public class Thunk<T>
-
-{
-
-    private T value;
-
-    private ThawFunction thaw;
-
-    private bool thawed;
-
-    public delegate T ThawFunction();
-
-    public Thunk(ThawFunction thaw)
-
+```
+    public class Thunk<T>
     {
+      private T value;
+      private ThawFunction thaw;
 
+      private bool thawed;
+
+      public delegate T ThawFunction();
+
+      public Thunk(ThawFunction thaw)
+      {
         this.thaw = thaw;
+      }
 
-    }
-
-    public T Value
-
-    {
-
+      public T Value
+      {
         get
-
         {
+          if (IsFrozen)
+          {
+            this.value = thaw();
+            thawed = true;
+          }
 
-            if (IsFrozen)
-
-            {
-
-                this.value = thaw();
-
-                thawed = true;
-
-            }
-
-            return this.value;
-
+          return this.value;
         }
+      }
 
-    }
-
-    public bool IsFrozen
-
-    {
-
+      public bool IsFrozen
+      {
         get { return !thawed; }
-
+      }
     }
-
-}
-
+```
 As an example of its usage, consider this test class:
 
-public class ThunkExample
-
-{
-
-    public static void Main(string[] args)
-
+    public class ThunkExample
     {
-
+      public static void Main(string[] args)
+      {
         ThunkExample ex = new ThunkExample();
 
-        string longText = "Pretend this is some long text that is expensive to
-split.";
+        string longText = "Pretend this is some long text that is expensive to split.";
 
         ex.WithThunk(longText);
 
         ex.WithoutThunk(longText);
+      }
 
-    }
+      public void WithThunk(string longText)
+      {
+        WithThunkDoWork(
+          longText.Length,
+          new Thunk<string[]>(delegate { return longText.Split(' '); }));
+      }
 
-    public void WithThunk(string longText)
-
-    {
-
-        WithThunkDoWork(longText.Length, new Thunk<string[]>(delegate { return
-longText.Split(' '); }));
-
-    }
-
-    public void WithThunkDoWork(int strlen, Thunk<string[]> words)
-
-    {
-
+      public void WithThunkDoWork(int strlen, Thunk<string[]> words)
+      {
         if (strlen > 2048)
-
             throw new ArgumentOutOfRangeException("strlen", "Must be <= 2048");
 
         Console.WriteLine("-- WithThunk --");
 
         foreach (string w in words.Value)
-
             Console.WriteLine(w);
+      }
 
-    }
-
-    public void WithoutThunk(string longText)
-
-    {
-
+      public void WithoutThunk(string longText)
+      {
         WithoutThunkDoWork(longText.Length, longText.Split(' '));
+      }
 
-    }
-
-    public void WithoutThunkDoWork(int strlen, string[] words)
-
-    {
-
+      public void WithoutThunkDoWork(int strlen, string[] words)
+      {
         if (strlen > 2048)
-
-            throw new ArgumentOutOfRangeException("strlen", "Must be <= 2048");
+          throw new ArgumentOutOfRangeException("strlen", "Must be <= 2048");
 
         Console.WriteLine("-- WithoutThunk --");
 
         foreach (string w in words)
-
             Console.WriteLine(w);
-
+      }
     }
 
-}
-
-If you take a look at the IL for the WithThunk vs. WithoutThunk method, you'll
-see a fundamental difference. Specifically, WithoutThunk computes a bunch of
+If you take a look at the IL for the `WithThunk` vs. `WithoutThunk` method, you'll
+see a fundamental difference. Specifically, `WithoutThunk` computes a bunch of
 local values, and leaves them on the stack for the following call to the
-WithoutThunkDoWork(...) method.
+`WithoutThunkDoWork(...)` method.
 
-  IL\_0009:  newarr     [mscorlib]System.Char IL\_000e:  stloc.0 IL\_000f:
-ldloc.0 IL\_0010:  ldc.i4.0 IL\_0011:  ldc.i4.s   32 IL\_0013:  stelem.i2
-IL\_0014:  ldloc.0 IL\_0015:  callvirt   instance string[]
-[mscorlib]System.String::Split(char[])
+    IL_0009:  newarr [mscorlib]System.Char
+    IL_000e:  stloc.0
+    IL_000f:  ldloc.0
+    IL_0010:  ldc.i4.0
+    IL_0011:  ldc.i4.s 32
+    IL_0013:  stelem.i2
+    IL_0014:  ldloc.0
+    IL_0015:  callvirt instance string[] [mscorlib]System.String::Split(char[])
 
-So the difference is that WithoutThunk evaluates the string[] argument at the
-call site, while WithThunk delays calculation to its first use in the \*DoWork
+So the difference is that `WithoutThunk` evaluates the `string[]` argument at the
+call site, while `WithThunk` delays calculation to its first use in the `*DoWork`
 methods. If the data is not used at all, it doesn't get calculated. Obviously
 this is a contrived example, but if the delayed operation was expensive -- e.g.
 as in the database example cited above -- this could have tangible benefits at
 runtime.
 
 A couple things would make this construct nicer sans first class CLR support.
-Consider if C# had mixins, for example. Thunk<T> could then derive from T, and
+Consider if C# had mixins, for example. `Thunk<T>` could then derive from `T`, and
 some compiler generated code could implement simple wrapper methods that
 forwarded any calls to its value field. Of course this would only work if all
 methods were virtual, but it's a start. We could then pass thunks around
@@ -192,12 +155,12 @@ pretending they were instances of a given type, and (in theory, at least)
 existing code would work with them just fine. Alternatively, overloading
 assignment and dereferencing operators might be nice, too. This would allow one
 to assign to and dereference a thunk as though it were just an instance of the
-type it wrapped. Similar to the Nullable<T> type, rarely does one actually want
+type it wrapped. Similar to the `Nullable<T>` type, rarely does one actually want
 to access and use it as a typical object.
 
 Lastly, a few caveats. All of this assumes that the performance hit resulting
 from late bound delegate calls is acceptable in your scenario. If you're
 wrapping an operation that has side effects, this is not a good idea for
-obvious reasons. (How cool would it be if C# hasd restrictions on
+obvious reasons. (How cool would it be if C# had restrictions on
 side-effects?)
 

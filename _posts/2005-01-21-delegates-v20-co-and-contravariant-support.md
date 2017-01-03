@@ -24,7 +24,7 @@ First, we have unbound delegates. These enable you to new up a delegate without
 having to supply an object instance at creation time. You just provide the
 method handle as you would with a static method, for example, and bind it
 lazily to an instance at invocation time. Interestingly, trying to pass null as
-the object pointer in v1.1 would die with a NullReferenceException.
+the object pointer in v1.1 would die with a `NullReferenceException`.
 
 C++/CLI has language syntax to support unbound delegates, but C# unfortunately
 does not. This feature is great for functional language-like algorithms and was
@@ -41,28 +41,32 @@ fact supported by C#. You get this feature for free and don't even need to
 change anything to take advantage of it. As an example of its use, consider
 this class hierarchy:
 
-> class A {} class B : A {} class C : B {}
+    class A {}
+    class B : A {}
+    class C : B {}
 
 And this delegate:
 
-> delegate B f(B b);
+    delegate B f(B b);
 
 In v1.1, the only valid method signature to which you could refer would have to
 have exact parameter and return types, e.g. as in
 
-> B g(B b);
+    B g(B b);
 
 Now in v2.0 you can bind to properly variant methods, too, e.g. as in
 
-> B h(A a); C h(B b); C h(A a);
+    B h(A a);
+    C h(B b);
+    C h(A a);
 
-Based on the type hierarchy defined above, C is covariant with respect to B,
-and thus can be substituted for the return type; conversely, A is contravariant
-with respect to B, and thus can be used as the parameter type. Any combination
+Based on the type hierarchy defined above, `C` is covariant with respect to `B`,
+and thus can be substituted for the return type; conversely, `A` is contravariant
+with respect to `B`, and thus can be used as the parameter type. Any combination
 of this variance is allowed. The following is not valid, however, as we're
 going the opposite direction (i.e. contravariant return, covariant parameters):
 
-> A h(C c);
+    A h(C c);
 
 Out and ref parameters continue to be treated as invariant for delegates, as do
 generic type parameters.
