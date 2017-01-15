@@ -625,6 +625,30 @@ publicly, privately, or not at all; where the base does or doesn't have a
 `Finalize`:
 
 <style>
+  table {
+    border-collapse: collapse;
+  }
+
+  table:not(:first-child) {
+    margin-top: 1rem;
+  }
+
+  table > thead > tr > th {
+    text-align: left;
+    border-bottom: 2px solid rgba(0, 0, 0, 0.69);
+  }
+
+  table > thead > tr > th,
+  table > thead > tr > td,
+  table > tbody > tr > th,
+  table > tbody > tr > td {
+    padding: 0.25rem 0.5rem;
+  }
+
+  table > tbody > tr + tr > td {
+    border-top: 1px solid rgba(0, 0, 0, 0.18);
+  }
+
   .border-left {
       border-left: 1px solid;
   }
@@ -707,7 +731,7 @@ publicly, privately, or not at all; where the base does or doesn't have a
     <td rowspan="4" class="border-left">
       if base version is not sealed then override
       public sealed
-    <td>
+    </td>
   </tr>
   <tr class="no-border">
     <td>publicly</td>
