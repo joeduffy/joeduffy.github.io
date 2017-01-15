@@ -271,7 +271,8 @@ Or
 {
   GC.SuppressFinalize(this);
   Dispose(true);
-}</pre></code>
+}
+</code></pre>
 </blockquote>
 
 We opted for the first ordering as it ensures that `GC.SuppressFinalize()` only
