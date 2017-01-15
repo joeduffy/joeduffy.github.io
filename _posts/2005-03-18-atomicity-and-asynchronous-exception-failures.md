@@ -21,7 +21,7 @@ I recently sent this out to an internal audience. I saw no reason not to share
 it with external folks, too... Although most of it probably won't be of
 interest, maybe somebody out there will get something useful from it.
 
-**Atomicity & Asynchronous Exception Failures**
+## Atomicity & Asynchronous Exception Failures
 
 We often get asked how Framework developers should write atomic paired
 operations that are reliable in the face of asynchronous exceptions, the
@@ -47,15 +47,15 @@ Frameworks," available here. In particular, the thread abort section #9. A lot
 of this will make its way into the Design Guidelines document in a more easily
 consumable form over the coming weeks.
 
-**A quick overview**
+## A quick overview
 
 We consider it the responsibility of Framework code to guarantee cleanup of
 state which spans AppDomains. It is also the responsibility of Framework code
 to block threads in a manner in which the CLR can take control of them. (For
-instance, use WaitHandle.WaitOne rather than a P/Invoke to
-WaitForSingleObject.) And it is also the responsibility of Framework code to
+instance, use `WaitHandle.WaitOne` rather than a P/Invoke to
+`WaitForSingleObject`). And it is also the responsibility of Framework code to
 tolerate AppDomain unloads. This includes tolerating a certain level of
-inconsistency, as seen by Finalize methods and AppDomain.DomainUnload events
+inconsistency, as seen by `Finalize` methods and `AppDomain.DomainUnload` events
 during an unload. There are some things Framework code isn't responsible for,
 though. It is entirely up to the host to deal with and contain possible
 inconsistent or corrupt state inside an AD that occurs as a result of raising
@@ -79,21 +79,21 @@ originating at seemingly any instruction in code running on a thread,
 essentially introducing nondeterministic races all over the place. By
 asynchronous, this just means that the target of a thread abort is different
 than the thread actually asking for the abort, either through the
-Thread.Abort() API or as part of the AppDomain unload process. Although saying
+`Thread.Abort()` API or as part of the `AppDomain` unload process. Although saying
 "any instruction" is a bit of an overstatement. We don't process thread aborts
 if you're executing inside a Constrained Execution Region (CER), finally block,
 catch block, .cctor, or while running inside unmanaged code. If an abort is
 requested while inside one of these regions, we process it as soon as you exit
 (assuming you're not nested inside another).
 
-Synchronous thread aborts (e.g. Thread.CurrentThread.Abort()) aren't a concern
+Synchronous thread aborts (e.g. `Thread.CurrentThread.Abort()`) aren't a concern
 at all since the result is analogous to manually throwing a new
-ThreadAbortException exception (with the exception that they get re-raised
+`ThreadAbortException` exception (with the exception that they get re-raised
 after catch blocks). This is completely deterministic and happens at well
 defined points in your code; thus, it doesn't carry the same risk of corruption
 as asynchronous aborts and won't be discussed further.
 
-**Atomic pairs**
+## Atomic pairs
 
 If you have a piece of code that introduces a state change, makes some side
 effect, or acquires or allocates a resource, for example, there will usually be
@@ -110,42 +110,40 @@ difficulty of trying to become resilient.
 
 As a simple example, all of this means that given trivial code like this:
 
-```
-using (Foo x = new Foo()) 
-{ 
-  // … 
-}
-```
+    using (Foo x = new Foo()) 
+    { 
+      // … 
+    }
 
-It can fail in nontrivial ways. For example, if a ThreadAbortException were
+It can fail in nontrivial ways. For example, if a `ThreadAbortException` were
 raised sometime between the invocation of Foo's constructor and the assignment
-to x, then Dispose() will never get called on the instance that got created.
-This is because at the end of the scope, x is still null (since it was never
-assigned a value). Assuming some resources got allocated in Foo's constructor,
-it's the responsibility of Foo's finalizer to clean up after itself at this
-point. It should also be noted this problem can also occur if Foo's constructor
+to `x`, then `Dispose()` will never get called on the instance that got created.
+This is because at the end of the scope, `x` is still null (since it was never
+assigned a value). Assuming some resources got allocated in `Foo`'s constructor,
+it's the responsibility of `Foo`'s finalizer to clean up after itself at this
+point. It should also be noted this problem can also occur if `Foo`'s constructor
 throws an exception, which is a particularly good reason to avoid throwing
 exceptions from constructors and to instead prefer acquisition of resources
 inside discrete methods.
 
-Now, hopefully Foo was written to have a finalizer that will eventually clean
-up such resources. Indeed, if Foo has a public constructor, then the author of
-Foo can have no guarantees that Foo is only used in the context of a 'using'
-statement. In other words, Foo would have no guarantees that its IDisposable
+Now, hopefully `Foo` was written to have a finalizer that will eventually clean
+up such resources. Indeed, if `Foo` has a public constructor, then the author of
+`Foo` can have no guarantees that `Foo` is only used in the context of a `using`
+statement. In other words, Foo would have no guarantees that its `IDisposable`
 interface is ever called on any of its instances. If we're talking about
 publicly constructable objects, the only guarantees worth considering are the
 guarantees made to the client code.
 
-While this does mean that whatever Foo introduced might take a little while to
+While this does mean that whatever `Foo` introduced might take a little while to
 roll back, since we're processing a thread abort it's safe for Framework code
-to assume that we are unloading an AppDomain and therefore will be executing
+to assume that we are unloading an `AppDomain` and therefore will be executing
 finalizers shortly anyhow, which means this is perfectly acceptable most of the
 time. (We talk about why this is so further below.) Here's where the paranoia
-starts. What if surrounding code assumes that Foo will always have been
-disposed of once control escapes the using statement? In this case, this
+starts. What if surrounding code assumes that `Foo` will always have been
+disposed of once control escapes the `using` statement? In this case, this
 assumption doesn't hold. If the surrounding code is privy to the internal
-details of what state Foo changes and how (such as knowing it creates a
-particular file on disk and cleans it up during Dispose, for example), it might
+details of what state `Foo` changes and how (such as knowing it creates a
+particular file on disk and cleans it up during `Dispose`, for example), it might
 be written against a false set of invariants. This might cause failures to
 ripple up the call stack.
 
@@ -153,10 +151,10 @@ Thankfully, as is the case with infrastructure exceptions like thread abort,
 the exception will be forced to re-raise at the tail end of any catch blocks.
 So long as catch blocks are written without such assumptions, at least
 non-catch code won't execute and see surprising state. And so long as any state
-which spans a single AppDomain is cleaned up in finalizers, such failures don't
+which spans a single `AppDomain` is cleaned up in finalizers, such failures don't
 seem quite so bad.
 
-**Some simple dos and don'ts**
+## Some simple dos and don'ts
 
 There are some simple things you can do to make your code more robust without
 stepping over the paranoia threshold. As I stated above, most people writing
@@ -167,7 +165,7 @@ section.
 fully from asynchronous exception.** In fact, the sole responsibility of code
 executing during a thread abort or an AD unload is to fix up corruption to
 state that spans AppDomains. By span, this just means that the management and
-lifetime of that state is orthogonal to that of the AppDomain executing code
+lifetime of that state is orthogonal to that of the `AppDomain` executing code
 which is manipulating it. It's safe to assume that, if code is subject to a
 thread abort, it will be shortly followed by an AD unload. Your goal should be
 to make "shortly" as short as possible, namely by reducing the amount of work
@@ -182,7 +180,7 @@ little about this. A malicious person who knows you end up violating a bunch of
 invariants because you didn't write code to deal with a thread abort might use
 this knowledge to find new and interesting exploits. If you're doing thread
 impersonation or some other scary security elevation, you likely want to
-guarantee (via ExecutionContext.Run) that it gets reverted before passing
+guarantee (via `ExecutionContext.Run`) that it gets reverted before passing
 control back up the stack, even in the face of thread aborts. Fortunately,
 aborting a thread does demand privileges not granted to most partial trust
 callers, but this does not rule out some bug exposing a reproducible way to
@@ -193,7 +191,7 @@ leaks.** Eager cleanup is useful, but you should always use a finalizer to
 guarantee that important state gets rolled back and that resources get
 reclaimed. Better yet, use
 [SafeHandle](http://blogs.msdn.com/bclteam/archive/2005/03/16/396900.aspx),
-especially for cross-AD state. SafeHandle uses critical finalization to ensure
+especially for cross-AD state. `SafeHandle` uses critical finalization to ensure
 execution even in the face of rude thread aborts and unloads. Regular
 finalizers won't get a chance to run in such situations. True, lazy cleanup can
 lead to undesirable intermediary situations, namely while the abort is getting
@@ -214,25 +212,23 @@ will result in a poor application experience for those who rely on your code.
 
 For example, consider this snippet:
 
-```
-ReaderWriterLock rwl = /*…*/; 
-bool taken = false; 
-try 
-{ 
-  try {} 
-  finally 
-  {
-    rwl.AcquireWriterLock(-1); 
-    taken = true; 
-  } 
-  // do some work 
-} 
-finally 
-{ 
-  if (taken) 
-    rwl.ReleaseWriterLock(); 
-}
-```
+    ReaderWriterLock rwl = /*…*/; 
+    bool taken = false; 
+    try 
+    { 
+      try {} 
+      finally 
+      {
+        rwl.AcquireWriterLock(-1); 
+        taken = true; 
+      } 
+      // do some work 
+    } 
+    finally 
+    { 
+      if (taken) 
+        rwl.ReleaseWriterLock(); 
+    }
 
 Yes, this prevents a normal asynchronous thread abort from occurring between
 the lock acquisition and entrance into the try block, but it also introduces
@@ -268,17 +264,17 @@ discrepancy between #4 and #5. This is true. Both of these constructs expand to
 code which does the acquisition right before entering the try block, which as
 we established in the opening section, could lead to missed deterministic
 cleanup. But as we've also already established, most of this shouldn't be a
-concern to you by now. In fact, the 'lock' statement has a hack to ensure that,
+concern to you by now. In fact, the `lock` statement has a hack to ensure that,
 at least in the absence of a rude abort or rude AD unload, the unlock will
 always occur. (Unfortunately, because it's a JIT hack, it's not guaranteed to
 happen across all platforms.) By using these constructs, we can optimize your
 code for free in the future if and when we reassess how better to make the code
-they emit (or how the JIT responds to such code, as in the case of 'lock') more
+they emit (or how the JIT responds to such code, as in the case of `lock`) more
 reliable in the face of asynchronous failures.
 
 **6. Never initiate asynchronous thread aborts in the Framework.** This is
 perhaps too strongly worded, but most code should never try to abort an opaque
-thread. Only sophisticated hosts who are prepared to deal with the ensuing
+thread. Only sophisticated hosts who are prepared to deal with the ensuring
 corruption and inconsistent state inside an AD should ever attempt to do this,
 and even then I emphasize the word "attempt." If you're doing this, know that
 we are recommending Framework code to be written with the assumption that an
@@ -295,7 +291,7 @@ science. Low level infrastructure code will use CERs more and more in the
 future, but for most of the code that builds on top of this infrastructure,
 CERs aren't necessary.
 
-**Stress failures, complexities**
+## Stress failures, complexities
 
 The picture of the world depicted above is a bit naive. For example, it
 suggests that orphaning an object lock is acceptable during an AD unload. While
@@ -329,7 +325,7 @@ difficult to predict that developers shouldn't proactively seek to fix problems
 that might not exist. Aggressive stress testing should uncover most of these
 problems.
 
-**Future direction**
+## Future direction
 
 Of course, this section is highly speculative. The topics raised in this paper
 are something that we (the CLR team) intend to look very closely at in the
@@ -340,33 +336,30 @@ language, and Framework support to get right.
 For example, we've begun to adopt the pattern of providing out parameters to
 confirm acquisition of a resource, where the acquisition occurs inside a
 protected region. This is mostly to avoid the difficulties explained in #3 and
-#4 above. For example, the Monitor.ReliableEnter method does just this (which
+#4 above. For example, the `Monitor.ReliableEnter` method does just this (which
 is only internally available, so you're out of luck if you're not shipping
 inside mscorlib). It executes inside a CER and sets a bit to indicate that
 you've successfully taken the lock. This alleviates concern about #4 above
-causing problems. For example, one could imagine the C# 'lock' keyword emitted
+causing problems. For example, one could imagine the C# `lock` keyword emitted
 code like this in the future:
 
-```
-bool took = false; 
-try 
-{ 
-  Monitor.ReliableEnter(foo, out took); // code inside synchronized block 
-} 
-finally 
-{ 
-  if (took) 
-    Monitor.Exit(foo); 
-}
-}
-```
+    bool took = false;
+    try
+    {
+      Monitor.ReliableEnter(foo, out took); // code inside synchronized block
+    }
+    finally
+    {
+      if (took)
+        Monitor.Exit(foo);
+    }
 
 So long as you abide by rule #5 above, you will get the benefits of whatever
 innovation we do for free, and this doesn't rely on any JIT hackery. We will
 certainly look for more places to introduce such a pattern—and even make it
 public, too.
 
-Dispose is unfortunately more difficult to solve. The goal here would be to
+`Dispose` is unfortunately more difficult to solve. The goal here would be to
 first make sure the construction of an object and assignment to a local
 variable is atomic, and second to ensure there's no window between the
 assignment and entrance into the try block. Without running constructors inside
@@ -377,7 +370,7 @@ resource allocations inside a protected factory method is one option, for
 instance, but only one that makes sense in a situation where you'd feel
 comfortable holding up an AD unload in order to protect state.
 
-_This guidance was creates mostly in response to constant feedback and
+_This guidance was created mostly in response to constant feedback and
 questions we receive on the topic. A lot of this will make its way into the
 Design Guidelines in the form of more prescriptive guidance. This paper was
 largely an exploratory exercise resulting from conversations and meetings on

@@ -30,14 +30,14 @@ in which it executes likely should indicate to callers what to expect should a
 failure occur; i.e. does an operation make (verifiable) guarantees regarding
 what actions it will take and succeed at to attempt recovery, or does it simply
 halt execution and throw an exception? One example of a language which employs
-such concepts is Eiffel. ( [I recommend this article for a bit more
+such concepts is Eiffel. ([I recommend this article for a bit more
 detail.](http://archive.eiffel.com/doc/manuals/technology/contract/))
 
 I (along with a number of other people, smarter than myself) assert that
 supporting such constructs, effectively embedding program correctness checks
 directly into the runtime, results in a more reliable, stable, and bug-free
 execution environment. With most mainstream programming languages lacking such
-support, proofs and verifications are encoded in manual if(x){throw;}
+support, proofs and verifications are encoded in manual `if(x){throw;}`
 statements, and proving correctness (hopefully!) captured in hand-crafted unit
 tests. Unfortunately, this significantly hampers readability, writability, and
 prevents any structured way to discover an operation's implicit contract,
@@ -51,40 +51,34 @@ While I've certainly not completed the thought process here, I wanted to walk
 through some random ideas I have on the subject. To be entirely transparent, my
 goal here is to add support to the C# language.
 
-**Language Support**
+## Language Support
 
 Type invariants can easily be supported by requiring types to implement a
 specific interface, for instance:
 
-  **interface** IContract
-
-  {
-
-    **bool** Invariant();
-
-  }
+    interface IContract
+    {
+      bool Invariant();
+    }
 
 Specifically, however, my primary focus will be on pre- and post-conditions,
 leaving the more difficult reliability and side effect support off the table
 for now. Additionally, I explicitly wanted to avoid mandating developers to
 sprinkle asserts throughout the main bodies of their code. (There are already
 frameworks [out there](http://www.codeproject.com/csharp/designbycontract.asp)
-that work in a similar fashion, and indeed System.Diagnostics.Debug.Assert() is
+that work in a similar fashion, and indeed `System.Diagnostics.Debug.Assert()` is
 a handy tool for this job.) Because we have not yet devised a means by which to
 express these constructs in code yet, the discussion will feel a bit loose to
 begin with. Hopefully it comes together as my brain dump progresses…
 
 Given the method:
 
-  **int** divide( **int** a, **int** b)
+    int divide(int a, int b)
+    {
+      return a / b;
+    }
 
-  {
-
-    **return** a / b;
-
-  }
-
-And its pre-condition: b != 0 and post-condition: returnValue == a / b, for
+And its pre-condition: `b != 0` and post-condition: `returnValue == a / b`, for
 example.
 
 The following pseudo-code represents one possible version of the desired
@@ -94,81 +88,55 @@ etc. are all interesting questions I will consider below in the Runtime
 Verification section. This section simply considers how to enable these
 expressions in the C# language.)
 
-  **int** divide( **int** a, **int** b)
+    int divide(int a, int b)
+    {
+      assert(b != 0);
 
-  {
+      int z = a / b;
 
-    assert(b != 0);
+      assert(z == a / b);
 
-    **int** z = a / b;
-
-    assert(z == a / b);
-
-    **return** z;
-
-  }
+      return z;
+    }
 
 More generally and accurately, an expanded operation should look something like
 this, ensuring an assignment to returnValue wherever the pre-expanded method
 body returns just prior to doing so:
 
-  **T** [...] operation( **T** a[...], ...)
-
-  {
-
-    // pre-condition asserts
-
-    T returnValue;
-
-    **bool** caughtFailure;
-
-    **try**
-
+    T [...] operation(T a[...], ...)
     {
+      // pre-condition asserts
 
-      // method body
+      T returnValue;
 
+      bool caughtFailure;
+
+      try
+      {
+        // method body
+      }
+      catch
+      {
+        caughtFailure = true;
+        throw;
+      }
+      finally
+      {
+        if (caughtFailure)
+          // reliability asserts
+        else
+          // post-condition asserts
+      }
     }
-
-    **catch**
-
-    {
-
-      caughtFailure = **true** ;
-
-      **throw** ;
-
-    }
-
-    **finally**
-
-    {
-
-      **if** (caughtFailure)
-
-        // reliability asserts
-
-      **else**
-
-        // post-condition asserts
-
-    }
-
-  }
 
 My initial approach was to consider using attributes. For example:
 
-  [PreCondition("b != 0")]
-
-  [PostCondition("returnValue == a / b")]
-
-  **int** divide( **int** a, **int** b)
-
-  {
-
-    **return** a / b;
-
-  }
+    [PreCondition("b != 0")]
+    [PostCondition("returnValue == a / b")]
+    int divide(int a, int b)
+    {
+      return a / b;
+    }
 
 This was attractive due to the reuse of an existing language feature, however
 was quickly discarded for a number of reasons. First, expressing constraints
@@ -184,33 +152,22 @@ trace behind only in the form of the expanded pseudo-code above. Perhaps rather
 than expressing constraints like a mini-scripting language, it could be
 replaced by simple method references,
 
-  **bool** Equal( **int** x, **int** y)
+    bool Equal(int x, int y)
+    {
+      return x == y;
+    }
 
-  {
+    bool NotEqual(int x, int y)
+    {
+      return x != y;
+    }
 
-    **return** x == y;
-
-  }
-
-  **bool** NotEqual( **int** x, **int** y)
-
-  {
-
-    **return** x != y;
-
-  }
-
-  [PreCondition("NotEqual(b, 0)")]
-
-  [PostCondition("Equal(returnValue, ???)")]
-
-  **int** divide( **int** a, **int** b)
-
-  {
-
-    **return** a / b;
-
-  }
+    [PreCondition("NotEqual(b, 0)")]
+    [PostCondition("Equal(returnValue, ???)")]
+    int divide(int a, int b)
+    {
+      return** a / b;
+    }
 
 But this feels very heavyweight and limited (i.e. you'd need to write a method
 for each condition; some out of the box ones could be provided, such as
@@ -225,13 +182,10 @@ more complex to implement, it feels like the right way to go about things. The
 options are endless (well, almost)… however, after a couple minutes of
 playing around, I've become particularly fond of the following syntax,
 
-  **int** [== a / b] divide( **int** a, **int** b[!= 0])
-
-  {
-
-    **return** a / b;
-
-  }
+    int [== a / b] divide(int a, int b[!= 0])
+    {
+      return a / b;
+    }
 
 The code within the brackets implicitly adopts the variable it straddles as its
 l-value. It isn't too much of a stretch to envision the code within each
@@ -253,59 +207,37 @@ certainly enables. I think we've got a workable solution!
 
 This has the end result of looking as though you'd written the following code:
 
-  [PreCondition("a != 0")]
-
-  [PostCondition("returnValue == a / b")]
-
-  **int** divide( **int** a, **int** b)
-
-  {
-
-    // pre-condition asserts
-
-    assert(a != 0);
-
-    **int** returnValue;
-
-    **bool** caughtFailure;
-
-    **try**
-
+    [PreCondition("a != 0")]
+    [PostCondition("returnValue == a / b")]
+    int divide(int a, int b)
     {
+      // pre-condition asserts
+      assert(a != 0);
 
-      // method body
+      int returnValue;
+      bool caughtFailure;
 
-      returnValue = a / b;
-
+      try
+      {
+        // method body
+        returnValue = a / b;
+      }
+      catch
+      {
+        caughtFailure = true;
+        throw;
+      }
+      finally
+      {
+        if (!caughtFailure)
+          // post-condition asserts
+          assert(returnValue == a / b);
+      }
     }
-
-    **catch**
-
-    {
-
-      caughtFailure = **true** ;
-
-      **throw** ;
-
-    }
-
-    **finally**
-
-    {
-
-      **if** (!caughtFailure)
-
-        // post-condition asserts
-
-        assert(returnValue == a / b);
-
-    }
-
-  }
 
 Now, just to implement it…
 
-**Runtime Verification**
+## Runtime Verification
 
 Some interesting questions arise while considering the implementation. I
 haven't thought enough about these problems to surface answers to them all, but

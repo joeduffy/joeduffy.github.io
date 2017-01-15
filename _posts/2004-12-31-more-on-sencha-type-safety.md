@@ -40,30 +40,28 @@ casting. This tends to have a viral nature up the AST, as once I start using
 erasure on a less elder node, everyone further up in the tree starts to see
 object as the inherited type. As an example, consider the Scheme if statement:
 
-> <if-stmt> ::= (if <test> <consequent> <alternate>)
+    <if-stmt> ::= (if <test> <consequent> <alternate>)
 
 This has the type:
 
-> <consequent> : **T** , <alternate> : **T**
-> ----------------------------------- <if-stmt> : **T**
->
->
->
-> <consequent> : **T1** , <alternate> : **T2**
-> ----------------------------------- <if-stmt> : **typeof(_object_)**
+    <consequent> : T , <alternate> : T
+    ----------------------------------- <if-stmt> : T
 
-In other words, if <consequent> and <alternate> are both of the same type **T**
-, the type of <if-stmt> is **T**. Otherwise, we erase to _ **object** _, and
-ensure to box up whatever is left on the stack; that is, if <test> evaluates to
-true and **T1** is a value type, we must box; if <test> is false and **T2** is
+    <consequent> : T1 , <alternate> : T2
+    ----------------------------------- <if-stmt> : typeof(object)
+
+In other words, if <consequent> and <alternate> are both of the same type `T`
+, the type of `<if-stmt>` is `T`. Otherwise, we erase to `object`, and
+ensure to box up whatever is left on the stack; that is, if `<test>` evaluates to
+`true` and `T1` is a value type, we must box; if `<test>` is `false` and `T2` is
 a value type, we must box.
 
 The chances to get stuck are numerous right now, and not just limited to funky
 type mismatches like that mentioned above. This is primarily my own fault, as
 any lambda gets generated as having an object return value. I theoretically can
 support arbitrary return types since each lambda is represented by a generic
-delegate (T1 Func1<T1,T2>(T2 a), T1 Func2<T1,T2,T3>(T2 a, T3 b), T1
-Func3<T1,T2,T3,T4>(T2 a, T3 b, T4 c), and so on). But for now, I just make sure
+delegate (`T1 Func1<T1,T2>(T2 a)`, `T1 Func2<T1,T2,T3>(T2 a, T3 b)`,
+`T1 Func3<T1,T2,T3,T4>(T2 a, T3 b, T4 c)`, and so on). But for now, I just make sure
 to box everything up before passing it to such a function as an argument, and
 ensure that from within the delegate I box any value types before returning.
 The bottom line here is that any time I encounter an application of a first
@@ -80,27 +78,48 @@ post](http://www.bluebytesoftware.com/blog/PermaLink.aspx?guid=e748f403-94cc-48e
 with the (+ 1 2 3 4 5) Scheme expression looks a bit better now. Since I can
 now bind to the type-safe version, the IL looks like this:
 
-> .method public hidebysig static void  Main(string[] A\_0) cil managed {
-> .entrypoint // Code size       91 (0x5b) .maxstack  4 .locals init ([0]
-> float64[] V\_0) IL\_0000:  ldc.i4.4 IL\_0001:  newarr
-> [mscorlib]System.Double IL\_0006:  stloc      V\_0 IL\_000a:  nop IL\_000b:
-> nop IL\_000c:  ldc.r8     1.  IL\_0015:  ldloc.0 IL\_0016:  ldc.i4.0
-> IL\_0017:  ldc.r8     2.  IL\_0020:  stelem.r8 IL\_0021:  ldloc.0 IL\_0022:
-> ldc.i4.1 IL\_0023:  ldc.r8     3.  IL\_002c:  stelem.r8 IL\_002d:  ldloc.0
-> IL\_002e:  ldc.i4.2 IL\_002f:  ldc.r8     4.  IL\_0038:  stelem.r8 IL\_0039:
-> ldloc.0 IL\_003a:  ldc.i4.3 IL\_003b:  ldc.r8     5.  IL\_0044:  stelem.r8
-> IL\_0045:  ldloc.0 IL\_0046:  call       float64
-> [SenchaRuntimeLibrary]Sencha.Runtime.StandardSchemeFunctions::op\_Add(float64,
-> float64[]) IL\_004b:  box        [mscorlib]System.Double IL\_0050:  call
-> string [SenchaRuntimeLibrary]Sencha.Runtime.RuntimeHelper::ToString(object)
-> IL\_0055:  call       void [mscorlib]System.Console::WriteLine(string)
-> IL\_005a:  ret } // end of method Program::Main
->
+    .method public hidebysig static void  Main(string[] A_0) cil managed {
+      .entrypoint
+      // Code size       91 (0x5b)
+      .maxstack  4
+      .locals init (
+        [0] float64[] V_0
+      )
+      IL_0000:  ldc.i4.4
+      IL_0001:  newarr [mscorlib]System.Double
+      IL_0006:  stloc      V_0
+      IL_000a:  nop
+      IL_000b:  nop
+      IL_000c:  ldc.r8     1.
+      IL_0015:  ldloc.0
+      IL_0016:  ldc.i4.0
+      IL_0017:  ldc.r8     2.
+      IL_0020:  stelem.r8
+      IL_0021:  ldloc.0
+      IL_0022:  ldc.i4.1
+      IL_0023:  ldc.r8     3.
+      IL_002c:  stelem.r8
+      IL_002d:  ldloc.0
+      IL_002e:  ldc.i4.2
+      IL_002f:  ldc.r8     4.
+      IL_0038:  stelem.r8
+      IL_0039:  ldloc.0
+      IL_003a:  ldc.i4.3
+      IL_003b:  ldc.r8     5.
+      IL_0044:  stelem.r8
+      IL_0045:  ldloc.0
+      IL_0046:  call       float64 [SenchaRuntimeLibrary]Sencha.Runtime.StandardSchemeFunctions
+                                     ::op_Add(float64, float64[])
+      IL_004b:  box        [mscorlib]System.Double
+      IL_0050:  call       string [SenchaRuntimeLibrary]Sencha.Runtime.RuntimeHelper::ToString(object)
+      IL_0055:  call       void [mscorlib]System.Console::WriteLine(string)
+      IL_005a:  ret
+    } // end of method Program::Main
 
-Note that if I were to do something like (+ 1 2 ((lambda () 3)) 4 5), it breaks
+Note that if I were to do something like `(+ 1 2 ((lambda () 3)) 4 5)`, it breaks
 down immediately and erases everything. It should be obvious that this can bind
-to the op\_Add(double, double[]) overload, but it actually can't. This is
+to the `op_Add(double, double[])` overload, but it actually can't. This is
 because, as stated above, all lambdas return object. Thus, when I evaluate
-((lambda () 3)), the evaluation type of this expression turns out to be object.
+`((lambda () 3))`, the evaluation type of this expression turns out to be object.
 This will be a focus for optimizations in the future.
 

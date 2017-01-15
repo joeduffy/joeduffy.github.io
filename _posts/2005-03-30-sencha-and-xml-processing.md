@@ -34,19 +34,21 @@ experimentation.
 
 For example, generating SOAP is quite simple, etc.:
 
-> '(Envelope (:ns s) (@xmlns:s "http://www.w3.org/2003/05/soap-envelope")
-> (@xmlns:wsa "http://schemas.xmlsoap.org/ws/2004/08/addressing") (@xmlns:f123
-> "http://www.fabrikam123.example/svc53") (Header (:ns s) (MessageID (:ns wsa)
-> "uuid:aaaabbbb-cccc-dddd-eeee-ffffffffffff") (ReplyTo (:ns wsa) (Address (:ns
-> wsa) "http://business456.example/client1")) (To (@mustUnderstand "1") (:ns
-> wsa) "mailto:joe@fabrikam123.example") (Action (:ns wsa) (@mustUnderstand
-> "1") "http://fabrikam123.example/mail/Delete")) (Body (:ns s) (Delete (:ns
-> f123) (maxCount 42))))
+    '(Envelope (:ns s)
+      (@xmlns:s "http://www.w3.org/2003/05/soap-envelope")
+      (@xmlns:wsa "http://schemas.xmlsoap.org/ws/2004/08/addressing")
+      (@xmlns:f123 "http://www.fabrikam123.example/svc53")
+      (Header (:ns s)
+        (MessageID (:ns wsa) "uuid:aaaabbbb-cccc-dddd-eeee-ffffffffffff")
+        (ReplyTo (:ns wsa) (Address (:ns wsa) "http://business456.example/client1"))
+        (To (@mustUnderstand "1") (:ns wsa) "mailto:joe@fabrikam123.example")
+        (Action (:ns wsa) (@mustUnderstand "1") "http://fabrikam123.example/mail/Delete"))
+      (Body (:ns s) (Delete (:ns f123) (maxCount 42))))
 
 Similar to what's possible in C-omega, quasiquotations enable you to embed
 calculations in the message. For example, the body node could have been:
 
-> '(Body (:ns s) ,(generateSoapBody ,42))
+    '(Body (:ns s) ,(generateSoapBody ,42))
 
 Which has the nice effect of substituting the return value of the
 generateSoapBody function, passing 42 as its argument.
