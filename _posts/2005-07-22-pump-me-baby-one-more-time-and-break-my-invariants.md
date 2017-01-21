@@ -33,7 +33,7 @@ at PDC, where I'll discuss such "to the metal" details.
 
 OK. I've hyped it up. But I don't really have that much to say.
 
-**Using monitors for critical sections**
+### Using monitors for critical sections
 
 When somebody accesses a shared piece of memory from multiple units of parallel
 execution, some form of locking is usually necessary. For a very small class of
@@ -42,35 +42,53 @@ rocket science. Most people give up quickly if they even think to try in the
 first place (except for double checked locking, which is often copied from some
 book or website on the topic). If it's a simple primitive operation,
 interlocked operations might work. But in other cases, you need a coarser
-grained critical section-ish lock. For manager programmers, this is Monitor
-(i.e. 'lock' keyword in C#).
+grained critical section-ish lock. For managed programmers, this is `Monitor`
+(i.e. `lock` keyword in C#).
 
 A class that has a private shared static variable, for example, would lock on
-it before mutating its contents. Imagine we have a class Coords:
+it before mutating its contents. Imagine we have a class `Coords`:
 
-> class Coords { public int x; public int y; }
+    class Coords
+    {
+      public int x;
+      public int y;
+    }
 
-Our program decides it needs to maintain the invariant that x == y (don't ask
+Our program decides it needs to maintain the invariant that `x == y` (don't ask
 why), and here's the code a developer might write:
 
-> class MyComponent : ServicedComponent { private static Coords c = new
-> Coords(); void DoWork() { lock (myCoords) { myCoords.x++; DoMoreWork();
-> myCoords.y++; } } void DoMoreWork() { /\* code that tolerates broken
-> invariants \*/ } }
+    class MyComponent : ServicedComponent
+    {
+      private static Coords myCoords = new Coords();
+      
+      void DoWork()
+      {
+        lock (myCoords)
+        {
+          myCoords.x++;
+          DoMoreWork();
+          myCoords.y++; }
+      }
+      
+      void DoMoreWork()
+      {
+        /* code that tolerates broken invariants */
+      }
+    }
 
-So long as we never leak the myCoords instance (raising the risk somebody
+So long as we never leak the `myCoords` instance (raising the risk somebody
 accesses it w/out locking), we're safe. Right?
 
 Not quite.
 
-**Enter STA**
+### Enter STA
 
-You might not have noticed that MyComponent derives from ServicedComponent.
-This is a ContextBoundObject that lives by all of the standard COM component
+You might not have noticed that `MyComponent` derives from `ServicedComponent`.
+This is a `ContextBoundObject` that lives by all of the standard COM component
 rules. If it's instantiated inside an STA (Single Threaded Apartment), all
 access is serialized, as is the case with ordinary COM components. Now, this
 might seem a tad esoteric, but consider if you have a class that's called by a
-user who wrote their own ServicedComponent. It might seem more real, and is
+user who wrote their own `ServicedComponent`. It might seem more real, and is
 equally as problematic.
 
 Chris's article above talks at great length about message pumping. STAs have to
@@ -80,62 +98,75 @@ fairness issues at best and incorrect code at worst. We pump for you so you
 don't need to worry about it, but we might do it in places you might not
 expect. This ends up being nearly anywhere you can block.
 
-Let's pretend DoMoreWork above did this:
+Let's pretend `DoMoreWork` above did this:
 
-> void DoMoreWork() { Thread.CurrentThread.Join(0); }
+    void DoMoreWork()
+    {
+      Thread.CurrentThread.Join(0);
+    }
 
-Join waits for the target thread to complete execution or the timeout to
+`Join` waits for the target thread to complete execution or the timeout to
 expire, whichever comes first. Since we call it on our own thread, it should be
 clear which occurs first. (You _are _still awake, right?)
 
 When you pump, code can reenter on top of your existing stack. Let's look at
 the entire snippet of code:
 
-> [ComVisible(true)] public class MyComponent : ServicedComponent { private
-> static Coords c = new Coords();
->
->
->
->     public void DoWork(int n) { Console.WriteLine("{0}->", n);
->
->
->
->         lock (c) { // Check invariant x==y upon entry int x = c.x, y = c.y;
->         Console.WriteLine("{0}:{1},{2}", n, x, y); Debug.Assert(x == y,
->         string.Format("Broken invariant on entry (#{0}, {1}!={2})", n, x,
->         y));
->
->
->
->             c.x++; DoMoreWork(); c.y++;
->
->
->
->             // Ensure invariant x==y upon exit x = c.x; y = c.y;
->             Debug.Assert(x == y, string.Format("Broken invariant on exit
->             (#{0}, {1}!={2})", n, x, y)); }
->
->
->
->         Console.WriteLine("{0}<-", n); }
->
->     private void DoMoreWork() { Thread.CurrentThread.Join(0); } }
+    [ComVisible(true)]
+    public class MyComponent : ServicedComponent
+    {
+      private static Coords c = new Coords();
 
-Recap: The call to DoMoreWork from the DoWork function occurs while invariants
-are broken. And DoMoreWork (or a function that DoMoreWork calls, e.g. some
+      public void DoWork(int n)
+      {
+        Console.WriteLine("{0}->", n);
+
+        lock (c)
+        {
+          // Check invariant x==y upon entry
+          int x = c.x, y = c.y;
+          Console.WriteLine("{0}:{1},{2}", n, x, y);
+
+          Debug.Assert(
+            x == y,
+            string.Format("Broken invariant on entry (#{0}, {1}!={2})", n, x, y));
+
+          c.x++;
+          DoMoreWork();
+          c.y++;
+
+          // Ensure invariant x==y upon exit
+          x = c.x; y = c.y;
+
+          Debug.Assert(
+            x == y,
+            string.Format("Broken invariant on exit (#{0}, {1}!={2})", n, x, y));
+        }
+
+        Console.WriteLine("{0}<-", n);
+      }
+
+      private void DoMoreWork()
+      {
+        Thread.CurrentThread.Join(0);
+      }
+    }
+
+Recap: The call to `DoMoreWork` from the `DoWork` function occurs while invariants
+are broken. And `DoMoreWork` (or a function that `DoMoreWork` calls, e.g. some
 opaque inside the Framework) pumps. This is a recipe for bad things.
 
-I also added some Console.WriteLines and Debug.Asserts in there so you can
+I also added some `Console.WriteLine`s and `Debug.Assert`s in there so you can
 watch the world fall down.
 
-**Breaking monitors with reentrancy**
+### Breaking monitors with reentrancy
 
 The situation we need to get into in order to show off this neat parlor trick
 is as follows:
 
-- A bunch of MyComponents are created inside an STA server;
+- A bunch of `MyComponent`s are created inside an STA server;
 
-- We try to make a load of calls to DoWork on those components from an MTA
+- We try to make a load of calls to `DoWork` on those components from an MTA
   client;
 
 - This requires that the MTA code reenter the STA to execute;
@@ -146,37 +177,43 @@ is as follows:
 It's not quite as difficult as it sounds, thanks to the CLR's accomodating
 interaction with the world of COM.
 
-> class Program { const int threadCount = 5;
->
->
->
->     [STAThread] static void Main() { // Create our components in our STA
->     server (note the STAThread on Main) MyComponent[] components = new
->     MyComponent[threadCount]; for (int i = 0; i < threadCount; i++)
->     components[i] = new MyComponent();
->
->
->
->         // Instantiate a bunch of MTA threads to work on the STA component
->         List<Thread> threads = new List<Thread>(threadCount); for (int i = 0;
->         i < threadCount; i++) { int v = i; Thread t = new Thread(delegate ()
->         { components[v].DoWork(v); });
->         t.SetApartmentState(ApartmentState.MTA); // default--here for
->         illustration threads.Add(t); }
->
->
->
->         // Let 'em loose threads.ForEach(delegate (Thread t) { t.Start(); });
->
->
->
->         // If you haven't Aborted by now, wait for completion
->         threads.ForEach(delegate (Thread t) { t.Join(); }); } }
+    class Program
+    {
+      const int threadCount = 5;
+
+      [STAThread]
+      static void Main()
+      {
+        // Create our components in our STA server (note the STAThread on Main)
+        MyComponent[] components = new MyComponent[threadCount];
+
+        for (int i = 0; i < threadCount; i++)
+          components[i] = new MyComponent();
+
+        // Instantiate a bunch of MTA threads to work on the STA component
+        List<Thread> threads = new List<Thread>(threadCount);
+        
+        for (int i = 0; i < threadCount; i++)
+        {
+          int v = i;
+
+          Thread t = new Thread(delegate () { components[v].DoWork(v); });
+          t.SetApartmentState(ApartmentState.MTA); // default--here for illustration
+          threads.Add(t);
+        }
+
+        // Let 'em loose
+        threads.ForEach(delegate (Thread t) { t.Start(); });
+
+        // If you haven't Aborted by now, wait for completion
+        threads.ForEach(delegate (Thread t) { t.Join(); });
+      }
+    }
 
 This glob of code does exactly what my bullets indicate. The whole thing can be
 downloaded [here](http://www.bluebytesoftware.com/code/05/07/serviced.txt).
 Note: ensure you compile this with the DEBUG symbol defined, otherwise your
-calls to Debug.Assert won't be present and you won't get the desired effect of
+calls to `Debug.Assert` won't be present and you won't get the desired effect of
 being bombarded with assert dialogs.
 
 It's quite nice that the CLR goes out of its way to marshal across contexts,
@@ -186,10 +223,29 @@ It's trying to make our application responsive and fair.
 
 Unfortunately, I see the following output when I run the code:
 
-> Constructing components in a STA server...  Instantiating 5 MTA threads to
-> operate on our components...  Starting up MTA threads...  Waiting for MTA
-> completion...  3-> 3:0,0 3<- 2-> 2:1,1 2<- 1-> 1:2,2 0-> 0:3,2 4-> 4:4,2 4<-
-> 0<- 1<-
+> Constructing components in a STA server...
+>
+> Instantiating 5 MTA threads to operate on our components...
+>
+> Starting up MTA threads...
+>
+> Waiting for MTA completion...
+>
+> 3-> 3:0,0 3<-
+>
+> 2-> 2:1,1 2<-
+>
+> 1-> 1:2,2
+>
+> 0-> 0:3,2
+>
+> 4-> 4:4,2
+>
+> 4<-
+>
+> 0<-
+>
+> 1<-
 
 Notice the "3,2" line. That prints out "x,y"... and does so at a point in the
 program where they should always be equal. Unfortunately, we've got reentrant

@@ -32,7 +32,7 @@ transferrable between technologies.
 He mentions in the book that all of the appendices are available on the web, so
 I did [a quick
 search](http://www.google.com/search?hl=en&q=c%2B%2B+stroustrup+exception+safety&btnG=Google+Search).
-Voila! [Here it is [PDF].](http://www.research.att.com/~bs/3rd_safe.pdf)
+Voila! [Here it is [PDF].](http://www.stroustrup.com/3rd_safe.pdf)
 
 Even if you're not a C++-er, you'll find a ton of great information in that
 article. Enjoy. I did (again).
