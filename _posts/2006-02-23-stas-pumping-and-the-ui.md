@@ -18,8 +18,8 @@ author:
   last_name: ''
 ---
 When you perform a wait on the CLR, we make sure it happens in an STA-friendly
-manner. This entails using msg-waits, such as MsgWaitForMultipleObjectsEx
-and/or CoWaitForMultipleHandles. Doing so ensures we pick up and dispatch
+manner. This entails using msg-waits, such as `MsgWaitForMultipleObjectsEx`
+and/or `CoWaitForMultipleHandles`. Doing so ensures we pick up and dispatch
 incoming RPC work mid-stack, while the STA isn't necessarily sitting in a
 top-level message loop. In fact, an STA that doesn't pump temporarily can
 easily lead to temporary and permanent hangs (i.e. deadlocks), especially in
@@ -37,7 +37,7 @@ pump the special "WIN95 RPC Wmsg", "OleMainThreadWndClass", and
 
 If you were on a UI and you pumped your window's message queue, you could end
 up dispatching new events before old events had completed. If you dispatched a
-WM\_CLOSE message on the same stack you were doing some other UI processing,
+`WM_CLOSE` message on the same stack you were doing some other UI processing,
 you'd destroy the window before that other processing was done. Without the GUI
 message loop taking this into account somehow, you'd crash. There are other
 factors. Imagine you were processing a click event that required movement of

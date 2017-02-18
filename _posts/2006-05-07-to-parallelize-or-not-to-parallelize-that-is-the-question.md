@@ -47,27 +47,27 @@ the machine state, which can aid in this process, e.g.:
 
 - [System.Environment.ProcessorCount](http://msdn.microsoft.com/library/default.asp?url=/library/en-us/sysinfo/base/getsysteminfo.asp): 
   This property (new in 2.0) tells you how many hardware threads are on the 
-system. Note that the number includes hyper-threads on Intel architectures, 
-which really shouldn't be counted as a full parallel unit when deciding whether 
-to parallelize your code. 
-[GetSystemInfo](http://msdn.microsoft.com/library/default.asp?url=/library/en-us/sysinfo/base/getsysteminfo.asp) 
-can give you richer information, albeit with some P/Invoke nonsense. We should 
-give a better interface into this data for the next version of the Framework.
+  system. Note that the number includes hyper-threads on Intel architectures, 
+  which really shouldn't be counted as a full parallel unit when deciding whether 
+  to parallelize your code. 
+  [GetSystemInfo](http://msdn.microsoft.com/library/default.asp?url=/library/en-us/sysinfo/base/getsysteminfo.asp) 
+  can give you richer information, albeit with some P/Invoke nonsense. We should 
+  give a better interface into this data for the next version of the Framework.
 
 - Processor:% Processor Time performance counter: This gives you the % 
   utilization of a specific processor and allows asynchronous querying. Using 
-it, you could query each processor on the system to figure out what the overall 
-system utilization is, and specifically how many sub-parts to break your problem 
-into. The CLR thread-pool uses this today to decide when to inject or retire 
-threads. You can use it too to determine whether introducing parallelism is a 
-wise thing to do. Although your code may not have a lot of "context," this is 
-often a good heuristic that even leaf level algorithms can use.
+  it, you could query each processor on the system to figure out what the overall 
+  system utilization is, and specifically how many sub-parts to break your problem 
+  into. The CLR thread-pool uses this today to decide when to inject or retire 
+  threads. You can use it too to determine whether introducing parallelism is a 
+  wise thing to do. Although your code may not have a lot of "context," this is 
+  often a good heuristic that even leaf level algorithms can use.
 
 - System:Processor Queue Length performance counter: For more sophisticated 
   situations, you can not only key off of the processor utilization, but also 
-off the queue length of processes waiting to be scheduled. For a really deep 
-queue (say, more than 2x the number of processors), introducing additional work 
-is likely to lead to unnecessary waiting.
+  off the queue length of processes waiting to be scheduled. For a really deep 
+  queue (say, more than 2x the number of processors), introducing additional work 
+  is likely to lead to unnecessary waiting.
 
 Using these are apt to lead to statistically good decisions. But clearly this is 
 a heuristic, and as such the state of the system could change dramatically 

@@ -19,39 +19,39 @@ author:
 ---
 Lock free code is hard. But it can come in handy in a pinch.
 
-There have been some recent internal discussions about the IAsyncResult pattern 
+There have been some recent internal discussions about the `IAsyncResult` pattern 
 and performance. Namely that, for high throughput scenarios, where the cost of 
 the asynchronous work is small relative to the cost of instantiating new 
-objects, there is a considerable overhead to using the IAsyncResult pattern. 
+objects, there is a considerable overhead to using the `IAsyncResult` pattern. 
 This is due to two allocations necessary to implement the pattern: (1) the 
-object that implements IAsyncResult itself, and (2) the WaitHandle for consumers 
-of the API who must access the IAsyncResult.AsyncWaitHandle property. I will 
+object that implements `IAsyncResult` itself, and (2) the `WaitHandle` for consumers 
+of the API who must access the `IAsyncResult.AsyncWaitHandle` property. I will 
 address (2) in this article, since it is much more expensive than (1).
 
 _Update: I've posted an [addendum to this article 
-here](http://www.bluebytesoftware.com/blog/PermaLink,guid,df20d0c7-4bf7-443e-8601-b6aa4355a9b1.aspx)._
+here](http://joeduffyblog.com/2006/06/11/implementing-a-highperf-iasyncresult-addendum/)._
 
-**Rendezvousing**
+### Rendezvousing
 
-Just to recap, there are four broad ways to rendezvous with the IAsyncResult 
+Just to recap, there are four broad ways to rendezvous with the `IAsyncResult` 
 pattern:
 
-1. You can poll the IAsyncResult.IsCompleted boolean flag. If it's true, the 
-   work has completed. If it's false, you can go off and do some interesting 
+1. You can poll the `IAsyncResult.IsCompleted` boolean flag. If it's `true`, the 
+   work has completed. If it's `false`, you can go off and do some interesting 
    work, coming back to check it once in a while.
 
-2. Supplying a delegate callback to the BeginXxx method. This callback is 
-   invoked when the work completes, passing the IAsyncResult as an argument to 
+2. Supplying a delegate callback to the `BeginXxx` method. This callback is 
+   invoked when the work completes, passing the `IAsyncResult` as an argument to 
    your callback.
 
-3. Waiting on the IAsyncResult.AsyncWaitHandle. This is a Windows WaitHandle, 
-   typically a ManualResetEvent, which allows you to block for a while until the 
+3. Waiting on the `IAsyncResult.AsyncWaitHandle`. This is a Windows `WaitHandle`, 
+   typically a `ManualResetEvent`, which allows you to block for a while until the 
    work completes.
 
-4. Call the EndXxx method. Internally, this will often check IsCompleted and, if 
-   it's false, will wait on the AsyncWaitHandle.
+4. Call the `EndXxx` method. Internally, this will often check `IsCompleted` and, if 
+   it's `false`, will wait on the `AsyncWaitHandle`.
 
-Notice that in cases 1 and 2, the WaitHandle isn't even needed. And in case 4, 
+Notice that in cases 1 and 2, the `WaitHandle` isn't even needed. And in case 4, 
 it's only needed some fraction of the time. Well, it turns out we can avoid 
 allocating it altogether for those cases where it's not used. We can "just" 
 lazily allocate it. Note that for asynchronous IO, the majority of code will use 
@@ -59,41 +59,41 @@ method 2 above. For scalable servers, we often don't want to tie up an extra
 thread polling or waiting for completion, since that contradicts the primary 
 benefits of Windows IO Completion Ports.
 
-**The Requirements**
+### The Requirements
 
 Notice I enclosed the word just above in quotes when mentioning lazy allocation. 
 We could of course use a lock. But that would require that we allocate an object 
 to lock against. We could of course just lock 'this', but that also comes with a 
 performance overhead. We can get away with lock free code in this case, so long 
 as we recognize a very important race condition that we must tolerate. Imagine 
-this case: Thread A checks IsCompleted. It's false. So it accesses the 
-AsyncWaitHandle property, triggering lazy allocation. Meanwhile, Thread B 
-finishes the async work, and sets IsCompleted to true. We need to ensure a 
+this case: Thread A checks `IsCompleted`. It's `false`. So it accesses the 
+`AsyncWaitHandle` property, triggering lazy allocation. Meanwhile, Thread B 
+finishes the async work, and sets `IsCompleted` to `true`. We need to ensure a 
 deadlock doesn't ensue.
 
 This race could go one of two ways:
 
-1. Thread A lazily allocates and publishes the WaitHandle before Thread B sets 
-   IsCompleted to true. Thread B must now witness a non-null WaitHandle when it 
-checks, and it must return the WaitHandle in the signaled state. If it returns 
-an unsigned WaitHandle, Thread A will wait on it, and never be woken up. This is 
-a deadlock.
+1. Thread A lazily allocates and publishes the `WaitHandle` before Thread B sets 
+   `IsCompleted` to `true`. Thread B must now witness a non-null `WaitHandle` when it 
+   checks, and it must return the `WaitHandle` in the signaled state. If it returns 
+   an unsigned `WaitHandle`, Thread A will wait on it, and never be woken up. This is 
+   a deadlock.
 
-2. Thread B finishes first, setting IsCompleted to true, and seeing a null 
-   WaitHandle. Thread A must see IsCompleted as true and consequently return the 
-event in a signaled state. Just like before, if this doesn't happen, Thread A 
-will wait on an unsigned WaitHandle which will never be signaled. Deadlock.
+2. Thread B finishes first, setting `IsCompleted` to `true`, and seeing a `null` 
+   `WaitHandle`. Thread A must see `IsCompleted` as `true` and consequently return the 
+   event in a signaled state. Just like before, if this doesn't happen, Thread A 
+   will wait on an unsigned `WaitHandle` which will never be signaled. Deadlock.
 
-To ensure both of these cases work, Thread A's read of the WaitHandle field and 
-Thread B's read of IsCompleted must be preceded by a memory barrier. This 
+To ensure both of these cases work, Thread A's read of the `WaitHandle` field and 
+Thread B's read of `IsCompleted` must be preceded by a memory barrier. This 
 ensures the memory accesses aren't reordered at the compiler or processor level, 
 either of which could lead to the deadlock situations we are worried about. The 
 CLR 2.0's memory model is not sufficient even with volatile loads, because the 
 load acquire can still move "before" the store release.
 
-**An Implementation**
+### An Implementation
 
-Here is one simplistic implementation of a FastAsyncResult class, with ample 
+Here is one simplistic implementation of a `FastAsyncResult` class, with ample 
 comments embedded within to explain things:
 
 ```
@@ -198,7 +198,7 @@ finalization to close it). This is an example of tolerating races instead of
 preventing them, and is similar to the design we use for jitting code in the 
 runtime, for example.
 
-**Some Initial Results**
+### Some Initial Results
 
 I'll do a more thorough analysis as follow up to my next post, including 
 profiling traces. But the initial results are promising.
@@ -225,7 +225,7 @@ Size         Normal       Lazy         Improvement
 ```
 
 As we would expect, as the ratio of the cost of computation to the cost of 
-allocating the WaitHandle increases (with an increased "size" of the fibonacci 
+allocating the `WaitHandle` increases (with an increased "size" of the fibonacci 
 series being calculated), the observed performance improvement also decreases. 
 For very small computations, however, this technique can really pay off. In the 
 case of high performance asynchronous IO, for example, where completion often 

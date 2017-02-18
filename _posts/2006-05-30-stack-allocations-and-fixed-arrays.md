@@ -58,7 +58,7 @@ unsafe class Program {
 The use of this is of course almost always limited to unmanaged interop 
 scenarios. For example, there's at least one place in the BCL where we use this 
 to stack allocate the binary layout of a security descriptor that we then pass 
-into the Win32 CreateMutex API, which avoids having to create a new interop 
+into the Win32 `CreateMutex` API, which avoids having to create a new interop 
 struct. (Whether such hacks are a good thing to put in our code-base is another 
 topic altogether...)
 
