@@ -26,11 +26,11 @@ PTEB NtCurrentTeb();
 This gives you access to the current thread's TEB (thread environment block), 
 which is a per-thread data structure that holds things like a pointer to the SEH 
 exception chain, stack range, TLS, fiber information, and so forth. This 
-function actually returns you a PTEB, which is defined as \_TEB\*. \_TEB is an 
+function actually returns you a PTEB, which is defined as `_TEB*`. `_TEB` is an 
 internal data structure defined in winternl.h, and consists of a bunch of byte 
-arrays. You can cast this to PNT\_TIB (defined as \_NT\_TIB\*), which gives you 
-access to the data in a strongly typed way. And \_NT\_TIB is a documented data 
-structure, unlike \_TEB, meaning you can actually rely on it not breaking 
+arrays. You can cast this to `PNT_TIB` (defined as `_NT_TIB*`), which gives you 
+access to the data in a strongly typed way. And `_NT_TIB` is a documented data 
+structure, unlike `_TEB`, meaning you can actually rely on it not breaking 
 between versions of Windows.
 
 For example, this code prints out the current thread's stack base and limit. The 
@@ -73,11 +73,11 @@ printf("Base = %p, Limit = %p\r\n",
     pStackBase, pStackLimit);
 ```
 
-Unfortunately, the \_asm keyword is not supported on all architectures, so the 
+Unfortunately, the `_asm` keyword is not supported on all architectures, so the 
 above code is only guaranteed to work on x86 (e.g. the VC++ Intel Itanium 
 compiler doesn't support it). Furthermore, the hardcoded offsets 04h and 08h are 
 clearly wrong on 64-bit: you need more than 4 bytes to represent a 64-bit 
-pointer. NtCurrentTeb hides all of this and uses whatever platform-specific 
+pointer. `NtCurrentTeb` hides all of this and uses whatever platform-specific 
 technique is needed to retrieve the information.
 
 Matt Pietrek's [1996](http://www.microsoft.com/msj/archive/S2CE.aspx) and 

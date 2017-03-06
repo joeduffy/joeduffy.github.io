@@ -22,14 +22,14 @@ of user-mode memory pointed at and reserved for use by the Windows kernel
 Thread data structure (KTHREAD). In addition to basic OS information like the
 active SEH filter chain, stack base and limit, and owned critical sections,
 applications can easily stash data into and retrieve data out of the Thread
-Local Storage (TLS) area of the TEB. This is done using the Win32 TlsAlloc,
-TlsGetValue, TlsSetValue, and TlsFree functions. You can view the TEB via the
+Local Storage (TLS) area of the TEB. This is done using the Win32 `TlsAlloc`,
+`TlsGetValue`, `TlsSetValue`, and `TlsFree` functions. You can view the TEB via the
 kernel debugger's !thread command.
 
-(The CLR of course offers TLS functionality too, i.e. using ThreadStatics and
-the System.Threading.Thread's AllocateDataSlot, SetData, and GetData functions.
+(The CLR of course offers TLS functionality too, i.e. using `ThreadStatics` and
+the `System.Threading.Thread`'s `AllocateDataSlot`, `SetData`, and `GetData` functions.
 This information does go into the TEB, but it is managed by the CLR. A call to
-SetData does not translate directly to a call to TlsSetValue.)
+`SetData` does not translate directly to a call to `TlsSetValue`.)
 
 Win32--and Windows in general--makes liberal use of thread-local memory. I
 noted a few uses above (e.g. exception handlers) which are pervasive. Such
@@ -43,10 +43,10 @@ physical thread to another.
 
 Imagine what would happen if we made a call to some Win32 function and then
 decided to swap out the logical work so that we could install new work.
-SetLastError might have been used to communicate a failure in a function called
+`SetLastError` might have been used to communicate a failure in a function called
 on either the thread the work is being swapped out of, or the destination once
-it gets rescheduled. But SetLastError installs the error information into the
-TEB. GetLastError will then either fail to retrieve information or, more
+it gets rescheduled. But `SetLastError` installs the error information into the
+TEB. `GetLastError` will then either fail to retrieve information or, more
 likely, will retrieve somebody else's information, either of which would lead
 to all sorts of serious problems. Similar issues can happen if we (foolishly)
 tried to swap out a thread that owned a critical section, or some other
@@ -56,11 +56,11 @@ This is one major reason why fibers are still problematic as a general task
 scheduling solution for Windows. And it's a challenge if you even want to
 consider user-mode scheduling a la continuations. You just can't get around the
 platform's hidden thread affinity. We've done much better in managed code. Over
-time we are trying to use ExecutionContext as the currency for logical context
+time we are trying to use `ExecutionContext` as the currency for logical context
 information, which can be easily captured and restored by the runtime. But
 there are examples where we violate this (e.g. monitors), where we use the
 physical OS thread as the context (be fair: we do notify hosts of such
-situations via Thread.Begin/EndThreadAffinity).
+situations via `Thread.Begin/EndThreadAffinity`).
 
 But you can't escape the fact that the runtime itself is built right on top of
 Win32.

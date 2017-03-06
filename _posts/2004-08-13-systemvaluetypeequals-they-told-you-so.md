@@ -35,42 +35,26 @@ Specifically, the core of this implementation looks something like this (see
 [here](http://www.dotnet247.com/247reference/System/ValueType/__rotor) for the
 full Rotor implementation):
 
-  **public**  **override**  **bool** Equals (Object obj) {
-
+    public override bool Equals(Object obj) {
       // ...
+      FieldInfo[] thisFields = thisType.InternalGetFields(BindingFlags.Instance |
+        BindingFlags.Public | BindingFlags.NonPublic, false);
 
-FieldInfo[] thisFields = thisType.InternalGetFields(BindingFlags.Instance |
-BindingFlags.Public | BindingFlags.NonPublic, **false** );
+      for (int i = 0; i < thisFields.Length; i++) {
+        thisResult = ((RuntimeFieldInfo)thisFields[i]).InternalGetValue(thisObj, false);
+        thatResult = ((RuntimeFieldInfo)thisFields[i]).InternalGetValue(obj, false);
 
-      **for** ( **int** i=0; i<thisFields.Length; i++) {
-
-          thisResult =
-((RuntimeFieldInfo)thisFields[i]).InternalGetValue(thisObj, **false** );
-
-          thatResult = ((RuntimeFieldInfo)thisFields[i]).InternalGetValue(obj,
-**false** );
-
-          **if** (thisResult == **null** ) {
-
-              **if** (thatResult != **null** )
-
-                  **return**  **false** ;
-
-          }
-
-          **else**
-
-          **if** (!thisResult.Equals(thatResult)) {
-
-              **return**  **false** ;
-
-          }
-
+        if (thisResult == null) {
+          if (thatResult != null)
+            return false;
+        }
+        else if (!thisResult.Equals(thatResult)) {
+          return  false;
+        }
       }
 
-      **return**  **true** ;
-
-  }
+      return true;
+    }
 
 I wrote a test harness (full code available
 [here](http://www.bluebytesoftware.com/code/04/08/13/TestVtEquals.txt)) to test
@@ -80,65 +64,41 @@ significant enough that I felt compelled to post this entry.
 
 My value type looks like this:
 
-  **struct** ValueTypeA
-
-  {
-
-    **private**  **string** a;
-
-    **public**  **string** A
-
+    struct ValueTypeA
     {
+      private string a;
+      public string A
+      {
+        get { return a; }
+        set { a = value ; }
+      }
 
-      **get** { **return** a; }
+      private DateTime b;
+      public DateTime B
+      {
+        get { return b; }
+        set { b = value; }
+      }
 
-      **set** { a = **value** ; }
-
+      private int c;
+      public int C
+      {
+        get { return c; }
+        set { c = value; }
+      }
     }
-
-    **private** DateTime b;
-
-    **public** DateTime B
-
-    {
-
-      **get** { **return** b; }
-
-      **set** { b = **value** ; }
-
-    }
-
-    **private**  **int** c;
-
-    **public**  **int** C
-
-    {
-
-      **get** { **return** c; }
-
-      **set** { c = **value** ; }
-
-    }
-
-  }
 
 ...And my main loop looks like this:
 
-  [MethodImpl(MethodImplOptions.NoInlining)]
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    void DoDefaultEquals(Array a)
+    {
+      ValueTypeA[] aa = (ValueTypeA[])a;
 
-  **void** DoDefaultEquals(Array a)
-
-  {
-
-    ValueTypeA[] aa = (ValueTypeA[])a;
-
-    **for** ( **int** i = 1; i < aa.Length; i++)
-
-      **for** ( **int** j = 0; j < i; j++)
-
-        aa[i].Equals(aa[j]);
-
-  }
+      for (int i = 1; i < aa.Length; i++)
+        for (int j = 0; j < i; j++)
+          aa[i].Equals(aa[j]);
+    }
 
 Admittedly, this is a very contrived, comparison-intensive example.
 Nonetheless, let's consider the default implementation as our baseline, that is
@@ -147,29 +107,19 @@ results less arbitrary (e.g. scenario 1 took 37,151 milliseconds to run, etc.).
 
 So, what if we explicitly override Equals(object) in our value type?
 
-  **public**  **override**  **bool** Equals( **object** o)
-
-  {
-
-    **if** (o **is** ValueTypeA)
-
+    public override bool Equals(object o)
     {
+      if (o is ValueTypeA)
+      {
+        ValueTypeA v = (ValueTypeA)o;
 
-      ValueTypeA v = (ValueTypeA)o;
-
-      **return** A == v.A && B == v.B && C == v.C;
-
+        return A == v.A && B == v.B && C == v.C;
+      }
+      else
+      {
+        return false;
+      }
     }
-
-    **else**
-
-    {
-
-      **return**  **false** ;
-
-    }
-
-  }
 
 This actually comes in way under the default implementation. In fact, on my
 computer it took on average about 10.5% (0.105) of the time the original
@@ -178,27 +128,18 @@ scenario took to execute! Pretty darn good!
 But we can still improve slightly, as the above implementation requires the
 value types are boxed before being passed to the implementation.
 
-  **public**  **override**  **bool** Equals( **object** o)
+    public override bool Equals(object o)
+    {
+      if (o is ValueTypeA)
+        return Equals((ValueTypeA)o);
+      else
+        return false;
+    }
 
-  {
-
-    **if** (o **is** ValueTypeA)
-
-      **return** Equals((ValueTypeA)o);
-
-    **else**
-
-      **return**  **false** ;
-
-  }
-
-  **public**  **bool** Equals(ValueTypeA v)
-
-  {
-
-    **return** A == v.A && B == v.B && C == v.C;
-
-  }
+    public bool Equals(ValueTypeA v)
+    {
+      return A == v.A && B == v.B && C == v.C;
+    }
 
 This one comes in at 6.5% (0.065) of the original implementation's execution
 time.
@@ -211,25 +152,17 @@ So just for summary, these are the comparative results I got on my machine:
 For yucks, I tried a loop which used Array.IndexOf() to look up value types
 stored in an array.
 
-  [MethodImpl(MethodImplOptions.NoInlining)]
-
-  **void** DoFind(Array a)
-
-  {
-
-    **for** ( **int** j = 0; j < 100; j++)
-
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    void DoFind(Array a)
     {
+      for (int j = 0; j < 100; j++)
+      {
+        ValueTypeA[] aa = (ValueTypeA[])a;
 
-      ValueTypeA[] aa = (ValueTypeA[])a;
-
-      **for** ( **int** i = 0; i < aa.Length; i++)
-
-        Array.IndexOf(aa, aa[i]);
-
+        for (int i = 0; i < aa.Length; i++)
+          Array.IndexOf(aa, aa[i]);
+      }
     }
-
-  }
 
 I received similar results:
 

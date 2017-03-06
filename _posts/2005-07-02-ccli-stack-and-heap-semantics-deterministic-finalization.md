@@ -28,11 +28,11 @@ has to offer.
 
 For example, want to create a ref type on the stack? Fine.
 
-> MyType mt("Foo");
+    MyType mt("Foo");
 
 On the GC heap? Alright.
 
-> MyType^ mt = gcnew MyType("Foo");
+    MyType^ mt = gcnew MyType("Foo");
 
 (Note if you're wondering "how'd they do that?" The answer is that the first
 case only has stack _semantics_. It still lives on the GC heap. In other words,
@@ -42,29 +42,33 @@ programmer's existing understanding of stack versus heap semantics.)
 Similarly, did you want to maintain a typed reference to a boxed value type?
 Ok.
 
-> int^ i = gcnew int(5);
+    int^ i = gcnew int(5);
 
 This compiles to IL which uses modopts to store typing and boxing information
 so that the runtime/JIT know how to treat it, and for the verifier so that it
-knows it's being used in a type-sound manner. Did you need a Nullable<int>?
+knows it's being used in a type-sound manner. Did you need a `Nullable<int>`?
 Nonsense! Just set your reference to null and you've got it:
 
-> int^ i = nullptr; // now it's null i = gcnew int(5); // now it's not
+    int^ i = nullptr; // now it's null
+    i = gcnew int(5); // now it's not
 
 Furthermore, with stack semantics for ref types, deterministic finalization is
 simple. Just write a destructor for your type (it gets compiled down to a
-Dispose method), and it gets invoked for you when leaving the scope. Just like
+`Dispose` method), and it gets invoked for you when leaving the scope. Just like
 the old C++ days. This means you can say:
 
-> { StreamReader sr(...); // do some stuff with stream }
+    {
+      StreamReader sr(...);
+      // do some stuff with StreamReader
+    }
 
-And sr gets disposed just prior to leaving the block scope. You can also create
+And `sr` gets disposed just prior to leaving the block scope. You can also create
 your own standard resource mgmt wrappers like that come with TR1 (e.g.
-tr1::shared\_ptr<>). Using the terms that Rico Mariani came up with in a
+`tr1::shared_ptr<>`). Using the terms that Rico Mariani came up with in a
 meeting a while back, you've got "the bang" and "the twiddle"...
 
-> !MyType() {} // the bang: a finalizer ~MyType() {} // the twiddle: a Dispose
-> method
+    !MyType() {} // the bang: a finalizer
+    ~MyType() {} // the twiddle: a Dispose method
 
 They've also [implemented
 STL](http://msdn.microsoft.com/visualc/?pull=/library/en-us/dnvs05/html/stl-netprimer.asp?frame=true)

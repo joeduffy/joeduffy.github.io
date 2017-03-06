@@ -53,7 +53,7 @@ Rotor's JIT to see what I can come up with, but it seems difficult to do in an
 efficient manner. STM requires that certain activities write to a transaction
 log instead of directly to memory. But it's difficult to know statically
 whether you're inside a transaction and thus which behavior is
-appropriate--e.g. with locked { Foo(); }, Foo() will execute inside a
+appropriate--e.g. with locked `{ Foo(); }`, `Foo()` will execute inside a
 transaction sometimes but other times not. You can detect this at runtime and
 do the right thing, but this would result in a pretty poor global performance
 hit.
@@ -62,7 +62,7 @@ Further, because of the non-strict nature of Haskell, implicit parallelism
 becomes more of a reality. Again, something that's possible in strict
 languages, but more difficult to do correctly. With more intent-based
 annotations throughout the Framework, I think we could eventually get there. I
-absolutely love the existing par and seq explicit abstractions that the
+absolutely love the existing `par` and `seq` explicit abstractions that the
 Parallel GHC library provides. They compose beautifully. I think C# could learn
 a thing or two.
 

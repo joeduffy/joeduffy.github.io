@@ -37,7 +37,7 @@ scalability due to dynamic fine-grained locking techniques and policies, while
 supplying conveniences such as intelligent contention management and deadlock 
 detection. And of course reliability is improved, because of the all-or-nothing 
 semantics of transactions. Even in the face of [asynchronous thread 
-aborts](http://www.bluebytesoftware.com/blog/PermaLink.aspx?guid=c1898a31-a0aa-40af-871c-7847d98f1641), 
+aborts](http://joeduffyblog.com/2005/09/29/rude-unloads-and-orphaned-locks/), 
 a transaction can ensure inconsistent state isn't left behind to corrupt a 
 process, greatly improving the reliability of software at a surprisingly low 
 cost. [Software transactional 
