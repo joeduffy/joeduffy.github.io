@@ -13,8 +13,6 @@ author:
   last_name: Duffy
   email: joeduffy@acm.org
 ---
-# A Brief Update on Me (in a Word, Pulumi)
-
 Almost unbelievably, it's been six months since I blogged.  I promise to return soon with more goods than ever before.
 And no, I haven't become a [professional MMA fighter](https://en.wikipedia.org/wiki/Joseph_Duffy_(fighter)).
 
