@@ -19,7 +19,7 @@ And no, I haven't become a [professional MMA fighter](https://en.wikipedia.org/w
 The reason for my radio silence is simple: a few months ago, we had our "ah-hah" moment, envisioned a company around it,
 [Pulumi](http://pulumi.com/), and began on our journey.  Since then, I've been having the time of my life spelunking at
 the intersection of distributed cloud systems, programming languages, and machine intelligence.  I've learned more and
-coded more in such a short period of time than ever before, and I've never worked so hard or had as much fun, in my life.
+coded more in such a short period of time than ever before, and I've never worked so hard or had as much fun.
 
 Pulumi will be continue in stealth for awhile longer; however, we recently hit some important milestones.  Including
 starting to hire!  Our first task is to bring together a world-class team and culture, with diverse perspectives,
