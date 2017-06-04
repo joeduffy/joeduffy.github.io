@@ -24,8 +24,7 @@ coded more in such a short period of time than ever before, and I've never worke
 Pulumi will be continue in stealth for awhile longer; however, we recently hit some important milestones.  Including
 starting to hire!  Our first task is to bring together a world-class team and culture, with diverse perspectives,
 capable of the challenging and exciting mission ahead of us.  After building many teams before, it's impossible for me
-to understate how important team and culture will be to our future success, and so that is life itself for year one and
-beyond.
+to overstate how important team and culture will be to our future success, and so that is life itself for year one.
 
 That's where you come in.
 
