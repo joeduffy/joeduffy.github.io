@@ -13,7 +13,6 @@ body {
   color: #222222;
   line-height: 24px;
   margin: 0;
-  padding-bottom: 64px;
 }
 
 .header {
@@ -295,6 +294,10 @@ i.fa-hn {
 
 .home:hover {
   text-decoration: none;
+}
+
+.container {
+    min-height: calc(100vh - 112px);
 }
 
 .disclaimer p {
