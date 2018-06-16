@@ -84,16 +84,16 @@ ul {
 
 a {
   color: #00acf2;
-  text-decoration: none;
-}
-
-a:hover {
-  /*color: {{ site.data.theme.highlight_color }};*/
   text-decoration: underline;
 }
 
+a:hover {
+  color: #ee975c;
+  text-decoration: none;
+}
+
 a:visited {
-  color: #3333cc;
+  color: #00acf2;
 }
 
 table {
