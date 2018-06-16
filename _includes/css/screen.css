@@ -42,6 +42,7 @@ h1.title {
 
 .site_title a {
     color: #ffffff;
+    text-decoration:none;
 }
 
 .site_title a:hover {
@@ -84,7 +85,7 @@ ul {
 
 a {
   color: #00acf2;
-  text-decoration: underline;
+  text-decoration: none;
 }
 
 a:hover {
