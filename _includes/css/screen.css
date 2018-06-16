@@ -93,10 +93,6 @@ a:hover {
   text-decoration: none;
 }
 
-a:visited {
-  color: #00acf2;
-}
-
 table {
   font-size: inherit;
   font: 100%;
