@@ -10,7 +10,7 @@ excerpt_separator: "\n\n"
 permalink: /:year/:month/:day/:title/
 timezone: America/Los_Angeles
 
-paginate: 15
+paginate: 10
 
 safe: true
 lsi: false
