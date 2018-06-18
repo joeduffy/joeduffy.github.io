@@ -292,8 +292,10 @@ This is a hard problem.  I am in no way saying we've solved it.  I do believe th
 future cloud development platform that I've personally seen and wanted.  Betting on languages will enable us all to
 "stand on the shoulders of giants" during this exciting time, which gives me optimism; languages are always a safe bet.
 
-Today is quite possibly the most exciting day of my career.  I'd like to thank the team and everybody who helped out
-along the way, indulging our crazy ideas.  Get Pulumi now at [https://pulumi.io](https://pulumi.io), or simply run:
+Today is quite possibly the most exciting day of my career.  I'd like to thank our amazing team and everybody who helped
+out along the way, indulging our crazy ideas, and believing in us.
+
+Get Pulumi now at [https://pulumi.io](https://pulumi.io), or simply run:
 
 ```bash
 $ curl -fsSL https://get.pulumi.com | sh
