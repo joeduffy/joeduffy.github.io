@@ -36,13 +36,14 @@ how and why we got here.
 ## Why Pulumi?
 
 My background is 100% developer tools.  I was an early engineer on .NET, architected its concurrency and asynchrony
-support, led the programming platform for a distributed OS, and managed Microsoft's languages groups, including open
-sourcing and taking .NET Core cross-platform.  Because of this background, I came to cloud with a unique perspective.
+support, led the programming platform for [a distributed OS](http://joeduffyblog.com/2015/11/03/blogging-about-midori/),
+and managed Microsoft's languages groups, including open sourcing and taking .NET Core cross-platform.  Because of this
+background, I came to cloud with a unique perspective.
 
 And what I found was frankly not very appealing to me.
 
 I started exploring Pulumi during late 2016 with my friend and co-founder Eric Rudder, when containers and serverless
-were far enough along to show incredible promise, but early enough to be very difficult to use "for real."  The
+were far enough along to show amazing promise, but early enough to be very difficult to use "for real."  The
 capabilities of the cloud are incredible, but far too difficult to use, still to this day a year and a half later.
 
 For every serverless function, I had dozens of lines of JSON or YAML configuration.  To connect that to an API endpoint,
@@ -79,7 +80,7 @@ running inside a VM for more flexible management.  This approach to configuratio
 shifted" these same VMs into the cloud.  And it worked, because we got the boundaries approximately correct.
 
 Expressing the relationships between container-based microservices, serverless functions, and fine-grained hosted
-services using this same style of configuration has led to incredible accidental complexity.  Turning an application
+services using this same style of configuration has led to significant accidental complexity.  Turning an application
 into a distributed system can't be an afterthought.  The cloud, it turns out, pervades your architecture and design.
 And the way that we know how to best express architecture and design in our programs is using code, written in real
 programming languages with abstractions, reuse, and great tooling.
