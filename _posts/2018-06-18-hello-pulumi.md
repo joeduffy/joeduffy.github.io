@@ -29,7 +29,7 @@ become [38 lines of code](http://blog.pulumi.com/build-a-video-thumbnailer-with-
 25,000 lines of YAML configuration becomes 500 lines in a real programming language.
 
 The entire Pulumi runtime, CLI, and supporting libraries are [available on GitHub](https://github.com/pulumi) and
-available for download at [https://pulumi.io](https://pulumi.io).  The team is on tenterhooks
+free to download at [https://pulumi.io](https://pulumi.io).  The team is on tenterhooks
 [awaiting your feedback](https://slack.pulumi.io). In the meantime, allow me to tell you a bit more about Pulumi, and
 how and why we got here.
 
