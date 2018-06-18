@@ -3,7 +3,6 @@ url: http://joeduffyblog.com
 description: Adventures in the high-tech underbelly
 email: joeduffy@acm.org
 
-highlighter: rouge
 markdown: kramdown
 excerpt_separator: "\n\n"
 
@@ -15,4 +14,3 @@ paginate: 10
 safe: true
 lsi: false
 exclude: [.gitignore, CNAME, Dockerfile, README.md]
-
