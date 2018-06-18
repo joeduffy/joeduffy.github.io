@@ -25,7 +25,7 @@ cloud.  Pulumi delivers a single, consistent programming model and set of tools 
 environments, supported by a rich ecosystem of reusable packages.  Using real languages changes everything.
 
 TL;DR, with Pulumi, [38 pages of manual instructions](https://serverless.com/blog/serverless-application-for-long-running-process-fargate-lambda/)
-become [38 lines of code](http://blog.pulumi.com/build-a-video-thumbnailer-with-pulumi-using-lambdas-containers-and-infrastructure-on-aws).
+become [38 lines of code](https://github.com/pulumi/examples/blob/master/cloud-js-thumbnailer/index.js).
 25,000 lines of YAML configuration becomes 500 lines in a real programming language.
 
 The entire Pulumi runtime, CLI, and supporting libraries are [available on GitHub](https://github.com/pulumi) and
