@@ -206,7 +206,8 @@ It's hard to choose, but here are some of my favorite things about Pulumi:
 **Open Source**.  I am a huge believer that all developer tools should be open source.  Sure, Pulumi is a company too,
 but there are ample opportunities to build a business model by adding true convenience.  (Think Git versus GitHub.)
 Because we bet so big on open source, I am excited to see where the community takes us, especially in the area of
-higher-level packages.
+higher-level packages.  And we benefit tremendously from work that has come before, including Docker, Terraform,
+Kubernetes, TypeScript, and too many others to mention explicitly.  We look forward to becoming part of the ecosystem.
 
 **Multi-Language**.  Just as with Java and .NET, the Pulumi runtime was architected to support many languages, and to
 do so in an idiomatic way for all aspects of a target language (style, syntax, packages, etc).  Because we are open
