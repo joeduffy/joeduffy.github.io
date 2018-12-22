@@ -233,7 +233,7 @@ Here's is an example of the resulting machine code for the inner loop array acce
     ; The error handler; just call a runtime helper that throws:
     3B28: E8 03 E5 FF FF  call        2030
 
-If you're doing this bookkeeping on every loop iteration, you won't get very tight loop code.  And you're certianly not
+If you're doing this bookkeeping on every loop iteration, you won't get very tight loop code.  And you're certainly not
 going to have any hope of vectorizing it.  So, we spent a lot of time and energy trying to eliminate such checks.
 
 In the above example, it's obvious to a human that no bounds checking is necessary.  To a compiler, however, the
