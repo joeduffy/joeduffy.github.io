@@ -876,7 +876,7 @@ Interfaces were a challenge.
 There are just some poorly designed, inefficient patterns in the .NET Framework.  `IEnumerator<T>` requires *two*
 interface dispatches simply to extract the next item!  Compare that to C++ iterators which can compile down a pointer
 increment plus dereference.  Many of these problems could be addressed simply with better library designs.  (Our final
-design for enumeration didn't even invole interfaces at all.)
+design for enumeration didn't even involve interfaces at all.)
 
 Plus invoking a C# interface is tricky.  Existing systems do not use pointer adjustment like
 C++ does so usually an interface dispatch requires a table search.  First a level of indirection to get to the vtable,
