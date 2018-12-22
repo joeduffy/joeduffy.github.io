@@ -684,7 +684,7 @@ instance, see [this study](http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.
 had some ways to combat the usual problems, like long pause times.  I'll go through those in a future post, however.
 For now, let's stick to the realm of code quality.
 
-The first top-level decision is: *conservative* or *precise*?  A conserative collector is easier to wedge into an
+The first top-level decision is: *conservative* or *precise*?  A conservative collector is easier to wedge into an
 existing system, however it can cause troubles in certain areas.  It often needs to scan more of the heap to get the
 same job done.  And it can falsely keep objects alive.  We felt both were unacceptable for a systems programming
 environment.  It was an easy, quick decision: we sought precision.
