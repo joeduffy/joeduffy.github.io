@@ -140,7 +140,7 @@ the hell out of the structures.  The net result wasn't much more than what a
 typical C++ program has just to support virtual dispatch (never mind casting).
 
 A general theme that ran throughout this journey is that compiler technology has
-advanced tremeodusly in the past 20 years.  In most cases, safety overheads can
+advanced tremendously in the past 20 years.  In most cases, safety overheads can
 be optimized very aggressively.  That's not to say they drop to zero, but we were
 able to get them within the noise for most interesting programs.  And --
 surprisingly -- we found plenty of cases where safety _enabled_ new, novel
