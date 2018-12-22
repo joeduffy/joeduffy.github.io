@@ -787,7 +787,7 @@ We did, however, want separately compiled binaries, purely as a developer produc
 play.  Well, I lied.  What we ended up with was incrementally compiled binaries, where a change in a root node triggered
 a cascading recompilation of its dependencies.  But for leaf nodes, such as applications, life was beautiful.  Over
 time, we got smarter in the toolchain by understanding precisely which sorts of changes could trigger cascading
-invaliation of images.  A function that was known to never have been inlined across modules, for example, could have its
+invalidation of images.  A function that was known to never have been inlined across modules, for example, could have its
 implementation -- but not its signature -- changed, without needing to trigger a rebuild.  This is similar to the
 distinction between headers and objects in a classical C/C++ compilation model.
 
