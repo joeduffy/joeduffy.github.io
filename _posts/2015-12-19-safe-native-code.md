@@ -862,7 +862,7 @@ impactfully, a lost opportunity to inline (which for small functions is essentia
 intra-module analysis to devirtualize, but also extended this across modules, using whole program compilation, when
 multiple binaries were grouped together into a library group.
 
-Although our defaults were right, m experience with C# developers is that they go a little hog-wild with virtuals and
+Although our defaults were right, my experience with C# developers is that they go a little hog-wild with virtuals and
 overly abstract code.  I think the ecosystem of APIs that exploded around highly polymorphic abstractions, like LINQ and
 Reactive Extensions, encouraged this and instilled a bit of bad behavior ("gratuitous over-abstraction").  I guess you
 could make similar arguments about highly templated code in C++.  As you can guess, there wasn't very much of it in the
