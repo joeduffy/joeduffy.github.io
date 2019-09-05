@@ -113,4 +113,4 @@ I'm humbled by the amazing team that has worked so hard to build this technology
 
 Although Pulumi 1.0 is a major milestone for all of us, we are just as excited about what comes next. Pulumi 1.0 lays a solid foundation to continue making it even easier than before to go to production with modern application architectures, while also going deeper ensuring great fundamentals when doing so.
 
-Pulumi is [open source](https://github.com/pulumi/pulumi) and I hope you will [check it out](/docs/get-started). [Join our Community Slack](https://slack.pulumi.com/) and let us know what you think!
+You can [read more about the 1.0 release here](https://www.pulumi.com/blog/pulumi-1-0/). Pulumi is [open source](https://github.com/pulumi/pulumi) and I hope you will [check it out](/docs/get-started). [Join our Community Slack](https://slack.pulumi.com/) and let us know what you think!
