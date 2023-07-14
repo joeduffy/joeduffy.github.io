@@ -103,7 +103,7 @@ slip through the cracks. And my mind obsesses over all aspects of my work, even 
 "off times" (e.g., eating dinner, walking down the hallway, etc). Each of these opportunities
 represents a chance to slow down, reflect, and course correct.
 
-Do I still miss thing? Sure I do. But that's why it's so critical to have a team
+Do I still miss things? Sure I do. But that's why it's so critical to have a team
 around you who shares the same principles and will help to identify any shortcomings
 that I've missed.
 
